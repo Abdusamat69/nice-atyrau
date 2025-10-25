@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nice-Atyrau — магазин</title>
+  <style>
+    :root{
+      --brand-blue:#0b5ed7;
+      --brand-yellow:#ffd400;
+      --muted:#f5f6f8;
+      --card-radius:12px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--muted),#fff);color:#0b2140}
+    header{background:var(--brand-blue);color:white;padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo .mark{width:44px;height:44px;border-radius:8px;background:var(--brand-yellow);display:grid;place-items:center;color:var(--brand-blue);font-weight:800}
+    .search{max-width:420px;width:60%}
+    .search input{width:100%;padding:10px 12px;border-radius:10px;border:none}
+    main{padding:24px;max-width:1200px;margin:0 auto}
+    .hero{display:flex;gap:20px;align-items:center;margin-bottom:20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+    .card{background:white;border-radius:var(--card-radius);padding:12px;box-shadow:0 6px 18px rgba(13,30,60,0.06);display:flex;flex-direction:column}
+    .card img{width:100%;height:150px;object-fit:cover;border-radius:8px}
+    .card h4{margin:10px 0 6px;font-size:16px}
+    .price{font-weight:700;color:var(--brand-blue)}
+    .card .actions{margin-top:auto;display:flex;gap:8px;align-items:center}
+    button{border:0;padding:10px 12px;border-radius:10px;cursor:pointer}
+    .btn-primary{background:var(--brand-blue);color:white}
+    .btn-ghost{background:transparent;border:1px solid #e6e9ef}
+    /* Корзина — плавающая кнопка */
+    .cart-button{position:fixed;right:18px;bottom:18px;background:var(--brand-yellow);color:var(--brand-blue);padding:14px 18px;border-radius:50px;box-shadow:0 6px 16px rgba(0,0,0,0.2);font-weight:700;cursor:pointer;z-index:999}
+    .cart-popup{position:fixed;right:18px;bottom:70px;background:white;border-radius:14px;box-shadow:0 8px 22px rgba(11,34,71,0.12);min-width:300px;display:none;flex-direction:column;max-height:420px;overflow:auto;padding:12px;z-index:998}
+    .cart-item{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #eee}
+    .qty{display:flex;align-items:center;gap:6px}
+    .checkout{margin-top:8px;display:flex;justify-content:space-between}
+    @media (max-width:800px){.hero{flex-direction:column}.search{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="mark">N</div>
+      <div>
+        <div style="font-weight:800">Nice-Atyrau</div>
+        <div style="font-size:12px;opacity:0.9">Всё для дома и детские игрушки</div>
+      </div>
+    </div>
+    <div class="search"><input id="search" placeholder="Поиск товаров..." /></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Товары для дома и игрушки</h1>
+        <p>Добавляйте в корзину и оплачивайте Kaspi QR или через WhatsApp!</p>
+      </div>
+    </section>
+    <section id="all">
+      <h2>Каталог</h2>
+      <div class="grid" id="products"></div>
+    </section>
+  </main>
+
+  <div class="cart-button" onclick="toggleCart()">🛒 Корзина (<span id="cart-count">0</span>)</div>
+  <div class="cart-popup" id="cart-popup">
+    <h3>Моя корзина</h3>
+    <div id="cart-list"></div>
+    <div style="margin-top:6px;font-weight:700">Итого: <span id="cart-total">0 KZT</span></div>
+    <div class="checkout">
+      <button class="btn-ghost" onclick="toggleCart()">Закрыть</button>
+      <button class="btn-primary" onclick="checkout()">Оплатить</button>
+    </div>
+  </div>
+
+  <!-- QR Modal -->
+  <div id="checkout-modal" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,0.4)">
+    <div style="background:white;padding:16px;border-radius:10px;text-align:center">
+      <h3>Оплата Kaspi QR</h3>
+      <img id="kaspi-qr" src="#KASPI_QR" style="width:220px;height:220px;object-fit:contain;border:1px solid #eee;border-radius:10px">
+      <div style="margin-top:10px">
+        <button class="btn-ghost" onclick="closeCheckout()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const kaspiQrSrc = '#KASPI_QR';
+    const whatsappNumber = '77014110470';
+
+    const productsData = [
+      {id:1,title:'Набор кухонных полотенец',price:1290,desc:'Хлопок, 3 шт., 40x60 см',img:'https://images.unsplash.com/photo-1567016527255-6f7f6f8b6a7f?q=80&w=800'},
+      {id:2,title:'Мягкая игрушка — медвежонок',price:3590,desc:'Высота 28 см, гипоаллергенный материал',img:'https://images.unsplash.com/photo-1552332386-f8dd00dc0f89?q=80&w=800'},
+      {id:3,title:'Детский набор пластилина',price:990,desc:'6 цветов, безопасный состав',img:'https://images.unsplash.com/photo-1582719478250-1cca93f2a0f7?q=80&w=800'},
+      {id:4,title:'Органайзер для хранения',price:2490,desc:'Складной, 3 секции',img:'https://images.unsplash.com/photo-1582582494701-7f2b9be7f1b6?q=80&w=800'},
+      {id:5,title:'Игрушечный набор посуды',price:1990,desc:'Пластик, 12 предметов',img:'https://images.unsplash.com/photo-1603398938378-5b9b4a8f1b1c?q=80&w=800'},
+      {id:6,title:'Ночник звёздное небо',price:3290,desc:'Проектор с батарейкой',img:'https://images.unsplash.com/photo-1590080874793-1d6d6dab3b03?q=80&w=800'}
+    ];
+
+    let cart = {};
+
+    function renderProducts(list){
+      const wrap=document.getElementById('products');wrap.innerHTML='';
+      list.forEach(p=>{
+        wrap.innerHTML+=`
+        <div class="card">
+          <img src="${p.img}" alt="${p.title}">
+          <h4>${p.title}</h4>
+          <div style="font-size:13px;opacity:0.85">${p.desc}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div class="price">${p.price} KZT</div>
+            <button class="btn-primary" onclick="addToCart(${p.id})">В корзину</button>
+          </div>
+        </div>`;
+      });
+    }
+
+    function addToCart(id){
+      const p=productsData.find(x=>x.id===id);
+      if(!cart[id]) cart[id]={...p,qty:0};
+      cart[id].qty++;
+      renderCart();
+    }
+
+    function renderCart(){
+      const list=document.getElementById('cart-list');
+      list.innerHTML='';
+      let total=0;
+      const keys=Object.keys(cart);
+      if(keys.length===0){list.innerHTML='<div style="opacity:0.6">Корзина пуста</div>';document.getElementById('cart-count').innerText='0';document.getElementById('cart-total').innerText='0 KZT';return;}
+      keys.forEach(k=>{
+        const it=cart[k];total+=it.price*it.qty;
+        list.innerHTML+=`
+        <div class="cart-item">
+          <img src="${it.img}" style="width:48px;height:48px;object-fit:cover;border-radius:6px">
+          <div style="flex:1">${it.title}<br><small>${it.price} x ${it.qty}</small></div>
+          <div class="qty">
+            <button onclick="changeQty(${it.id},-1)">−</button>
+            <button onclick="changeQty(${it.id},1)">+</button>
+            <button onclick="removeItem(${it.id})">✕</button>
+          </div>
+        </div>`;
+      });
+      document.getElementById('cart-count').innerText=keys.length;
+      document.getElementById('cart-total').innerText=total+' KZT';
+    }
+
+    function changeQty(id,d){if(!cart[id])return;cart[id].qty+=d;if(cart[id].qty<1)delete cart[id];renderCart();}
+    function removeItem(id){delete cart[id];renderCart();}
+
+    function toggleCart(){
+      const el=document.getElementById('cart-popup');
+      el.style.display=(el.style.display==='flex')?'none':'flex';
+    }
+
+    function checkout(){
+      if(Object.keys(cart).length===0){alert('Корзина пуста');return;}
+      let text='🛍 *Новый заказ Nice-Atyrau:*\n';
+      Object.values(cart).forEach(it=>{text+=`• ${it.title} — ${it.qty} шт. × ${it.price}₸\n`;});
+      const total=Object.values(cart).reduce((s,it)=>s+it.price*it.qty,0);
+      text+=`\n💰 *Итого:* ${total}₸`;
+      const url=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
+      window.open(url,'_blank');
+      document.getElementById('kaspi-qr').src=kaspiQrSrc;
+      document.getElementById('checkout-modal').style.display='grid';
+    }
+
+    function closeCheckout(){document.getElementById('checkout-modal').style.display='none';}
+
+    document.getElementById('search').addEventListener('input',e=>{
+      const q=e.target.value.toLowerCase();
+      renderProducts(productsData.filter(p=>(p.title+p.desc).toLowerCase().includes(q)));
+    });
+
+    renderProducts(productsData);
+    renderCart();
+  </script>
+</body>
+</html>
