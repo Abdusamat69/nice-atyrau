@@ -1,183 +1,137 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nice-Atyrau</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nice_Atyrau — магазин</title>
+  <meta name="description" content="Nice_Atyrau — товары для дома, посуда и детские игрушки" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 0;
-      background-color: #f4f4f9;
-      color: #333;
+    :root{
+      --brand-blue:#0b5ed7;
+      --brand-yellow:#ffd400;
+      --muted:#f5f6f8;
+      --card-radius:12px;
+      --text:#0b2140;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-
-    header {
-      background-color: #ffcc00;
-      color: #0047ab;
-      padding: 15px 0;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      letter-spacing: 1px;
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--muted),#fff);color:var(--text);-webkit-font-smoothing:antialiased}
+    header{background:var(--brand-blue);color:white;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo .mark{width:46px;height:46px;border-radius:8px;background:var(--brand-yellow);display:grid;place-items:center;color:var(--brand-blue);font-weight:900;font-size:20px}
+    .logo .title{font-weight:800;line-height:1}
+    .search{max-width:480px;flex:1;margin-left:16px}
+    .search input{width:100%;padding:10px 12px;border-radius:10px;border:none}
+    main{padding:20px;max-width:1200px;margin:0 auto}
+    .hero{display:flex;gap:20px;align-items:center;margin-bottom:18px}
+    .hint{color:rgba(0,0,0,0.6);font-size:14px}
+    .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}
+    .cat-card{background:white;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 18px rgba(13,30,60,0.06);cursor:pointer}
+    .cat-card img{width:72px;height:72px;object-fit:cover;border-radius:10px}
+    .cat-card h3{margin:0;font-size:18px}
+    .grid-products{display:flex;flex-direction:column;gap:10px}
+    .product-card{background:white;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 18px rgba(13,30,60,0.05)}
+    .product-card img{width:120px;height:90px;object-fit:cover;border-radius:10px}
+    .product-info{flex:1}
+    .product-info h4{margin:0 0 6px;font-size:16px}
+    .product-info p{margin:0 0 8px;color:rgba(11,33,64,0.75)}
+    .product-meta{display:flex;align-items:center;gap:12px}
+    .price{font-weight:800;color:var(--brand-blue)}
+    .btn-primary{background:var(--brand-blue);color:white;padding:8px 12px;border-radius:10px;border:0;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid #e6e9ef;padding:8px 10px;border-radius:10px;cursor:pointer}
+    .cart-button{position:fixed;right:18px;bottom:18px;background:var(--brand-yellow);color:var(--brand-blue);padding:12px 16px;border-radius:50px;box-shadow:0 8px 20px rgba(11,34,71,0.12);font-weight:700;cursor:pointer;z-index:999}
+    .cart-popup{position:fixed;right:18px;bottom:78px;background:white;border-radius:12px;box-shadow:0 12px 36px rgba(11,34,71,0.12);min-width:320px;display:none;flex-direction:column;max-height:70vh;overflow:auto;padding:12px;z-index:998}
+    .cart-item{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f3f6}
+    .cart-item img{width:52px;height:52px;object-fit:cover;border-radius:8px}
+    .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+    .small{font-size:13px;color:rgba(0,0,0,0.6)}
+    .back-btn{margin-bottom:12px}
+    .hint2{font-size:13px;color:rgba(0,0,0,0.55);margin-top:8px}
+    @media (max-width:800px){
+      .product-card{flex-direction:row}
+      .product-card img{width:100px;height:80px}
+      .categories{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+      .search input{padding:8px}
     }
-
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
-      gap: 15px;
-    }
-
-    .category-card {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 20px;
-      width: 180px;
-      text-align: center;
-      transition: 0.3s;
-      cursor: pointer;
-    }
-
-    .category-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .category-card img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      margin-bottom: 10px;
-    }
-
-    .products {
-      display: none;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
-      gap: 15px;
-    }
-
-    .product-card {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 15px;
-      width: 180px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: 0.3s;
-    }
-
-    .product-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .product-card img {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
-      margin-bottom: 10px;
-    }
-
-    .product-name {
-      font-weight: bold;
-      font-size: 14px;
-      margin-bottom: 5px;
-      text-align: center;
-    }
-
-    .product-price {
-      color: #0047ab;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .btn {
-      background-color: #0047ab;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #003580;
-    }
-
-    .cart {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      background-color: #0047ab;
-      color: white;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-
-    #cart-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .cart-content {
-      background: #fff;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      padding: 20px;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .cart-buttons {
-      text-align: right;
-      margin-top: 15px;
-    }
-
   </style>
 </head>
 <body>
-  <header>Nice-Atyrau</header>
+  <header>
+    <div class="logo">
+      <div class="mark">N</div>
+      <div>
+        <div class="title">Nice_Atyrau</div>
+        <div style="font-size:12px;opacity:0.9">Всё для дома и детские игрушки</div>
+      </div>
+    </div>
 
-  <div class="categories" id="categories"></div>
-  <div class="products" id="products"></div>
-  <div class="cart" onclick="toggleCart()">🛒</div>
+    <div class="search">
+      <input id="search" placeholder="Поиск товаров..." />
+    </div>
+  </header>
 
-  <div id="cart-modal">
-    <div class="cart-content">
-      <h3>Корзина</h3>
-      <div id="cart-items"></div>
-      <div class="cart-buttons">
-        <button class="btn" onclick="sendToWhatsApp()">Оплатить Kaspi QR</button>
-        <button class="btn" onclick="toggleCart()">Закрыть</button>
+  <main>
+    <section class="hero">
+      <div>
+        <h1 style="margin:0 0 6px">Nice_Atyrau — магазин</h1>
+        <div class="hint">Выберите категорию ниже — товары подтягиваются из Google-таблицы.</div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section id="categories" class="categories" aria-live="polite"></section>
+
+    <!-- Products -->
+    <section id="products-section" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-ghost back-btn" onclick="showCategories()">← Назад</button>
+          <h2 id="products-title" style="margin:0">Товары</h2>
+        </div>
+        <div id="products-count" class="small"></div>
+      </div>
+      <div id="products-list" class="grid-products"></div>
+    </section>
+  </main>
+
+  <!-- Floating cart button and popup -->
+  <div class="cart-button" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
+  <div class="cart-popup" id="cart-popup" role="dialog" aria-label="Корзина">
+    <h3>Корзина</h3>
+    <div id="cart-list"><div style="opacity:0.6">Корзина пуста</div></div>
+    <div class="cart-footer">
+      <div style="font-weight:700">Итого: <span id="cart-total">0 KZT</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-ghost" onclick="toggleCart()">Закрыть</button>
+        <button class="btn-primary" onclick="checkout()">Оплатить</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:rgba(0,0,0,0.6);margin-top:8px">
+      Оплата: WhatsApp → Kaspi QR. WhatsApp: <b>+7 701 411 0470</b>
+    </div>
+  </div>
+
+  <!-- QR Modal -->
+  <div id="checkout-modal" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,0.45);z-index:1200">
+    <div style="background:white;padding:16px;border-radius:12px;text-align:center;max-width:420px;margin:0 12px">
+      <h3>Оплата Kaspi QR</h3>
+      <p style="margin:6px 0 12px;color:rgba(0,0,0,0.7)">Отсканируйте QR в приложении Kaspi.</p>
+      <img id="kaspi-qr" src="" alt="Kaspi QR" style="width:220px;height:220px;object-fit:contain;border-radius:10px;border:1px solid #eee;background:#fff">
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+        <button class="btn-ghost" onclick="closeCheckout()">Закрыть</button>
       </div>
     </div>
   </div>
 
   <script>
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/pub?output=csv';
+    // ------------- SETTINGS -------------
+    // CSV link — constructed from your sheet ID using export?format=csv&gid=0
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
+    // WhatsApp (without +) — change if needed
+    const whatsappNumber = '77014110470';
+    // Kaspi QR image URL (if you have) — replace the placeholder with real URL or leave empty
+    const kaspiQrSrc = ''; // e.g. 'https://example.com/kaspi_qr.png'
+    // Categories list (use your exact names)
     const categoriesList = [
       "Посуды",
       "Игрушки и детские товары",
@@ -187,81 +141,227 @@
       "Для кухни",
       "Для дома и хозяйства"
     ];
+    // ------------- END SETTINGS -------------
 
-    const categoriesDiv = document.getElementById("categories");
-    const productsDiv = document.getElementById("products");
-    let cart = [];
+    // UI refs
+    const elCategories = document.getElementById('categories');
+    const elProductsSection = document.getElementById('products-section');
+    const elProductsList = document.getElementById('products-list');
+    const elProductsTitle = document.getElementById('products-title');
+    const elProductsCount = document.getElementById('products-count');
+    const elCartPopup = document.getElementById('cart-popup');
+    const elCartList = document.getElementById('cart-list');
+    const elCartCount = document.getElementById('cart-count');
+    const elCartTotal = document.getElementById('cart-total');
 
+    let products = [];
+    let cart = {};
+
+    // Fetch CSV (uses export?format=csv URL). Note: must be deployed via http(s) (not file://)
     async function fetchSheetCSV() {
       const res = await fetch(csvUrl);
-      const text = await res.text();
-      return text;
+      if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
+      return await res.text();
     }
 
-    function parseCSV(text) {
-      const rows = text.trim().split("\n").map(r => r.split(","));
-      const headers = rows.shift();
-      return rows.map(r => Object.fromEntries(r.map((v, i) => [headers[i], v])));
+    function parseCSV(str) {
+      // robust CSV parse (handles quoted commas)
+      const rows = [];
+      let cur = '', inQuotes = false, row = [];
+      for (let i=0;i<str.length;i++){
+        const ch = str[i];
+        if (ch === '"' ) {
+          if (inQuotes && str[i+1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; }
+          continue;
+        }
+        if (ch === ',' && !inQuotes) { row.push(cur); cur=''; continue; }
+        if ((ch === '\n' || ch === '\r') && !inQuotes) {
+          if (cur !== '' || row.length) { row.push(cur); rows.push(row); row = []; cur=''; }
+          if (ch === '\r' && str[i+1] === '\n') i++;
+          continue;
+        }
+        cur += ch;
+      }
+      if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+      return rows;
     }
 
     async function loadProductsFromSheet() {
-      const csv = await fetchSheetCSV();
-      const data = parseCSV(csv);
-
-      categoriesDiv.innerHTML = categoriesList.map(cat => `
-        <div class="category-card" onclick="showCategory('${cat}')">
-          <img src="https://cdn-icons-png.flaticon.com/512/888/888879.png" alt="${cat}">
-          <h4>${cat}</h4>
-        </div>
-      `).join("");
-
-      window.productsData = data;
-    }
-
-    function showCategory(category) {
-      categoriesDiv.style.display = "none";
-      productsDiv.style.display = "flex";
-
-      const filtered = window.productsData.filter(p => p.category.trim().toLowerCase() === category.trim().toLowerCase());
-
-      productsDiv.innerHTML = filtered.map(p => `
-        <div class="product-card">
-          <img src="${p.image}" alt="${p.name}">
-          <div class="product-name">${p.name}</div>
-          <div class="product-price">${p.price} ₸</div>
-          <button class="btn" onclick="addToCart('${p.name}', '${p.price}')">Добавить</button>
-        </div>
-      `).join("");
-    }
-
-    function addToCart(name, price) {
-      cart.push({ name, price });
-      alert(`${name} добавлен в корзину`);
-    }
-
-    function toggleCart() {
-      const modal = document.getElementById("cart-modal");
-      const itemsDiv = document.getElementById("cart-items");
-      modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-
-      if (modal.style.display === "flex") {
-        itemsDiv.innerHTML = cart.map(i => `
-          <div class="cart-item">
-            <span>${i.name}</span>
-            <span>${i.price} ₸</span>
-          </div>
-        `).join("");
+      try {
+        const csv = await fetchSheetCSV();
+        const rows = parseCSV(csv);
+        if (!rows || rows.length < 2) throw new Error('Нет данных в таблице.');
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        const idx = {
+          category: headers.indexOf('category') >=0 ? headers.indexOf('category') : headers.indexOf('категория'),
+          title: headers.indexOf('name') >=0 ? headers.indexOf('name') : headers.indexOf('название'),
+          desc: headers.indexOf('description') >=0 ? headers.indexOf('description') : headers.indexOf('описание'),
+          price: headers.indexOf('price') >=0 ? headers.indexOf('price') : headers.indexOf('цена'),
+          photo: headers.indexOf('image') >=0 ? headers.indexOf('image') : headers.indexOf('фото'),
+          id: headers.indexOf('id')
+        };
+        if (idx.title < 0 || idx.price < 0 || idx.category < 0) {
+          throw new Error('В таблице обязательно должны быть заголовки: Category/Категория, Name/Название, Price/Цена.');
+        }
+        products = rows.slice(1).map((r,i)=> {
+          const cat = (r[idx.category]||'Без категории').trim();
+          const title = (r[idx.title]||'Без названия').trim();
+          const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
+          const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
+          const price = parseInt(priceRaw)||0;
+          const photo = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : 'https://via.placeholder.com/480x320?text=No+Image';
+          const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
+          return {category: cat, title, desc, price, photo, id};
+        });
+        renderCategories();
+      } catch (err) {
+        elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">Не удалось загрузить таблицу: <b>${err.message}</b>.<br><small>Проверьте CSV ссылку или настройку доступа (таблица должна быть доступна по ссылке). Если тестируете локально — загрузите сайт на Netlify/GitHub Pages или откройте через Live Server.</small></div>`;
+        console.error(err);
       }
     }
 
-    function sendToWhatsApp() {
-      const message = cart.map(i => `${i.name} — ${i.price} ₸`).join("%0A");
-      const url = `https://wa.me/77014110470?text=Заказ:%0A${message}`;
-      window.open(url, '_blank');
+    function renderCategories(){
+      elCategories.innerHTML = '';
+      // use fixed categories order from categoriesList (only show those present OR show all)
+      categoriesList.forEach(cat=>{
+        // pick a sample picture from products list or placeholder
+        const sample = products.find(p=>p.category.toLowerCase()===cat.toLowerCase()) || {};
+        const img = sample.photo || 'https://via.placeholder.com/200x140?text=' + encodeURIComponent(cat);
+        const div = document.createElement('div');
+        div.className = 'cat-card';
+        div.innerHTML = `<img src="${img}" alt="${cat}"><div><h3>${cat}</h3><div class="small">${products.filter(p=>p.category.toLowerCase()===cat.toLowerCase()).length} товаров</div></div>`;
+        div.addEventListener('click',()=>showCategory(cat));
+        elCategories.appendChild(div);
+      });
     }
 
+    function showCategory(cat){
+      elProductsTitle.innerText = cat;
+      elProductsList.innerHTML = '';
+      const list = products.filter(p=>p.category.toLowerCase()===cat.toLowerCase());
+      if(list.length===0){
+        elProductsList.innerHTML = '<div style="opacity:0.7">Нет товаров в этой категории.</div>';
+      } else {
+        list.forEach(p=>{
+          const item = document.createElement('div');
+          item.className = 'product-card';
+          item.innerHTML = `
+            <img src="${p.photo}" alt="${p.title}">
+            <div class="product-info">
+              <h4>${p.title}</h4>
+              <p>${p.desc || ''}</p>
+              <div class="product-meta">
+                <div class="price">${p.price} KZT</div>
+                <div style="margin-left:auto">
+                  <button class="btn-primary" onclick='addToCart("${p.id}")'>В корзину</button>
+                </div>
+              </div>
+            </div>
+          `;
+          elProductsList.appendChild(item);
+        });
+        elProductsCount.innerText = list.length + ' товаров';
+      }
+      elCategories.style.display = 'none';
+      elProductsSection.style.display = 'block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function showCategories(){ elProductsSection.style.display='none'; elCategories.style.display='grid'; }
+
+    // CART
+    function addToCart(id){
+      const p = products.find(x=>x.id===id); if(!p) return;
+      if(!cart[id]) cart[id] = {...p, qty:0};
+      cart[id].qty++; renderCart(); elCartPopup.style.display='flex';
+    }
+    function changeQty(id, delta){ if(!cart[id]) return; cart[id].qty += delta; if(cart[id].qty < 1) delete cart[id]; renderCart(); }
+    function removeItem(id){ delete cart[id]; renderCart(); }
+    function renderCart(){
+      const keys = Object.keys(cart); elCartList.innerHTML = '';
+      if(keys.length===0){ elCartList.innerHTML = '<div style="opacity:0.6">Корзина пуста</div>'; elCartCount.innerText='0'; elCartTotal.innerText='0 KZT'; return; }
+      let total = 0;
+      keys.forEach(k=>{
+        const it = cart[k]; total += it.price * it.qty;
+        const row = document.createElement('div'); row.className='cart-item';
+        row.innerHTML = `
+          <img src="${it.photo}" alt="${it.title}">
+          <div style="flex:1">
+            <div style="font-weight:700">${it.title}</div>
+            <div class="small">${it.price} × ${it.qty} шт.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+            <div style="display:flex;gap:6px">
+              <button class="btn-ghost" onclick='changeQty("${it.id}", -1)'>−</button>
+              <button class="btn-ghost" onclick='changeQty("${it.id}", 1)'>+</button>
+            </div>
+            <button class="btn-ghost" onclick='removeItem("${it.id}")'>✕</button>
+          </div>
+        `;
+        elCartList.appendChild(row);
+      });
+      elCartCount.innerText = keys.length;
+      elCartTotal.innerText = total + ' KZT';
+    }
+    function toggleCart(){ elCartPopup.style.display = (elCartPopup.style.display==='flex') ? 'none' : 'flex'; }
+
+    // Checkout: send order to WhatsApp, then show Kaspi QR (if set)
+    function checkout(){
+      if(Object.keys(cart).length===0){ alert('Корзина пуста'); return; }
+      let text = '🛍 *Новый заказ Nice_Atyrau*%0A';
+      Object.values(cart).forEach(it => { text += `• ${encodeURIComponent(it.title)} — ${it.qty}шт. × ${it.price}₸%0A`; });
+      const total = Object.values(cart).reduce((s,it)=>s+it.price*it.qty,0);
+      text += `%0A*Итого:* ${total}₸%0A%0AПожалуйста, подтвердите заказ.`;
+      const waUrl = `https://wa.me/${whatsappNumber}?text=${text}`;
+      window.open(waUrl,'_blank');
+      if(kaspiQrSrc && kaspiQrSrc.trim()!==''){
+        document.getElementById('kaspi-qr').src = kaspiQrSrc;
+        document.getElementById('checkout-modal').style.display = 'grid';
+      } else {
+        alert('QR Kaspi не задан. Отправил(а) сообщение в WhatsApp — проверьте чат.');
+      }
+      // Не очищаем корзину автоматически — оставляем на подтверждение
+    }
+    function closeCheckout(){ document.getElementById('checkout-modal').style.display='none'; }
+
+    // Search
+    document.getElementById('search').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if(!q){ if(elProductsSection.style.display==='block'){ showCategory(elProductsTitle.innerText); } else { renderCategories(); } return; }
+      const matches = products.filter(p => (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q));
+      elProductsTitle.innerText = `Поиск: "${q}"`; elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
+      elProductsList.innerHTML = '';
+      matches.forEach(p => {
+        const item = document.createElement('div'); item.className='product-card';
+        item.innerHTML = `
+          <img src="${p.photo}" alt="${p.title}">
+          <div class="product-info">
+            <h4>${p.title}</h4><p>${p.desc || ''}</p>
+            <div class="product-meta">
+              <div class="price">${p.price} KZT</div>
+              <div style="margin-left:auto">
+                <button class="btn-primary" onclick='addToCart("${p.id}")'>В корзину</button>
+              </div>
+            </div>
+          </div>
+        `;
+        elProductsList.appendChild(item);
+      });
+      elCategories.style.display='none'; elProductsSection.style.display='block';
+    });
+
+    // Init
     loadProductsFromSheet();
+    renderCart();
+
+    // Expose functions to inline handlers
+    window.addToCart = addToCart;
+    window.changeQty = changeQty;
+    window.removeItem = removeItem;
+    window.toggleCart = toggleCart;
+    window.checkout = checkout;
+    window.closeCheckout = closeCheckout;
+    window.showCategories = showCategories;
+    window.showCategory = showCategory;
   </script>
 </body>
 </html>
-
