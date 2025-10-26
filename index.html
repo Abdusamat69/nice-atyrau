@@ -56,13 +56,13 @@
       font-size:14px;
     }
 
-    main{max-width:1100px;margin:12px auto;padding:0 14px 80px} /* bottom padding so floating buttons don't cover */
+    main{max-width:1100px;margin:12px auto;padding:0 14px 80px}
 
     .hero{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .hero h1{margin:0;font-size:20px}
     .hint{color:rgba(0,0,0,0.65);font-size:14px;margin-top:6px}
 
-    /* Categories grid (объёмные карточки) */
+    /* Categories grid */
     .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px}
     .cat-card{
       border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;
@@ -76,7 +76,7 @@
     .cat-meta h3{margin:0;font-size:16px;color:var(--brand-blue)}
     .cat-meta .small{font-size:13px;color:rgba(0,0,0,0.6);margin-top:6px}
 
-    /* Products list (horizontal cards) */
+    /* Products list */
     #products-section{display:none}
     .products-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;position:relative}
     .products-list{display:flex;flex-direction:column;gap:12px}
@@ -110,7 +110,7 @@
     .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
     .small{font-size:13px;color:rgba(0,0,0,0.6)}
 
-    /* Floating BACK button (плавающая внизу слева) */
+    /* Floating BACK button */
     .floating-back{
       position:fixed;
       left:16px;
@@ -136,7 +136,7 @@
       .brand-title{font-size:16px}
       .search-wrap{margin-left:8px;margin-right:8px}
       .cart-popup{right:12px;left:12px;bottom:100px;min-width:auto;max-width:calc(100% - 24px)}
-      .floating-back{left:14px;bottom:84px} /* avoid overlapping cart on very small screens */
+      .floating-back{left:14px;bottom:84px}
     }
     @media (max-width:420px){
       .categories{grid-template-columns:1fr}
@@ -145,6 +145,10 @@
       header{padding:10px}
       main{padding-bottom:120px}
     }
+
+    /* Loading states */
+    .loading{opacity:0.6;pointer-events:none}
+    .image-loading{background:#f5f5f5;display:grid;place-items:center;color:#999;font-size:12px}
   </style>
 </head>
 <body>
@@ -177,7 +181,6 @@
     <section id="products-section" style="display:none">
       <div class="products-head">
         <div style="display:flex;gap:8px;align-items:center">
-          <!-- note: back is floating too; keep small placeholder for layout -->
           <div style="width:8px"></div>
           <div style="font-weight:700"><span id="products-title">Товары</span> <small id="products-count" class="small"></small></div>
         </div>
@@ -187,7 +190,7 @@
     </section>
   </main>
 
-  <!-- Floating BACK (снизу слева) -->
+  <!-- Floating BACK -->
   <button class="floating-back" id="floating-back" title="Назад">←</button>
 
   <!-- CART -->
@@ -208,7 +211,7 @@
     <div class="hint2 small" style="margin-top:8px">Оплата: WhatsApp → Kaspi QR. WhatsApp: <b>+7 778 222 2191</b></div>
   </div>
 
-  <!-- CHECKOUT MODAL (Kaspi QR) -->
+  <!-- CHECKOUT MODAL -->
   <div id="checkout-modal" class="modal">
     <div class="modal-card">
       <h3 style="margin-top:0">Оплата Kaspi QR</h3>
@@ -223,8 +226,8 @@
   <script>
     /* ========== SETTINGS ========== */
     const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
-    const whatsappNumber = '77782222191'; // no +
-    const kaspiQrSrc = ''; // вставь ссылку на QR если есть
+    const whatsappNumber = '77782222191';
+    const kaspiQrSrc = '';
     const categoriesList = [
       "Посуды",
       "Игрушки и детские товары",
@@ -251,7 +254,49 @@
     let products = [];
     let cart = {};
 
-    // Robust CSV fetch + parse (handles quoted fields)
+    // Улучшенная функция нормализации URL Google Drive
+    function normalizePhotoUrl(url) {
+      if (!url) return 'https://via.placeholder.com/480x320?text=No+Image';
+      url = url.trim();
+      
+      // Если уже прямая ссылка на изображение - оставляем как есть
+      if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
+      
+      // Извлекаем ID файла из различных форматов Google Drive ссылок
+      let fileId = '';
+      
+      // Формат 1: /d/FILE_ID/view или /d/FILE_ID/
+      const match1 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match1) fileId = match1[1];
+      
+      // Формат 2: id=FILE_ID
+      const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (match2) fileId = match2[1];
+      
+      // Формат 3: open?id=FILE_ID
+      const match3 = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
+      if (match3) fileId = match3[1];
+      
+      // Формат 4: только ID (прямой ввод)
+      const match4 = url.match(/^[a-zA-Z0-9_-]{10,}$/);
+      if (match4) fileId = match4[0];
+      
+      if (fileId) {
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+      }
+      
+      // Если не удалось извлечь ID, возвращаем заглушку
+      return 'https://via.placeholder.com/480x320?text=No+Image';
+    }
+
+    // Обработка ошибок загрузки изображений
+    function handleImageError(img) {
+      img.onerror = null;
+      img.src = 'https://via.placeholder.com/480x320?text=Ошибка+загрузки';
+      img.style.opacity = '0.7';
+    }
+
+    // Robust CSV fetch + parse
     async function fetchCSV() {
       const res = await fetch(csvUrl);
       if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
@@ -279,31 +324,14 @@
       return rows;
     }
 
-    // normalize google drive photo link to usable form
-    function normalizePhotoUrl(url) {
-      if (!url) return '';
-      url = url.trim();
-      // if already a direct image (starts with http and ends with image ext) keep
-      if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
-      // google drive file link patterns: /d/FILEID/
-      const m = url.match(/\/d\/([-\w]{10,})/);
-      if (m && m[1]) {
-        return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-      }
-      // sometimes sharing link includes id as id=... or open?id=...
-      const m2 = url.match(/[?&]id=([-\w]{10,})/);
-      if (m2 && m2[1]) {
-        return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
-      }
-      // fallback to original URL
-      return url;
-    }
-
     async function loadProductsFromSheet() {
       try {
+        elCategories.innerHTML = '<div style="padding:20px;text-align:center;opacity:0.7">Загрузка товаров...</div>';
+        
         const csv = await fetchCSV();
         const rows = parseCSV(csv);
         if (!rows || rows.length < 2) throw new Error('Таблица пуста или неверный формат.');
+        
         const headers = rows[0].map(h=>h.trim().toLowerCase());
         const idx = {
           category: headers.indexOf('категория'),
@@ -313,9 +341,11 @@
           photo: headers.indexOf('фото'),
           id: headers.indexOf('id')
         };
+        
         if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
           throw new Error('В таблице обязаны быть колонки: Категория | Название | Описание | Цена | Фото');
         }
+        
         products = rows.slice(1).map((r,i) => {
           const category = (r[idx.category]||'').trim();
           const title = (r[idx.title]||'').trim() || 'Без названия';
@@ -325,24 +355,40 @@
           const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
           const photo = rawPhoto ? normalizePhotoUrl(rawPhoto) : 'https://via.placeholder.com/480x320?text=No+Image';
           const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
+          
           return {category,title,desc,price,photo,id};
         });
+        
+        console.log('Загружено товаров:', products.length);
+        console.log('Примеры фото URL:', products.slice(0,3).map(p => p.photo));
+        
         renderCategories();
       } catch (err) {
-        elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">Ошибка: <b>${err.message}</b><br><small>Проверьте CSV ссылку, доступ к таблице или развёртывание сайта (Netlify/Live Server вместо file://).</small></div>`;
-        console.error(err);
+        elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
+          <b>Ошибка загрузки данных</b><br>
+          <small>${err.message}</small><br>
+          <small style="margin-top:8px;display:block">Проверьте: доступ к таблице, интернет-соединение, хостинг (не file://)</small>
+        </div>`;
+        console.error('Ошибка загрузки:', err);
       }
     }
 
     function renderCategories() {
       elCategories.innerHTML = '';
       categoriesList.forEach(cat => {
-        const sample = products.find(p=>p.category.toLowerCase()===cat.toLowerCase()) || {};
+        const categoryProducts = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
+        const sample = categoryProducts[0] || {};
         const img = sample.photo || `https://via.placeholder.com/200x140?text=${encodeURIComponent(cat)}`;
         const div = document.createElement('div');
         div.className = 'cat-card';
-        div.innerHTML = `<img src="${img}" alt="${cat}" class="cat-thumb"><div class="cat-meta"><h3>${cat}</h3><div class="small">${products.filter(p=>p.category.toLowerCase()===cat.toLowerCase()).length} товаров</div></div>`;
-        div.addEventListener('click', ()=> showCategory(cat));
+        div.innerHTML = `
+          <img src="${img}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)">
+          <div class="cat-meta">
+            <h3>${cat}</h3>
+            <div class="small">${categoryProducts.length} товаров</div>
+          </div>
+        `;
+        div.addEventListener('click', () => showCategory(cat));
         elCategories.appendChild(div);
       });
     }
@@ -350,16 +396,17 @@
     function showCategory(cat) {
       elProductsTitle.innerText = cat;
       elProductsList.innerHTML = '';
-      const list = products.filter(p=>p.category.toLowerCase()===cat.toLowerCase());
-      if (list.length===0){
-        elProductsList.innerHTML = '<div style="opacity:0.7">Нет товаров в этой категории.</div>';
+      const list = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
+      
+      if (list.length === 0) {
+        elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
         elProductsCount.innerText = '';
       } else {
-        list.forEach(p=>{
+        list.forEach(p => {
           const item = document.createElement('div');
           item.className = 'product-card';
           item.innerHTML = `
-            <img src="${p.photo}" alt="${p.title}">
+            <img src="${p.photo}" alt="${p.title}" onerror="handleImageError(this)">
             <div class="product-info">
               <h4>${p.title}</h4>
               <p>${p.desc || ''}</p>
@@ -375,6 +422,7 @@
         });
         elProductsCount.innerText = list.length + ' товаров';
       }
+      
       elCategories.style.display = 'none';
       elProductsSection.style.display = 'block';
       window.scrollTo({top:0,behavior:'smooth'});
@@ -388,24 +436,44 @@
 
     /* CART */
     function addToCart(id){
-      const p = products.find(x=>x.id===id); if(!p) return;
+      const p = products.find(x => x.id === id);
+      if(!p) return;
       if(!cart[id]) cart[id] = {...p, qty:0};
       cart[id].qty++;
       renderCart();
       elCartPopup.style.display = 'flex';
     }
-    function changeQty(id,delta){ if(!cart[id]) return; cart[id].qty += delta; if(cart[id].qty<1) delete cart[id]; renderCart(); }
-    function removeItem(id){ delete cart[id]; renderCart(); }
+
+    function changeQty(id, delta){
+      if(!cart[id]) return;
+      cart[id].qty += delta;
+      if(cart[id].qty < 1) delete cart[id];
+      renderCart();
+    }
+
+    function removeItem(id){
+      delete cart[id];
+      renderCart();
+    }
+
     function renderCart(){
       const keys = Object.keys(cart);
       elCartList.innerHTML = '';
-      if(keys.length===0){ elCartList.innerHTML = '<div style="opacity:0.6">Корзина пуста</div>'; elCartCount.innerText='0'; elCartTotal.innerText='0 KZT'; return; }
-      let total=0;
-      keys.forEach(k=>{
-        const it = cart[k]; total += it.price * it.qty;
-        const row = document.createElement('div'); row.className='cart-item';
+      if(keys.length === 0){
+        elCartList.innerHTML = '<div style="opacity:0.6;padding:20px;text-align:center">Корзина пуста</div>';
+        elCartCount.innerText = '0';
+        elCartTotal.innerText = '0 KZT';
+        return;
+      }
+      
+      let total = 0;
+      keys.forEach(k => {
+        const it = cart[k];
+        total += it.price * it.qty;
+        const row = document.createElement('div');
+        row.className = 'cart-item';
         row.innerHTML = `
-          <img src="${it.photo}" alt="${it.title}">
+          <img src="${it.photo}" alt="${it.title}" onerror="handleImageError(this)">
           <div style="flex:1">
             <div style="font-weight:700">${it.title}</div>
             <div class="small">${it.price} × ${it.qty} шт.</div>
@@ -423,37 +491,65 @@
       elCartCount.innerText = keys.length;
       elCartTotal.innerText = total + ' KZT';
     }
-    function toggleCart(){ elCartPopup.style.display = (elCartPopup.style.display==='flex') ? 'none' : 'flex'; }
+
+    function toggleCart(){
+      elCartPopup.style.display = (elCartPopup.style.display === 'flex') ? 'none' : 'flex';
+    }
 
     /* CHECKOUT: WhatsApp -> Kaspi QR */
     function checkout(){
-      if(Object.keys(cart).length===0){ alert('Корзина пуста'); return; }
-      let text='🛍 Заказ Nice_Atyrau:%0A';
-      Object.values(cart).forEach(it=>{ text += `• ${encodeURIComponent(it.title)} — ${it.qty}шт. × ${it.price}₸%0A`; });
-      const total = Object.values(cart).reduce((s,it)=>s+it.price*it.qty,0);
+      if(Object.keys(cart).length === 0){
+        alert('Корзина пуста');
+        return;
+      }
+      
+      let text = '🛍 Заказ Nice_Atyrau:%0A%0A';
+      Object.values(cart).forEach(it => {
+        text += `• ${encodeURIComponent(it.title)} — ${it.qty}шт. × ${it.price}₸%0A`;
+      });
+      const total = Object.values(cart).reduce((s, it) => s + it.price * it.qty, 0);
       text += `%0A*Итого:* ${total}₸`;
+      
       const waUrl = `https://wa.me/${whatsappNumber}?text=${text}`;
-      window.open(waUrl,'_blank');
-      if(kaspiQrSrc && kaspiQrSrc.trim()!==''){
+      window.open(waUrl, '_blank');
+      
+      if(kaspiQrSrc && kaspiQrSrc.trim() !== ''){
         document.getElementById('kaspi-qr').src = kaspiQrSrc;
         document.getElementById('checkout-modal').style.display = 'grid';
       } else {
         alert('Сообщение отправлено в WhatsApp. QR Kaspi не задан в настройках.');
       }
     }
-    function closeCheckout(){ document.getElementById('checkout-modal').style.display='none'; }
+
+    function closeCheckout(){
+      document.getElementById('checkout-modal').style.display = 'none';
+    }
 
     /* SEARCH */
     document.getElementById('search').addEventListener('input', (e) => {
       const q = e.target.value.trim().toLowerCase();
-      if(!q){ if(elProductsSection.style.display==='block'){ showCategory(elProductsTitle.innerText); } else { renderCategories(); } return; }
-      const matches = products.filter(p => (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q));
-      elProductsTitle.innerText = `Поиск: "${q}"`; elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
+      if(!q){
+        if(elProductsSection.style.display === 'block'){
+          showCategory(elProductsTitle.innerText);
+        } else {
+          renderCategories();
+        }
+        return;
+      }
+      
+      const matches = products.filter(p => 
+        (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q)
+      );
+      
+      elProductsTitle.innerText = `Поиск: "${q}"`;
+      elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
       elProductsList.innerHTML = '';
-      matches.forEach(p=>{
-        const item = document.createElement('div'); item.className='product-card';
+      
+      matches.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'product-card';
         item.innerHTML = `
-          <img src="${p.photo}" alt="${p.title}">
+          <img src="${p.photo}" alt="${p.title}" onerror="handleImageError(this)">
           <div class="product-info">
             <h4>${p.title}</h4>
             <p>${p.desc || ''}</p>
@@ -467,16 +563,16 @@
         `;
         elProductsList.appendChild(item);
       });
-      document.getElementById('categories').style.display='none';
-      elProductsSection.style.display='block';
+      
+      document.getElementById('categories').style.display = 'none';
+      elProductsSection.style.display = 'block';
     });
 
-    // Floating back behavior — returns to categories
-    floatingBack.addEventListener('click', ()=> {
+    // Floating back behavior
+    floatingBack.addEventListener('click', () => {
       showCategories();
-      // small visual feedback
       floatingBack.style.transform = 'scale(0.98)';
-      setTimeout(()=>floatingBack.style.transform='scale(1)',120);
+      setTimeout(() => floatingBack.style.transform = 'scale(1)', 120);
     });
 
     // Init
@@ -484,7 +580,8 @@
       elProductsSection.style.display = 'none';
       loadProductsFromSheet();
       renderCart();
-      // expose for inline handlers
+      
+      // Expose functions for inline handlers
       window.addToCart = addToCart;
       window.changeQty = changeQty;
       window.removeItem = removeItem;
@@ -493,6 +590,7 @@
       window.closeCheckout = closeCheckout;
       window.showCategories = showCategories;
       window.showCategory = showCategory;
+      window.handleImageError = handleImageError;
     })();
   </script>
 </body>
