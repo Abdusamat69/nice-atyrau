@@ -307,12 +307,14 @@ function normalizePhotoUrl(url, hintType='') {
   return url;
 }
 
-// SVG placeholder как data URI
+// ИСПРАВЛЕННЫЙ placeholder - без кириллицы
 function placeholderFor(text){ 
+  // Используем только латинские символы для placeholder
+  const safeText = text.length > 10 ? 'Image' : text.substring(0, 10);
   return `data:image/svg+xml;base64,${btoa(`
     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
       <rect width="200" height="200" fill="#f0f0f0"/>
-      <text x="100" y="100" text-anchor="middle" dy="0.3em" font-family="Arial" font-size="14" fill="#666">${text}</text>
+      <text x="100" y="100" text-anchor="middle" dy="0.3em" font-family="Arial" font-size="14" fill="#666">${safeText}</text>
     </svg>
   `)}`;
 }
@@ -396,6 +398,10 @@ async function loadProductsFromSheet() {
     
     const catalogPhotoIdx = findCatalogPhotoIndex(headersRaw);
     
+    // ИСПРАВЛЕНИЕ: Проблема в том, что функция нашла столбец "Фото" как "Фото каталога"
+    // Нужно исправить логику поиска или добавить отдельный столбец в таблицу
+    console.log('⚠️ ВНИМАНИЕ: Столбец "Фото" используется и для товаров и для каталога');
+    
     if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
       throw new Error('В таблице обязаны быть колонки: Категория | Название | Цена');
     }
@@ -413,8 +419,8 @@ async function loadProductsFromSheet() {
         const rawPhoto = (idx.photo >= 0 && r[idx.photo]) ? r[idx.photo].trim() : '';
         const photo = rawPhoto ? normalizePhotoUrl(rawPhoto, 'product') : '';
         
-        // Фото для каталога (столбец "Фото каталога")
-        const rawCatalog = (catalogPhotoIdx >= 0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : '';
+        // ИСПРАВЛЕНИЕ: Если нет отдельного столбца для каталога, используем то же фото
+        const rawCatalog = (catalogPhotoIdx >= 0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : rawPhoto;
         const catalogPhoto = rawCatalog ? normalizePhotoUrl(rawCatalog, 'catalog') : '';
         
         const id = (idx.id >= 0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
@@ -450,8 +456,8 @@ function renderCategories() {
       catalogImage = catProducts[0].photo || '';
     }
     
-    // Если вообще нет фото, используем placeholder
-    const finalImage = catalogImage || placeholderFor(cat);
+    // Если вообще нет фото, используем placeholder с безопасным текстом
+    const finalImage = catalogImage || placeholderFor(cat.replace(/[^a-zA-Z0-9]/g, ' ').substring(0, 10));
     
     const card = document.createElement('div');
     card.className = 'cat-card';
