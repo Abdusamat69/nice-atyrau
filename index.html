@@ -219,7 +219,7 @@
 
       <label style="color:rgba(255,255,255,0.95);margin-top:8px">Выберите банк</label>
       <div class="bank-select" id="bank-select">
-        <button class="bank-btn" id="bank-btn">Не указано ▾</button>
+        <button class="bank-btn" id="bank-btn" type="button">Не указано ▾</button>
         <div class="bank-list" id="bank-list" role="listbox" aria-hidden="true">
           <div class="item" data-val="">Не указано</div>
           <div class="item" data-val="Kaspi">Kaspi Bank</div>
@@ -420,7 +420,7 @@ function openCategory(cat) {
           <div class="product-meta">
             <div class="price">${p.price} KZT</div>
             <div style="margin-left:auto">
-              <button class="btn btn-primary" onclick='addToCart("${p.id}")'>В корзину</button>
+              <button class="btn btn-primary" onclick='addToCart("${p.id.replace(/"/g, '\\"')}")'>В корзину</button>
             </div>
           </div>
         </div>
@@ -482,10 +482,10 @@ function renderCart() {
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
         <div style="display:flex;gap:6px">
-          <button class="btn btn-ghost" onclick='changeQty("${it.id}", -1)'>−</button>
-          <button class="btn btn-ghost" onclick='changeQty("${it.id}", 1)'>+</button>
+          <button class="btn btn-ghost" onclick='changeQty("${it.id.replace(/"/g, '\\"')}", -1)'>−</button>
+          <button class="btn btn-ghost" onclick='changeQty("${it.id.replace(/"/g, '\\"')}", 1)'>+</button>
         </div>
-        <button class="btn btn-ghost" onclick='removeItem("${it.id}")'>✕</button>
+        <button class="btn btn-ghost" onclick='removeItem("${it.id.replace(/"/g, '\\"')}")'>✕</button>
       </div>
     `;
     elCartList.appendChild(row);
@@ -498,6 +498,10 @@ function toggleCart() {
 }
 cartButton.addEventListener('click', toggleCart);
 document.getElementById('close-cart').addEventListener('click', () => { elCartPopup.style.display='none'; });
+
+function hideCartPopup() {
+  elCartPopup.style.display = 'none';
+}
 
 /* Auto hide on small screens */
 function autoHideCartOnSmall(){ if(window.innerWidth <= 720) elCartPopup.style.display='none'; }
@@ -564,7 +568,7 @@ document.getElementById('search').addEventListener('input', (e) => {
         <div class="product-meta">
           <div class="price">${p.price} KZT</div>
           <div style="margin-left:auto">
-            <button class="btn btn-primary" onclick='addToCart("${p.id}")'>Добавить</button>
+            <button class="btn btn-primary" onclick='addToCart("${p.id.replace(/"/g, '\\"')}")'>Добавить</button>
           </div>
         </div>
       </div>
@@ -583,12 +587,16 @@ floatingBack.addEventListener('click', () => {
   setTimeout(() => floatingBack.style.transform = 'scale(1)', 120);
 });
 
+/* back to categories button */
+elBackToCats.addEventListener('click', showCategories);
+
 /* Expose inline handlers */
 window.addToCart = addToCart;
 window.changeQty = changeQty;
 window.removeItem = removeItem;
 window.showCategory = openCategory;
 window.handleImageError = handleImageError;
+window.hideCartPopup = hideCartPopup;
 
 /* Init */
 (async function init(){
