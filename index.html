@@ -223,7 +223,7 @@
     </div>
   </div>
 
-  <script>
+<script>
     /* ========== SETTINGS ========== */
     const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
     const whatsappNumber = '77782222191';
@@ -254,49 +254,42 @@
     let products = [];
     let cart = {};
 
-    // Улучшенная функция нормализации URL Google Drive
+    // normalize drive / url / relative
     function normalizePhotoUrl(url) {
-      if (!url) return 'https://via.placeholder.com/480x320?text=No+Image';
-      url = url.trim();
-      
-      // Если уже прямая ссылка на изображение - оставляем как есть
-      if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
-      
-      // Извлекаем ID файла из различных форматов Google Drive ссылок
-      let fileId = '';
-      
-      // Формат 1: /d/FILE_ID/view или /d/FILE_ID/
-      const match1 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (match1) fileId = match1[1];
-      
-      // Формат 2: id=FILE_ID
-      const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-      if (match2) fileId = match2[1];
-      
-      // Формат 3: open?id=FILE_ID
-      const match3 = url.match(/\/open\?id=([a-zA-Z0-9_-]+)/);
-      if (match3) fileId = match3[1];
-      
-      // Формат 4: только ID (прямой ввод)
-      const match4 = url.match(/^[a-zA-Z0-9_-]{10,}$/);
-      if (match4) fileId = match4[0];
-      
-      if (fileId) {
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+      if (!url || !url.toString) return '';
+      url = String(url).trim();
+      if (url === '') return '';
+      // if relative path (images/...), return as-is
+      if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
+        // allow relative paths such as images/...
+        return url;
       }
-      
-      // Если не удалось извлечь ID, возвращаем заглушку
-      return 'https://via.placeholder.com/480x320?text=No+Image';
+      // if direct image
+      if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
+      // google drive patterns
+      const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
+      if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
+      const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+      if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+      const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
+      if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
+      // if looks like only ID
+      if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
+      // fallback: return original (may be a fully qualified URL or invalid)
+      return url;
     }
 
-    // Обработка ошибок загрузки изображений
+    function getPlaceholderUrl(text) {
+      return `https://via.placeholder.com/480x320.png?text=${encodeURIComponent(text)}`;
+    }
+
     function handleImageError(img) {
       img.onerror = null;
-      img.src = 'https://via.placeholder.com/480x320?text=Ошибка+загрузки';
-      img.style.opacity = '0.7';
+      img.src = getPlaceholderUrl('Ошибка+загрузки');
+      img.style.opacity = '0.75';
     }
 
-    // Robust CSV fetch + parse
+    // CSV fetch + parse
     async function fetchCSV() {
       const res = await fetch(csvUrl);
       if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
@@ -324,15 +317,30 @@
       return rows;
     }
 
+    // Find header index flexibly for catalog photo
+    function findCatalogPhotoIndex(headers) {
+      const candidates = [
+        'фото каталога','фото_каталога','фото_каталог','catalog photo','catalog_photo',
+        'catalog_image','image_catalog','catalog','photo_catalog','catalogphoto'
+      ];
+      for (let i=0;i<headers.length;i++){
+        const h = headers[i].toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
+        for (const c of candidates){
+          const cNorm = c.toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
+          if (h.includes(cNorm) || cNorm.includes(h)) return i;
+        }
+      }
+      return -1;
+    }
+
     async function loadProductsFromSheet() {
       try {
         elCategories.innerHTML = '<div style="padding:20px;text-align:center;opacity:0.7">Загрузка товаров...</div>';
-        
         const csv = await fetchCSV();
         const rows = parseCSV(csv);
         if (!rows || rows.length < 2) throw new Error('Таблица пуста или неверный формат.');
-        
-        const headers = rows[0].map(h=>h.trim().toLowerCase());
+        const headersRaw = rows[0].map(h => (h||'').trim());
+        const headers = headersRaw.map(h=>h.toLowerCase());
         const idx = {
           category: headers.indexOf('категория'),
           title: headers.indexOf('название'),
@@ -341,48 +349,54 @@
           photo: headers.indexOf('фото'),
           id: headers.indexOf('id')
         };
-        
+        const catalogPhotoIdx = findCatalogPhotoIndex(headersRaw);
+        // validate
         if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
           throw new Error('В таблице обязаны быть колонки: Категория | Название | Описание | Цена | Фото');
         }
-        
-        products = rows.slice(1).map((r,i) => {
-          const category = (r[idx.category]||'').trim();
-          const title = (r[idx.title]||'').trim() || 'Без названия';
-          const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
-          const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
-          const price = parseInt(priceRaw)||0;
-          const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
-          const photo = rawPhoto ? normalizePhotoUrl(rawPhoto) : 'https://via.placeholder.com/480x320?text=No+Image';
-          const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
-          
-          return {category,title,desc,price,photo,id};
-        });
-        
-        console.log('Загружено товаров:', products.length);
-        console.log('Примеры фото URL:', products.slice(0,3).map(p => p.photo));
-        
+        products = rows.slice(1)
+          .filter(row => row && row.some(cell => cell && String(cell).trim() !== ''))
+          .map((r,i) => {
+            const category = (r[idx.category]||'').trim();
+            const title = (r[idx.title]||'').trim() || 'Без названия';
+            const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
+            const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
+            const price = parseInt(priceRaw)||0;
+            const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
+            const photo = rawPhoto ? normalizePhotoUrl(rawPhoto) : getPlaceholderUrl('No+Image');
+            const rawCatalogPhoto = (catalogPhotoIdx>=0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : '';
+            const catalogPhoto = rawCatalogPhoto ? normalizePhotoUrl(rawCatalogPhoto) : '';
+            const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
+            return {category,title,desc,price,photo,catalogPhoto,id};
+          });
         renderCategories();
       } catch (err) {
         elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
           <b>Ошибка загрузки данных</b><br>
           <small>${err.message}</small><br>
-          <small style="margin-top:8px;display:block">Проверьте: доступ к таблице, интернет-соединение, хостинг (не file://)</small>
+          <small style="margin-top:8px;display:block">Проверьте: доступ к таблице, ссылку CSV и развёртывание (не file://)</small>
         </div>`;
-        console.error('Ошибка загрузки:', err);
+        console.error(err);
       }
     }
 
     function renderCategories() {
       elCategories.innerHTML = '';
       categoriesList.forEach(cat => {
-        const categoryProducts = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
-        const sample = categoryProducts[0] || {};
-        const img = sample.photo || `https://via.placeholder.com/200x140?text=${encodeURIComponent(cat)}`;
+        const categoryProducts = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
+        // pick catalog photo priority:
+        // 1) first product with catalogPhoto
+        // 2) first product photo
+        // 3) placeholder
+        let imgUrl = '';
+        const withCatalog = categoryProducts.find(p => p.catalogPhoto && p.catalogPhoto.trim() !== '');
+        if (withCatalog) imgUrl = withCatalog.catalogPhoto;
+        else if (categoryProducts[0]) imgUrl = categoryProducts[0].photo;
+        else imgUrl = getPlaceholderUrl(cat);
         const div = document.createElement('div');
         div.className = 'cat-card';
         div.innerHTML = `
-          <img src="${img}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)">
+          <img src="${imgUrl}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)">
           <div class="cat-meta">
             <h3>${cat}</h3>
             <div class="small">${categoryProducts.length} товаров</div>
@@ -396,8 +410,7 @@
     function showCategory(cat) {
       elProductsTitle.innerText = cat;
       elProductsList.innerHTML = '';
-      const list = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
-      
+      const list = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
       if (list.length === 0) {
         elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
         elProductsCount.innerText = '';
@@ -422,7 +435,6 @@
         });
         elProductsCount.innerText = list.length + ' товаров';
       }
-      
       elCategories.style.display = 'none';
       elProductsSection.style.display = 'block';
       window.scrollTo({top:0,behavior:'smooth'});
@@ -465,7 +477,6 @@
         elCartTotal.innerText = '0 KZT';
         return;
       }
-      
       let total = 0;
       keys.forEach(k => {
         const it = cart[k];
@@ -502,17 +513,14 @@
         alert('Корзина пуста');
         return;
       }
-      
       let text = '🛍 Заказ Nice_Atyrau:%0A%0A';
       Object.values(cart).forEach(it => {
         text += `• ${encodeURIComponent(it.title)} — ${it.qty}шт. × ${it.price}₸%0A`;
       });
       const total = Object.values(cart).reduce((s, it) => s + it.price * it.qty, 0);
       text += `%0A*Итого:* ${total}₸`;
-      
       const waUrl = `https://wa.me/${whatsappNumber}?text=${text}`;
       window.open(waUrl, '_blank');
-      
       if(kaspiQrSrc && kaspiQrSrc.trim() !== ''){
         document.getElementById('kaspi-qr').src = kaspiQrSrc;
         document.getElementById('checkout-modal').style.display = 'grid';
@@ -536,15 +544,12 @@
         }
         return;
       }
-      
       const matches = products.filter(p => 
         (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q)
       );
-      
       elProductsTitle.innerText = `Поиск: "${q}"`;
       elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
       elProductsList.innerHTML = '';
-      
       matches.forEach(p => {
         const item = document.createElement('div');
         item.className = 'product-card';
@@ -563,7 +568,6 @@
         `;
         elProductsList.appendChild(item);
       });
-      
       document.getElementById('categories').style.display = 'none';
       elProductsSection.style.display = 'block';
     });
@@ -580,7 +584,6 @@
       elProductsSection.style.display = 'none';
       loadProductsFromSheet();
       renderCart();
-      
       // Expose functions for inline handlers
       window.addToCart = addToCart;
       window.changeQty = changeQty;
@@ -593,5 +596,5 @@
       window.handleImageError = handleImageError;
     })();
   </script>
-</body>
+  </body>
 </html>
