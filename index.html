@@ -55,7 +55,7 @@
       font-size:14px;
     }
 
-    main{max-width:1100px;margin:12px auto;padding:0 14px 140px}
+    main{max-width:1100px;margin:12px auto;padding:0 14px 160px}
 
     .hero{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .hero h1{margin:0;font-size:20px}
@@ -93,26 +93,38 @@
     .btn-primary{background:var(--brand-blue);color:white}
     .btn-ghost{background:transparent;border:1px solid #e6e9ef}
 
-    /* Floating cart button + popup */
+    /* CART BUTTON (floating) */
     .cart-button{
-      position:fixed;right:16px;bottom:16px;background:var(--brand-yellow);color:var(--brand-blue);
-      padding:12px 16px;border-radius:50px;box-shadow:0 20px 48px rgba(11,34,71,0.12);font-weight:700;cursor:pointer;z-index:999;
-      display:flex;align-items:center;gap:8px;
+      position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:white;
+      padding:12px 16px;border-radius:50px;box-shadow: 0 18px 40px rgba(11,34,71,0.18), 0 6px 18px rgba(11,34,71,0.06) inset;
+      font-weight:700;cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;
+      transform-style:preserve-3d;
     }
+    .cart-button:active{transform:translateY(2px) scale(.995)}
     .cart-count{background:#fff;border-radius:10px;padding:4px 8px;font-size:13px;color:var(--brand-blue)}
+    /* CART POPUP — now blue, 3D-ish */
     .cart-popup{
-      position:fixed;right:16px;bottom:74px;background:white;border-radius:12px;box-shadow:0 20px 48px rgba(11,34,71,0.12);
-      min-width:320px;max-width:380px;display:none;flex-direction:column;max-height:72vh;overflow:auto;padding:12px;z-index:998;
+      position:fixed;right:16px;bottom:84px;background:linear-gradient(180deg,var(--brand-blue), #0a4fc6);
+      color:#fff;border-radius:14px;box-shadow: 0 28px 68px rgba(11,34,71,0.35);
+      min-width:320px;max-width:420px;display:none;flex-direction:column;max-height:72vh;overflow:auto;padding:14px;z-index:998;
+      transform-origin:bottom right; /* for small-collapsing animation */
+      perspective:1000px;
     }
-    .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f3f6}
-    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px}
-    .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
-    .small{font-size:13px;color:rgba(0,0,0,0.6)}
+    .cart-popup .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .cart-popup .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+    .cart-popup .cart-item .small{color:rgba(255,255,255,0.85)}
+    .cart-popup .cart-item .title{font-weight:700;color:#fff}
+    .cart-popup .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
+    .cart-popup .btn-primary{background:var(--brand-yellow);color:var(--brand-blue)}
+    .cart-popup .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.14);color:#fff}
+    .cart-popup .order-form{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.04)}
+    .cart-popup label{display:block;font-size:13px;margin-top:6px;color:rgba(255,255,255,0.95)}
+    .cart-popup input, .cart-popup select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);margin-top:6px;background:rgba(255,255,255,0.03);color:#fff}
 
-    /* order form inside cart */
-    .order-form{margin-top:12px;padding:10px;border-radius:10px;background:#fbfbff;border:1px solid #eef2ff}
-    .order-form label{display:block;font-size:13px;margin-top:6px}
-    .order-form input, .order-form select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px}
+    /* subtle 3D tilt for popup when open */
+    .cart-popup.show-3d{
+      transform: translateZ(4px) rotateX(0.6deg);
+    }
 
     /* Floating BACK button */
     .floating-back{
@@ -147,10 +159,9 @@
       .product-info p{font-size:13px}
       .btn{padding:10px}
       header{padding:10px}
-      main{padding-bottom:160px}
+      main{padding-bottom:220px}
     }
 
-    /* Loading states */
     .loading{opacity:0.6;pointer-events:none}
     .image-loading{background:#f5f5f5;display:grid;place-items:center;color:#999;font-size:12px}
   </style>
@@ -198,20 +209,20 @@
   <button class="floating-back" id="floating-back" title="Назад">←</button>
 
   <!-- CART BUTTON -->
-  <div class="cart-button" onclick="toggleCart()">
+  <div class="cart-button" id="cart-button" title="Открыть корзину">
     🛒 <span id="cart-count" class="cart-count">0</span>
   </div>
 
   <!-- CART POPUP -->
   <div class="cart-popup" id="cart-popup" role="dialog" aria-label="Корзина">
-    <h3 style="margin:0 0 8px">Корзина</h3>
-    <div id="cart-list"><div style="opacity:0.6;padding:8px;text-align:center">Корзина пуста</div></div>
+    <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
+    <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
 
-    <div style="margin-top:8px">Итого: <span id="cart-total">0 KZT</span></div>
+    <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
 
     <!-- Order form inside cart -->
     <div class="order-form" id="order-form">
-      <h4 style="margin:0 0 6px">Контакт и оплата</h4>
+      <h4 style="margin:0 0 6px;color:#fff">Контакт и оплата</h4>
       <label for="client-phone">Номер телефона (для связи и выставления счёта)</label>
       <input id="client-phone" placeholder="+7 7xxxxxxxxx" />
 
@@ -225,12 +236,12 @@
 
     <div class="cart-footer" style="margin-top:10px">
       <div style="display:flex;gap:8px">
-        <button class="btn-ghost" onclick="toggleCart()">Закрыть</button>
-        <button class="btn-primary" id="send-order">Отправить заказ (WhatsApp)</button>
+        <button class="btn-ghost" id="close-cart">Закрыть</button>
+        <button class="btn-primary" id="send-order">Отправить заказ</button>
       </div>
     </div>
 
-    <div class="hint2 small" style="margin-top:8px">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
+    <div class="hint2 small" style="margin-top:8px;color:rgba(255,255,255,0.9)">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
   </div>
 
   <!-- CHECKOUT MODAL -->
@@ -248,9 +259,9 @@
 <script>
   /* ========== SETTINGS ========== */
   const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
-  const whatsappNumberRaw = '+77782222191'; // display with + for info
-  const whatsappNumber = '77782222191'; // for wa.me (no +)
-  const kaspiQrSrc = ''; // optional, leave empty if none
+  const whatsappNumber = '77782222191'; // no plus for wa.me
+  const whatsappDisplay = '+77782222191';
+  const kaspiQrSrc = '';
   const categoriesList = [
     "Посуды",
     "Игрушки и детские товары",
@@ -268,12 +279,14 @@
   const elProductsList = document.getElementById('products-list');
   const elProductsTitle = document.getElementById('products-title');
   const elProductsCount = document.getElementById('products-count');
+  const cartButton = document.getElementById('cart-button');
   const elCartPopup = document.getElementById('cart-popup');
   const elCartList = document.getElementById('cart-list');
   const elCartCount = document.getElementById('cart-count');
   const elCartTotal = document.getElementById('cart-total');
-  const floatingBack = document.getElementById('floating-back');
   const sendOrderBtn = document.getElementById('send-order');
+  const closeCartBtn = document.getElementById('close-cart');
+  const floatingBack = document.getElementById('floating-back');
 
   let products = [];
   let cart = {};
@@ -283,9 +296,7 @@
     if (!url) return '';
     url = String(url).trim();
     if (url === '') return '';
-    // if starts with images/ or /
     if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
-      // if filename only -> add based on hint
       if (!url.includes('/')) {
         if (hintType === 'catalog') return `images/catalog/${url}`;
         if (hintType === 'product') return `images/products/${url}`;
@@ -293,9 +304,7 @@
       }
       return url;
     }
-    // direct image link
     if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
-    // google drive patterns -> convert to uc?export=view
     const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
     if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
     const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
@@ -425,7 +434,11 @@
           <div class="small">${categoryProducts.length} товаров</div>
         </div>
       `;
-      div.addEventListener('click', () => showCategory(cat));
+      div.addEventListener('click', () => {
+        // when user opens a category, auto-collapse cart on mobile
+        if (window.innerWidth <= 720) hideCartPopup();
+        showCategory(cat);
+      });
       elCategories.appendChild(div);
     });
   }
@@ -461,6 +474,8 @@
     elCategories.style.display = 'none';
     elProductsSection.style.display = 'block';
     window.scrollTo({top:0,behavior:'smooth'});
+    // auto-collapse cart on small screens
+    if (window.innerWidth <= 720) hideCartPopup();
   }
 
   function showCategories() {
@@ -476,7 +491,8 @@
     if(!cart[id]) cart[id] = {...p, qty:0};
     cart[id].qty++;
     renderCart();
-    elCartPopup.style.display = 'flex';
+    // show popup for desktop, but on mobile keep it collapsed (user can open manually)
+    if (window.innerWidth > 720) showCartPopup();
   }
 
   function changeQty(id, delta){
@@ -495,7 +511,7 @@
     const keys = Object.keys(cart);
     elCartList.innerHTML = '';
     if(keys.length === 0){
-      elCartList.innerHTML = '<div style="opacity:0.6;padding:12px;text-align:center">Корзина пуста</div>';
+      elCartList.innerHTML = '<div style="opacity:0.85;padding:12px;text-align:center;color:#fff">Корзина пуста</div>';
       elCartCount.innerText = '0';
       elCartTotal.innerText = '0 KZT';
       return;
@@ -509,7 +525,7 @@
       row.innerHTML = `
         <img src="${it.photo}" alt="${it.title}" onerror="handleImageError(this)">
         <div style="flex:1">
-          <div style="font-weight:700">${it.title}</div>
+          <div class="title">${it.title}</div>
           <div class="small">${it.price} × ${it.qty} шт.</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
@@ -524,14 +540,44 @@
     });
     elCartCount.innerText = keys.length;
     elCartTotal.innerText = total + ' KZT';
+    // add slight 3D class
+    elCartPopup.classList.add('show-3d');
+  }
+
+  function showCartPopup(){
+    elCartPopup.style.display = 'flex';
+    // subtle 3d transform on open
+    requestAnimationFrame(()=>elCartPopup.classList.add('show-3d'));
+  }
+  function hideCartPopup(){
+    elCartPopup.style.display = 'none';
+    elCartPopup.classList.remove('show-3d');
   }
 
   function toggleCart(){
-    elCartPopup.style.display = (elCartPopup.style.display === 'flex') ? 'none' : 'flex';
+    if (elCartPopup.style.display === 'flex') hideCartPopup(); else showCartPopup();
   }
 
+  // close cart btn
+  closeCartBtn.addEventListener('click', hideCartPopup);
+
+  // auto-hide cart on small screens (when resizing / rotating)
+  function autoHideCartOnSmall() {
+    if (window.innerWidth <= 720) {
+      hideCartPopup();
+      cartButton.style.bottom = '16px'; // ensure button not blocked
+    } else {
+      // keep normal place
+      cartButton.style.bottom = '16px';
+    }
+  }
+  window.addEventListener('resize', autoHideCartOnSmall);
+  window.addEventListener('orientationchange', autoHideCartOnSmall);
+
+  // when opening a category or navigating, also hide cart on small
+  // implemented in showCategory and in category click
+
   /* ORDER (WhatsApp) */
-  // Build nicely formatted message
   function buildOrderMessage(clientPhone, clientBank) {
     const items = Object.values(cart);
     let lines = [];
@@ -546,21 +592,21 @@
     msg += `💰 Итого: ${total}₸\n`;
     if (clientBank) msg += `🏦 Банк клиента: ${clientBank}\n`;
     if (clientPhone) msg += `📱 Телефон клиента: ${clientPhone}\n`;
-    msg += "\nПожалуйста, выставьте счёт и свяжитесь с клиентом.";
+    msg += `\nСайт: https://nice-atyrau.netlify.app/`;
+    msg += "\n\nПожалуйста, выставьте счёт и свяжитесь с клиентом.";
     return msg;
   }
 
-  // Send to WhatsApp
   sendOrderBtn.addEventListener('click', () => {
     if (Object.keys(cart).length === 0) { alert('Корзина пуста'); return; }
     const clientPhone = document.getElementById('client-phone').value.trim();
     const clientBank = document.getElementById('client-bank').value;
     const message = buildOrderMessage(clientPhone, clientBank);
     const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    // open in new window/tab -> this triggers WhatsApp (mobile/desktop)
+    // open in new window/tab (will open whatsapp web or app)
     window.open(waUrl, '_blank');
-    // keep cart as-is (operator will confirm)
     alert('Заказ отправлен оператору в WhatsApp. Ожидайте ответа.');
+    // optionally keep cart (operator will process)
   });
 
   /* SEARCH */
@@ -598,6 +644,8 @@
     });
     document.getElementById('categories').style.display = 'none';
     elProductsSection.style.display = 'block';
+    // hide cart on small to avoid overlay
+    if (window.innerWidth <= 720) hideCartPopup();
   });
 
   // Floating back
@@ -605,6 +653,14 @@
     showCategories();
     floatingBack.style.transform = 'scale(0.98)';
     setTimeout(()=>floatingBack.style.transform='scale(1)',120);
+    // when returning to categories hide cart on mobile
+    if (window.innerWidth <= 720) hideCartPopup();
+  });
+
+  // Open/close cart button
+  cartButton.addEventListener('click', () => {
+    // On mobile, toggle but prefer hiding when product list open
+    toggleCart();
   });
 
   // Init
@@ -612,7 +668,8 @@
     elProductsSection.style.display = 'none';
     loadProductsFromSheet();
     renderCart();
-    // expose functions for inline handlers
+    autoHideCartOnSmall();
+    // expose for inline handlers
     window.addToCart = addToCart;
     window.changeQty = changeQty;
     window.removeItem = removeItem;
@@ -621,7 +678,6 @@
     window.showCategories = showCategories;
     window.handleImageError = handleImageError;
   })();
-
 </script>
 </body>
 </html>
