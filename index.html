@@ -255,8 +255,7 @@ const categoriesList = [
 ];
 
 // БАЗОВЫЙ URL ДЛЯ ИЗОБРАЖЕНИЙ ИЗ GITHUB
-// ЗАМЕНИТЕ на ваш реальный URL репозитория
-const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/ВАШ_USERNAME/ВАШ_РЕПОЗИТОРИЙ/main/';
+const GITHUB_BASE_URL = 'https://raw.githubusercontent.com/zhannagul/nice-atyrau/main/';
 /* ============================================ */
 
 /* UI refs */
@@ -285,41 +284,68 @@ function normalizePhotoUrl(url, hintType='') {
   url = String(url).trim();
   if (!url) return '';
   
+  console.log(`🖼️ Обрабатываем изображение: "${url}" для типа: ${hintType}`);
+  
   // Если это уже полный URL, возвращаем как есть
-  if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
+  if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) {
+    console.log(`✅ Уже полный URL: ${url}`);
+    return url;
+  }
   
   // Если это Google Drive ID, формируем URL
   const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
-  if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
+  if (m1) {
+    const driveUrl = `https://drive.google.com/uc?export=view&id=${m1[1]}`;
+    console.log(`✅ Google Drive URL: ${driveUrl}`);
+    return driveUrl;
+  }
+  
   const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
-  if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+  if (m2) {
+    const driveUrl = `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+    console.log(`✅ Google Drive URL: ${driveUrl}`);
+    return driveUrl;
+  }
+  
   const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
-  if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
-  if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
+  if (m3) {
+    const driveUrl = `https://drive.google.com/uc?export=view&id=${m3[1]}`;
+    console.log(`✅ Google Drive URL: ${driveUrl}`);
+    return driveUrl;
+  }
+  
+  if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) {
+    const driveUrl = `https://drive.google.com/uc?export=view&id=${url}`;
+    console.log(`✅ Google Drive ID: ${driveUrl}`);
+    return driveUrl;
+  }
   
   // Если это имя файла из GitHub репозитория
   if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
     // Формируем полный URL к файлу в GitHub репозитории
     const folder = hintType === 'catalog' ? 'catalog/' : 'products/';
-    return `${GITHUB_BASE_URL}images/${folder}${url}`;
+    const githubUrl = `${GITHUB_BASE_URL}images/${folder}${url}`;
+    console.log(`✅ GitHub URL: ${githubUrl}`);
+    return githubUrl;
   }
   
+  console.log(`❓ Неизвестный формат: ${url}`);
   return url;
 }
 
 // ИСПРАВЛЕННЫЙ placeholder - без кириллицы
 function placeholderFor(text){ 
   // Используем только латинские символы для placeholder
-  const safeText = text.length > 10 ? 'Image' : text.substring(0, 10);
-  return `data:image/svg+xml;base64,${btoa(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-      <rect width="200" height="200" fill="#f0f0f0"/>
-      <text x="100" y="100" text-anchor="middle" dy="0.3em" font-family="Arial" font-size="14" fill="#666">${safeText}</text>
-    </svg>
-  `)}`;
+  const safeText = text.length > 10 ? 'Image' : text.substring(0, 10).replace(/[^a-zA-Z0-9]/g, ' ');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="#f0f0f0"/>
+    <text x="100" y="100" text-anchor="middle" dy="0.3em" font-family="Arial" font-size="14" fill="#666">${safeText}</text>
+  </svg>`;
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
 }
 
 function handleImageError(img){ 
+  console.log(`❌ Ошибка загрузки изображения: ${img.src}`);
   img.onerror = null; 
   img.src = placeholderFor('No Image'); 
   img.style.opacity = '0.7'; 
@@ -398,9 +424,8 @@ async function loadProductsFromSheet() {
     
     const catalogPhotoIdx = findCatalogPhotoIndex(headersRaw);
     
-    // ИСПРАВЛЕНИЕ: Проблема в том, что функция нашла столбец "Фото" как "Фото каталога"
-    // Нужно исправить логику поиска или добавить отдельный столбец в таблицу
-    console.log('⚠️ ВНИМАНИЕ: Столбец "Фото" используется и для товаров и для каталога');
+    console.log('🔍 Индексы столбцов:', idx);
+    console.log('📸 Индекс фото каталога:', catalogPhotoIdx);
     
     if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
       throw new Error('В таблице обязаны быть колонки: Категория | Название | Цена');
@@ -419,11 +444,17 @@ async function loadProductsFromSheet() {
         const rawPhoto = (idx.photo >= 0 && r[idx.photo]) ? r[idx.photo].trim() : '';
         const photo = rawPhoto ? normalizePhotoUrl(rawPhoto, 'product') : '';
         
-        // ИСПРАВЛЕНИЕ: Если нет отдельного столбца для каталога, используем то же фото
+        // Фото для каталога
         const rawCatalog = (catalogPhotoIdx >= 0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : rawPhoto;
         const catalogPhoto = rawCatalog ? normalizePhotoUrl(rawCatalog, 'catalog') : '';
         
         const id = (idx.id >= 0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
+        
+        console.log(`📦 Товар "${title}":`, {
+          категория: category,
+          'Фото товара': photo,
+          'Фото каталога': catalogPhoto
+        });
         
         return { category, title, desc, price, photo, catalogPhoto, id };
       });
@@ -451,9 +482,11 @@ function renderCategories() {
     
     if (productWithCatalog) {
       catalogImage = productWithCatalog.catalogPhoto;
+      console.log(`🎯 Для категории "${cat}" найдено фото каталога:`, catalogImage);
     } else if (catProducts.length > 0) {
       // Если нет фото каталога, используем первое фото товара
       catalogImage = catProducts[0].photo || '';
+      console.log(`⚠️ Для категории "${cat}" фото каталога не найдено, используем фото товара:`, catalogImage);
     }
     
     // Если вообще нет фото, используем placeholder с безопасным текстом
