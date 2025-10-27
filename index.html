@@ -6,17 +6,16 @@
   <title>Nice_Atyrau — магазин</title>
   <meta name="description" content="Nice_Atyrau — товары для дома, посуда и детские игрушки" />
   <style>
-    /* ========== Палитра и базовые стили ========== */
     :root{
-      --brand-blue: #0b5ed7;
-      --brand-blue-dark: #093f93;
-      --brand-yellow: #ffd400;
-      --bg: #f7f8fb;
-      --card-radius: 12px;
-      --text: #0b2140;
-      --cart-blue: #0a4fc6;
-      --white: #ffffff;
-      --muted: #eef2fb;
+      --brand-blue:#0b5ed7;
+      --brand-blue-dark:#093f93;
+      --brand-yellow:#ffd400;
+      --bg:#f7f8fb;
+      --card-radius:12px;
+      --text:#0b2140;
+      --cart-blue:#0a4fc6;
+      --white:#ffffff;
+      --muted:#eef2fb;
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     *{box-sizing:border-box}
@@ -92,7 +91,7 @@
     .btn-primary{background:var(--brand-blue);color:white}
     .btn-ghost{background:transparent;border:1px solid #e6e9ef}
 
-    /* FLOATING BACK */
+    /* Floating back */
     .floating-back{
       position:fixed;left:16px;bottom:20px;width:56px;height:56px;border-radius:50%;
       background:var(--brand-yellow); color:var(--brand-blue);display:grid;place-items:center;font-weight:800;font-size:20px;
@@ -121,6 +120,7 @@
     .cart-popup label{display:block;font-size:13px;margin-top:6px;color:rgba(255,255,255,0.95)}
     .cart-popup input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);margin-top:6px;background:rgba(255,255,255,0.03);color:#fff}
     .cart-popup input::placeholder{color:#e8f0ff}
+
     /* custom dropdown (banks) */
     .bank-select { position:relative; margin-top:6px; }
     .bank-select .bank-btn {
@@ -158,7 +158,6 @@
       main{padding-bottom:220px}
     }
 
-    /* helper */
     .hidden{display:none}
   </style>
 </head>
@@ -174,7 +173,7 @@
     <div class="search-wrap">
       <input id="search" placeholder="Поиск товаров (название, описание, категория)..." />
     </div>
-    <div style="min-width:120px;text-align:right;color:#fff">
+    <div style="min-width:140px;text-align:right;color:#fff">
       <div style="font-size:12px">Казахстан · Atyrau</div>
       <div style="font-weight:700;margin-top:2px">+7 778 222 2191</div>
     </div>
@@ -184,14 +183,12 @@
     <section class="hero">
       <div>
         <h1 style="margin:0 0 6px">Товары для дома и игрушки</h1>
-        <div class="hint">Быстро выбирайте — добавляйте в корзину — оплачивайте или отправляйте заказ оператору.</div>
+        <div class="hint">Выберите категорию — добавляйте в корзину — отправляйте заказ оператору.</div>
       </div>
     </section>
 
-    <!-- categories -->
     <section id="categories" class="categories" aria-live="polite"></section>
 
-    <!-- products -->
     <section id="products-section" class="hidden">
       <div class="products-head">
         <div style="display:flex;gap:8px;align-items:center">
@@ -201,16 +198,15 @@
         <div class="small">Категории загружаются из Google Sheets</div>
       </div>
       <div id="products-list" class="products-list"></div>
+      <div style="margin-top:12px"><button class="btn-ghost" id="back-to-cats">← Назад в категории</button></div>
     </section>
   </main>
 
   <button class="floating-back" id="floating-back" title="Назад">←</button>
 
-  <!-- cart button -->
   <div class="cart-button" id="cart-button" title="Открыть корзину">🛒 <span id="cart-count" class="cart-count">0</span></div>
 
-  <!-- cart popup -->
-  <div class="cart-popup" id="cart-popup" role="dialog" aria-label="Корзина">
+  <div class="cart-popup hidden" id="cart-popup" role="dialog" aria-label="Корзина">
     <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
     <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
     <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
@@ -240,7 +236,7 @@
   </div>
 
 <script>
-/* ================= SETTINGS ================= */
+/* ========== Settings ========== */
 const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
 const whatsappNumber = '77782222191';
 const categoriesList = [
@@ -260,33 +256,33 @@ const elProductsSection = document.getElementById('products-section');
 const elProductsList = document.getElementById('products-list');
 const elProductsTitle = document.getElementById('products-title');
 const elProductsCount = document.getElementById('products-count');
+const elBackToCats = document.getElementById('back-to-cats');
+const cartButton = document.getElementById('cart-button');
 const elCartPopup = document.getElementById('cart-popup');
 const elCartList = document.getElementById('cart-list');
 const elCartCount = document.getElementById('cart-count');
 const elCartTotal = document.getElementById('cart-total');
-const cartButton = document.getElementById('cart-button');
+
+const bankBtn = document.getElementById('bank-btn');
+const bankList = document.getElementById('bank-list');
 
 let products = [];
 let cart = {};
 let selectedBank = '';
 
-/* ---------- Utilities ---------- */
+/* Utilities */
 function normalizePhotoUrl(url, hintType='') {
   if (!url) return '';
   url = String(url).trim();
   if (!url) return '';
-  // direct image url?
   if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
-  // google drive id formats
   const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
   if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
   const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
   if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
   const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
   if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
-  // single id
   if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
-  // if filename only -> map to images folder
   if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
     if (hintType === 'catalog') return `images/catalog/${url}`;
     if (hintType === 'product') return `images/products/${url}`;
@@ -294,22 +290,15 @@ function normalizePhotoUrl(url, hintType='') {
   }
   return url;
 }
-
 function placeholderFor(text){ return `https://via.placeholder.com/480x320.png?text=${encodeURIComponent(text)}`; }
+function handleImageError(img){ img.onerror = null; img.src = placeholderFor('No+Image'); img.style.opacity = '0.8'; }
 
-function handleImageError(img){
-  img.onerror = null;
-  img.src = placeholderFor('No+Image');
-  img.style.opacity = '0.8';
-}
-
-/* ---------- CSV fetch & parse (robust) ---------- */
+/* CSV parse */
 async function fetchCSV(){
   const res = await fetch(csvUrl);
   if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
   return await res.text();
 }
-
 function parseCSV(str){
   const rows = [];
   let cur = '', inQuotes = false, row = [];
@@ -330,7 +319,6 @@ function parseCSV(str){
   if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
   return rows;
 }
-
 function findCatalogPhotoIndex(headers) {
   const candidates = ['фото каталога','фотокаталога','фото_каталога','catalogphoto','catalog_photo','catalog image','catalog_image','image_catalog','catalog'];
   for (let i=0;i<headers.length;i++){
@@ -343,7 +331,7 @@ function findCatalogPhotoIndex(headers) {
   return -1;
 }
 
-/* ---------- Load products ---------- */
+/* Load products */
 async function loadProductsFromSheet(){
   try {
     elCategories.innerHTML = '<div style="padding:18px;text-align:center;opacity:0.6">Загрузка товаров...</div>';
@@ -379,46 +367,43 @@ async function loadProductsFromSheet(){
         const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
         return {category,title,desc,price,photo,catalogPhoto,id};
       });
-
-    // debug: log first 20 photo urls
-    console.log('Перв. 20 фото (каталог/товар):', products.slice(0,20).map(p=>({title:p.title, catalog:p.catalogPhoto, photo:p.photo})));
-
+    // debug log first 10
+    console.log('Products sample:', products.slice(0,10).map(p=>({title:p.title, catalog:p.catalogPhoto, photo:p.photo})));
     renderCategories();
   } catch (err) {
     console.error(err);
     elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
-      <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверьте публикацию таблицы и что сайт запущен через http(s) (не file://)</small>
+      <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверьте: публикацию таблицы (CSV) и что сайт запущен по https.</small>
     </div>`;
   }
 }
 
-/* ---------- Render categories ---------- */
+/* Render categories */
 function renderCategories(){
   elCategories.innerHTML = '';
-  // show in fixed order (categoriesList)
   categoriesList.forEach(cat=>{
     const categoryProducts = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
     const sample = categoryProducts[0] || {};
-    const img = (categoryProducts.find(p=>p.catalogPhoto && p.catalogPhoto.trim() !== '') || sample).catalogPhoto || sample.photo || placeholderFor(cat);
+    const candidate = categoryProducts.find(p=>p.catalogPhoto && p.catalogPhoto.trim() !== '');
+    const img = (candidate && candidate.catalogPhoto) || sample.photo || placeholderFor(cat);
     const div = document.createElement('div');
     div.className = 'cat-card';
-    div.innerHTML = `<img src="${img}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)">
-      <div class="cat-meta"><h3>${cat}</h3><div class="small">${categoryProducts.length} товаров</div></div>`;
-    div.addEventListener('click', ()=> { if (window.innerWidth <= 720) hideCartPopup(); showCategory(cat); });
+    div.innerHTML = `<img src="${img}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)"><div class="cat-meta"><h3>${cat}</h3><div class="small">${categoryProducts.length} товаров</div></div>`;
+    div.addEventListener('click', ()=> { if(window.innerWidth<=720) hideCartPopup(); openCategory(cat); });
     elCategories.appendChild(div);
   });
 }
 
-/* ---------- Show category products ---------- */
-function showCategory(cat){
+/* Open category -> show products */
+function openCategory(cat){
   elProductsTitle.innerText = cat;
   elProductsList.innerHTML = '';
   const list = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
-  if (list.length === 0) {
+  if(list.length === 0){
     elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
     elProductsCount.innerText = '';
   } else {
-    list.forEach(p => {
+    list.forEach(p=>{
       const item = document.createElement('div');
       item.className = 'product-card';
       item.innerHTML = `
@@ -443,14 +428,10 @@ function showCategory(cat){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ---------- Show categories ---------- */
-function showCategories(){
-  elProductsSection.style.display = 'none';
-  document.getElementById('categories').style.display = 'grid';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+/* Show categories button */
+document.getElementById('back-to-cats').addEventListener('click', ()=>{ document.getElementById('products-section').style.display='none'; document.getElementById('categories').style.display='grid'; if(window.innerWidth<=720) hideCartPopup(); });
 
-/* ---------- CART logic ---------- */
+/* CART logic */
 function addToCart(id){
   const p = products.find(x=>x.id===id);
   if(!p) return;
@@ -459,22 +440,14 @@ function addToCart(id){
   renderCart();
   if(window.innerWidth > 720) showCartPopup();
 }
-
-function changeQty(id,delta){
-  if(!cart[id]) return;
-  cart[id].qty += delta;
-  if(cart[id].qty < 1) delete cart[id];
-  renderCart();
-}
-
+function changeQty(id,delta){ if(!cart[id]) return; cart[id].qty += delta; if(cart[id].qty<1) delete cart[id]; renderCart(); }
 function removeItem(id){ delete cart[id]; renderCart(); }
-
 function renderCart(){
-  const list = Object.keys(cart);
+  const keys = Object.keys(cart);
   elCartList.innerHTML = '';
-  if(list.length === 0){ elCartList.innerHTML = '<div style="opacity:0.85;padding:12px;text-align:center;color:#fff">Корзина пуста</div>'; elCartCount.innerText='0'; elCartTotal.innerText='0 KZT'; return; }
+  if(keys.length === 0){ elCartList.innerHTML = '<div style="opacity:0.85;padding:12px;text-align:center;color:#fff">Корзина пуста</div>'; elCartCount.innerText='0'; elCartTotal.innerText='0 KZT'; return; }
   let total = 0;
-  list.forEach(k=>{
+  keys.forEach(k=>{
     const it = cart[k];
     total += it.price * it.qty;
     const row = document.createElement('div');
@@ -494,27 +467,32 @@ function renderCart(){
       </div>`;
     elCartList.appendChild(row);
   });
-  elCartCount.innerText = list.length;
+  elCartCount.innerText = keys.length;
   elCartTotal.innerText = total + ' KZT';
 }
 
-/* ---------- Cart popup behavior ---------- */
-function showCartPopup(){ elCartPopup.style.display='flex'; requestAnimationFrame(()=>elCartPopup.classList.add('show-3d')); }
-function hideCartPopup(){ elCartPopup.style.display='none'; elCartPopup.classList.remove('show-3d'); }
-function toggleCart(){ elCartPopup.style.display === 'flex' ? hideCartPopup() : showCartPopup(); }
+/* Cart popup */
+function showCartPopup(){ elCartPopup.classList.remove('hidden'); elCartPopup.style.display = 'flex'; }
+function hideCartPopup(){ elCartPopup.style.display = 'none'; elCartPopup.classList.add('hidden'); }
+function toggleCart(){ if(elCartPopup.style.display==='flex') hideCartPopup(); else showCartPopup(); }
+cartButton.addEventListener('click', toggleCart);
+document.getElementById('close-cart').addEventListener('click', hideCartPopup);
 
-/* auto-hide on small screens when routing/resize */
+/* Auto hide on small screens when navigation */
 function autoHideCartOnSmall(){ if(window.innerWidth <= 720) hideCartPopup(); }
 window.addEventListener('resize', autoHideCartOnSmall);
 window.addEventListener('orientationchange', autoHideCartOnSmall);
 
-/* Prevent cart closing while typing: we DON'T attach blur-based hide handlers */
+/* Bank custom dropdown (desktop readable) */
+bankBtn.addEventListener('click', (e)=>{ e.stopPropagation(); bankList.style.display = bankList.style.display==='block' ? 'none' : 'block'; bankList.setAttribute('aria-hidden', bankList.style.display==='block' ? 'false' : 'true'); });
+bankList.addEventListener('click', (e)=>{ const it = e.target.closest('.item'); if(!it) return; selectedBank = it.dataset.val || ''; bankBtn.textContent = (it.textContent || 'Не указано') + ' ▾'; bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
+document.addEventListener('click', ()=>{ bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
 
-/* ---------- Order sending ---------- */
+/* Build order message & send */
 function buildOrderMessage(clientPhone, clientBank){
   const items = Object.values(cart);
   let lines = [];
-  items.forEach((it, i) => lines.push(`${i+1}. ${it.title} — ${it.qty} шт. × ${it.price}₸`));
+  items.forEach((it, idx)=> lines.push(`${idx+1}. ${it.title} — ${it.qty} шт. × ${it.price}₸`));
   const total = items.reduce((s,it)=>s+it.price*it.qty,0);
   let msg = "🛍️ Новый заказ с сайта Nice_Atyrau\n——————————————\n";
   msg += "📦 Товары:\n" + lines.join("\n") + "\n";
@@ -525,32 +503,21 @@ function buildOrderMessage(clientPhone, clientBank){
   msg += `\nСайт: https://nice-atyrau.netlify.app/`;
   return msg;
 }
-
-/* send order action (button) */
 document.getElementById('send-order').addEventListener('click', ()=>{
-  if(Object.keys(cart).length === 0) { alert('Корзина пуста'); return; }
+  if(Object.keys(cart).length === 0){ alert('Корзина пуста'); return; }
   const clientPhone = document.getElementById('client-phone').value.trim();
   const clientBank = selectedBank;
   const msg = buildOrderMessage(clientPhone, clientBank);
   const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl, '_blank');
   alert('Заказ отправлен оператору в WhatsApp.');
-  hideCartPopup(); // auto collapse after send
+  hideCartPopup();
 });
 
-/* close cart */
-document.getElementById('close-cart').addEventListener('click', hideCartPopup);
-
-/* cart button */
-cartButton.addEventListener('click', toggleCart);
-
-/* floating back */
-document.getElementById('floating-back').addEventListener('click', ()=>{ showCategories(); document.getElementById('floating-back').style.transform='scale(0.98)'; setTimeout(()=>document.getElementById('floating-back').style.transform='scale(1)',120); if(window.innerWidth<=720) hideCartPopup(); });
-
-/* ---------- Search ---------- */
-document.getElementById('search').addEventListener('input', (e)=>{
+/* Search */
+document.getElementById('search').addEventListener('input',(e)=>{
   const q = e.target.value.trim().toLowerCase();
-  if(!q){ if(elProductsSection.style.display==='block'){ /* keep current category */ } else { renderCategories(); } return; }
+  if(!q){ /* if viewing products keep as is */ if(elProductsSection.style.display==='block') return; renderCategories(); return; }
   const matches = products.filter(p => (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q));
   elProductsTitle.innerText = `Поиск: "${q}"`;
   elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
@@ -558,8 +525,7 @@ document.getElementById('search').addEventListener('input', (e)=>{
   matches.forEach(p=>{
     const item = document.createElement('div');
     item.className = 'product-card';
-    item.innerHTML = `<img src="${p.photo}" alt="${p.title}" onerror="handleImageError(this)">
-      <div class="product-info"><h4>${p.title}</h4><p>${p.desc||''}</p><div class="product-meta"><div class="price">${p.price} KZT</div><div style="margin-left:auto"><button class="btn btn-primary" onclick='addToCart("${p.id}")'>Добавить</button></div></div></div>`;
+    item.innerHTML = `<img src="${p.photo}" alt="${p.title}" onerror="handleImageError(this)"><div class="product-info"><h4>${p.title}</h4><p>${p.desc||''}</p><div class="product-meta"><div class="price">${p.price} KZT</div><div style="margin-left:auto"><button class="btn btn-primary" onclick='addToCart("${p.id}")'>Добавить</button></div></div></div>`;
     elProductsList.appendChild(item);
   });
   document.getElementById('categories').style.display='none';
@@ -567,31 +533,23 @@ document.getElementById('search').addEventListener('input', (e)=>{
   if(window.innerWidth<=720) hideCartPopup();
 });
 
-/* ---------- Custom bank dropdown (ensures readable on desktop) ---------- */
-const bankBtn = document.getElementById('bank-btn');
-const bankList = document.getElementById('bank-list');
-bankBtn.addEventListener('click', (e)=>{ e.stopPropagation(); const visible = bankList.style.display==='block'; document.querySelectorAll('.bank-list').forEach(n=>n.style.display='none'); bankList.style.display = visible ? 'none' : 'block'; bankList.setAttribute('aria-hidden', visible ? 'true' : 'false'); });
-bankList.addEventListener('click', (e)=>{ const it = e.target.closest('.item'); if(!it) return; selectedBank = it.dataset.val || ''; bankBtn.textContent = (it.textContent || 'Не указано') + ' ▾'; bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
-document.addEventListener('click', ()=>{ bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
+/* floating back */
+document.getElementById('floating-back').addEventListener('click', ()=>{
+  document.getElementById('products-section').style.display='none';
+  document.getElementById('categories').style.display='grid';
+  if(window.innerWidth<=720) hideCartPopup();
+});
 
-/* ---------- Back button & product navigation ---------- */
-function showCategory(cat){
-  // already defined above but need small wrapper if called from bank-list scope; keep existing behaviour
-  // (function exists earlier)
-}
-document.querySelectorAll('.cat-card') // placeholder to avoid lint errors
-
-/* We need functions accessible globally for inline handlers inside product creation */
+/* Expose for inline handlers */
 window.addToCart = addToCart;
 window.changeQty = changeQty;
 window.removeItem = removeItem;
-window.showCategory = showCategory;
-window.showCategories = showCategories;
+window.openCategory = openCategory;
 window.handleImageError = handleImageError;
 
-/* ---------- Init ---------- */
+/* Init */
 (async function init(){
-  elProductsSection.style.display='none';
+  document.getElementById('products-section').style.display='none';
   await loadProductsFromSheet();
   renderCart();
   autoHideCartOnSmall();
