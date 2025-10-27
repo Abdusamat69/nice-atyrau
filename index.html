@@ -13,152 +13,46 @@
       --bg:#f7f8fb;
       --card-radius:12px;
       --text:#0b2140;
-      --cart-blue:#0a4fc6;
       --white:#ffffff;
-      --muted:#eef2fb;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:linear-gradient(180deg,var(--bg),#fff);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      line-height:1.35;
-    }
-
-    /* header */
-    header{
-      background:var(--brand-blue);
-      color:var(--white);
-      padding:14px 16px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      position:sticky;
-      top:0;
-      z-index:120;
-    }
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#fff)}
+    header{background:var(--brand-blue);color:var(--white);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:120}
     .brand{display:flex;align-items:center;gap:12px}
-    .logo-circle{
-      width:46px;height:46px;border-radius:10px;background:var(--brand-yellow);display:grid;place-items:center;color:var(--brand-blue);font-weight:900;font-size:20px;
-      box-shadow: 0 6px 18px rgba(11,34,71,0.08);
-      flex-shrink:0;
-    }
-    .brand-title{font-weight:800; font-size:18px}
-    .brand-sub{font-size:12px;opacity:0.9}
+    .logo-circle{width:46px;height:46px;border-radius:10px;background:var(--brand-yellow);display:grid;place-items:center;color:var(--brand-blue);font-weight:900;font-size:20px}
+    .brand-title{font-weight:800}
     .search-wrap{flex:1;margin-left:14px;margin-right:12px}
-    .search-wrap input{width:100%;padding:10px 12px;border-radius:12px;border:none;outline:none;font-size:14px;box-shadow:0 6px 18px rgba(11,34,71,0.04)}
-
-    main{max-width:1100px;margin:14px auto;padding:0 14px 180px}
-
+    .search-wrap input{width:100%;padding:10px 12px;border-radius:12px;border:none;font-size:14px;box-shadow:0 6px 18px rgba(11,34,71,0.04)}
+    main{max-width:1100px;margin:12px auto;padding:0 14px 180px}
     .hero{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .hero h1{margin:0;font-size:20px}
-    .hint{color:rgba(0,0,0,0.65);font-size:14px;margin-top:6px}
-
-    /* CATEGORIES */
     .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px}
-    .cat-card{
-      border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;
-      background:linear-gradient(135deg,#fff7d6,var(--brand-yellow));
-      box-shadow: 0 10px 30px rgba(11,34,71,0.08);
-      transition: transform .18s ease, box-shadow .18s ease;
-      border:1px solid rgba(0,0,0,0.03);
-    }
-    .cat-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(11,34,71,0.12)}
+    .cat-card{border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;background:linear-gradient(135deg,#fff7d6,var(--brand-yellow));box-shadow:0 10px 30px rgba(11,34,71,0.08);border:1px solid rgba(0,0,0,0.03)}
     .cat-thumb{width:84px;height:84px;border-radius:12px;object-fit:cover;border:1px solid #eee;flex-shrink:0}
     .cat-meta h3{margin:0;font-size:16px;color:var(--brand-blue)}
-    .cat-meta .small{font-size:13px;color:rgba(0,0,0,0.6);margin-top:6px}
-
-    /* PRODUCTS */
-    #products-section{display:none}
-    .products-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;position:relative}
     .products-list{display:flex;flex-direction:column;gap:12px}
-    .product-card{
-      display:flex;gap:12px;align-items:center;background:white;padding:12px;border-radius:12px;
-      box-shadow:0 10px 24px rgba(11,34,71,0.04);
-      border:1px solid rgba(0,0,0,0.02);
-    }
+    .product-card{display:flex;gap:12px;align-items:center;background:white;padding:12px;border-radius:12px;box-shadow:0 10px 24px rgba(11,34,71,0.04);border:1px solid rgba(0,0,0,0.02)}
     .product-card img{width:120px;height:86px;object-fit:cover;border-radius:8px;flex-shrink:0}
     .product-info h4{margin:0;font-size:16px}
     .product-info p{margin:6px 0 10px;color:rgba(0,0,0,0.65);font-size:14px}
-    .product-meta{display:flex;align-items:center;gap:10px}
     .price{font-weight:800;color:var(--brand-blue)}
     .btn{border:0;padding:10px 12px;border-radius:10px;cursor:pointer}
     .btn-primary{background:var(--brand-blue);color:white}
-    .btn-ghost{background:transparent;border:1px solid #e6e9ef}
-
-    /* Floating back */
-    .floating-back{
-      position:fixed;left:16px;bottom:20px;width:56px;height:56px;border-radius:50%;
-      background:var(--brand-yellow); color:var(--brand-blue);display:grid;place-items:center;font-weight:800;font-size:20px;
-      box-shadow:0 10px 30px rgba(11,34,71,0.12);border: none; cursor:pointer; z-index:999;transition: transform .14s;
-    }
-    .floating-back:hover{transform:scale(1.06)}
-
-    /* CART BUTTON + POPUP (Blue 3D) */
-    .cart-button{
-      position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:white;
-      padding:12px 16px;border-radius:50px;box-shadow: 0 20px 48px rgba(11,34,71,0.18);
-      font-weight:700;cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;transform-style:preserve-3d;
-    }
-    .cart-count{background:#fff;border-radius:10px;padding:4px 8px;font-size:13px;color:var(--brand-blue)}
-    .cart-popup{
-      position:fixed;right:16px;bottom:84px;background:linear-gradient(180deg,var(--cart-blue),var(--brand-blue-dark));
-      color:var(--white);border-radius:14px;box-shadow: 0 28px 68px rgba(11,34,71,0.35);
-      min-width:320px;max-width:460px;display:none;flex-direction:column;max-height:78vh;overflow:auto;padding:14px;z-index:998;
-      transform-origin:bottom right;perspective:1000px;
-    }
+    .floating-back{position:fixed;left:16px;bottom:20px;width:56px;height:56px;border-radius:50%;background:var(--brand-yellow);color:var(--brand-blue);display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:0 10px 30px rgba(11,34,71,0.12);border:none;cursor:pointer;z-index:999}
+    .cart-button{position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:white;padding:12px 16px;border-radius:50px;box-shadow:0 20px 48px rgba(11,34,71,0.18);font-weight:700;cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px}
+    .cart-popup{position:fixed;right:16px;bottom:84px;background:linear-gradient(180deg,#0a4fc6,var(--brand-blue-dark));color:#fff;border-radius:14px;min-width:320px;max-width:460px;display:none;flex-direction:column;max-height:78vh;overflow:auto;padding:14px;z-index:998}
     .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
     .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
-    .cart-item .title{font-weight:700;color:#fff}
-    .cart-popup .small{color:rgba(255,255,255,0.85)}
-    .cart-popup .order-form{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.03)}
-    .cart-popup label{display:block;font-size:13px;margin-top:6px;color:rgba(255,255,255,0.95)}
-    .cart-popup input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);margin-top:6px;background:rgba(255,255,255,0.03);color:#fff}
-    .cart-popup input::placeholder{color:#e8f0ff}
-
-    /* custom dropdown (banks) */
-    .bank-select { position:relative; margin-top:6px; }
-    .bank-select .bank-btn {
-      width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);
-      background:transparent; color:#fff; text-align:left; cursor:pointer;
-    }
-    .bank-select .bank-list {
-      position:absolute; left:0; right:0; top:calc(100% + 6px);
-      background: linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue)); color:#fff;
-      border-radius:8px; padding:6px; box-shadow:0 10px 30px rgba(11,34,71,0.14); display:none; z-index:1000;
-    }
-    .bank-select .bank-list .item { padding:8px;border-radius:6px; cursor:pointer; }
-    .bank-select .bank-list .item:hover { background: rgba(255,255,255,0.06); }
-
-    /* actions: buttons in one line, thinner but visible */
-    .cart-actions { display:flex; gap:8px; margin-top:12px; }
-    .cart-actions .cart-send { flex:1; padding:10px 12px; border-radius:10px; background:var(--brand-yellow); color:var(--brand-blue); font-weight:800; border:0; box-shadow:0 10px 24px rgba(11,34,71,0.12); cursor:pointer; }
-    .cart-actions .cart-close { flex:1; padding:10px 12px; border-radius:10px; background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.14); cursor:pointer; }
-    .cart-actions .cart-send:active, .cart-actions .cart-close:active { transform:translateY(1px); }
-
-    /* responsive */
-    @media (max-width:720px){
-      .cat-card{padding:12px}
-      .product-card{flex-direction:row;gap:10px}
-      .product-card img{width:96px;height:72px}
-      .brand-title{font-size:16px}
-      .search-wrap{margin-left:8px;margin-right:8px}
-      .cart-popup{right:10px;left:10px;bottom:86px;min-width:auto;max-width:calc(100% - 20px)}
-      .floating-back{left:14px;bottom:110px}
-    }
-    @media (max-width:420px){
-      .categories{grid-template-columns:1fr}
-      .product-info p{font-size:13px}
-      header{padding:10px}
-      main{padding-bottom:220px}
-    }
-
+    .cart-actions{display:flex;gap:8px;margin-top:12px}
+    .cart-actions .send{flex:1;padding:10px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);font-weight:800;border:0;cursor:pointer;box-shadow:0 10px 24px rgba(11,34,71,0.12)}
+    .cart-actions .close{flex:1;padding:10px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.14);cursor:pointer}
+    input, .bank-btn{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;margin-top:6px}
+    .bank-select{position:relative}
+    .bank-list{position:absolute;left:0;right:0;top:calc(100% + 6px);background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));border-radius:8px;padding:6px;box-shadow:0 10px 30px rgba(11,34,71,0.14);display:none;z-index:1000}
+    .bank-list .item{padding:8px;border-radius:6px;cursor:pointer}
+    .bank-list .item:hover{background:rgba(255,255,255,0.06)}
     .hidden{display:none}
+    @media (max-width:720px){.cart-popup{right:10px;left:10px;bottom:86px;min-width:auto;max-width:calc(100% - 20px)}}
   </style>
 </head>
 <body>
@@ -167,13 +61,13 @@
       <div class="logo-circle">N</div>
       <div>
         <div class="brand-title">Nice_Atyrau</div>
-        <div class="brand-sub">Всё для дома и детские игрушки</div>
+        <div style="font-size:12px;opacity:0.9">Всё для дома и детские игрушки</div>
       </div>
     </div>
     <div class="search-wrap">
       <input id="search" placeholder="Поиск товаров (название, описание, категория)..." />
     </div>
-    <div style="min-width:140px;text-align:right;color:#fff">
+    <div style="min-width:120px;text-align:right;color:#fff">
       <div style="font-size:12px">Казахстан · Atyrau</div>
       <div style="font-weight:700;margin-top:2px">+7 778 222 2191</div>
     </div>
@@ -190,12 +84,9 @@
     <section id="categories" class="categories" aria-live="polite"></section>
 
     <section id="products-section" class="hidden">
-      <div class="products-head">
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="width:8px"></div>
-          <div style="font-weight:700"><span id="products-title">Товары</span> <small id="products-count" class="small"></small></div>
-        </div>
-        <div class="small">Категории загружаются из Google Sheets</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-weight:700"><span id="products-title">Товары</span> <small id="products-count" style="font-size:13px;color:rgba(0,0,0,0.6)"></small></div>
+        <div style="font-size:13px;color:rgba(0,0,0,0.6)">Категории загружаются из Google Sheets</div>
       </div>
       <div id="products-list" class="products-list"></div>
       <div style="margin-top:12px"><button class="btn-ghost" id="back-to-cats">← Назад в категории</button></div>
@@ -204,22 +95,20 @@
 
   <button class="floating-back" id="floating-back" title="Назад">←</button>
 
-  <div class="cart-button" id="cart-button" title="Открыть корзину">🛒 <span id="cart-count" class="cart-count">0</span></div>
+  <div class="cart-button" id="cart-button" title="Открыть корзину">🛒 <span id="cart-count" style="background:#fff;border-radius:10px;padding:4px 8px;color:var(--brand-blue)">0</span></div>
 
   <div class="cart-popup hidden" id="cart-popup" role="dialog" aria-label="Корзина">
     <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
     <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
     <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
 
-    <div class="order-form" id="order-form">
-      <h4 style="margin:8px 0 6px;color:#fff">Контакт и оплата</h4>
-      <label for="client-phone" style="color:rgba(255,255,255,0.95)">Номер телефона (для связи)</label>
+    <div style="margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03)">
+      <label style="color:#fff;font-size:13px">Номер телефона (для связи)</label>
       <input id="client-phone" placeholder="+7 7xxxxxxxxx" />
-
-      <label style="color:rgba(255,255,255,0.95);margin-top:8px">Выберите банк</label>
-      <div class="bank-select" id="bank-select">
+      <label style="color:#fff;font-size:13px;margin-top:8px">Выберите банк</label>
+      <div class="bank-select">
         <button class="bank-btn" id="bank-btn">Не указано ▾</button>
-        <div class="bank-list" id="bank-list" role="listbox" aria-hidden="true">
+        <div class="bank-list" id="bank-list" aria-hidden="true">
           <div class="item" data-val="">Не указано</div>
           <div class="item" data-val="Kaspi">Kaspi Bank</div>
           <div class="item" data-val="Halyk">Halyk Bank</div>
@@ -228,15 +117,15 @@
     </div>
 
     <div class="cart-actions">
-      <button class="cart-send" id="send-order">Отправить заказ</button>
-      <button class="cart-close" id="close-cart">Закрыть</button>
+      <button class="send" id="send-order">Отправить заказ</button>
+      <button class="close" id="close-cart">Закрыть</button>
     </div>
 
     <div style="margin-top:8px;color:rgba(255,255,255,0.9)">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
   </div>
 
 <script>
-/* ========== Settings ========== */
+/* ========== Настройки ========== */
 const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
 const whatsappNumber = '77782222191';
 const categoriesList = [
@@ -260,9 +149,8 @@ const elBackToCats = document.getElementById('back-to-cats');
 const cartButton = document.getElementById('cart-button');
 const elCartPopup = document.getElementById('cart-popup');
 const elCartList = document.getElementById('cart-list');
-const elCartCount = document.getElementById('cart-count');
+const elCartCount = document.querySelector('#cart-count');
 const elCartTotal = document.getElementById('cart-total');
-
 const bankBtn = document.getElementById('bank-btn');
 const bankList = document.getElementById('bank-list');
 
@@ -270,19 +158,23 @@ let products = [];
 let cart = {};
 let selectedBank = '';
 
-/* Utilities */
+/* ---------- Утилиты для ссылок на картинки ---------- */
 function normalizePhotoUrl(url, hintType='') {
   if (!url) return '';
   url = String(url).trim();
   if (!url) return '';
+  // Если это прямой URL на картинку
   if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
+  // Извлечь id из форм Google Drive
   const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
   if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
   const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
   if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
   const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
   if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
+  // Если это один только id
   if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
+  // Если это имя файла (без https://), подставляем локальную структуру
   if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
     if (hintType === 'catalog') return `images/catalog/${url}`;
     if (hintType === 'product') return `images/products/${url}`;
@@ -291,10 +183,10 @@ function normalizePhotoUrl(url, hintType='') {
   return url;
 }
 function placeholderFor(text){ return `https://via.placeholder.com/480x320.png?text=${encodeURIComponent(text)}`; }
-function handleImageError(img){ img.onerror = null; img.src = placeholderFor('No+Image'); img.style.opacity = '0.8'; }
+function handleImageError(img){ img.onerror = null; img.src = placeholderFor('No+Image'); img.style.opacity = '0.85'; }
 
-/* CSV parse */
-async function fetchCSV(){
+/* ---------- CSV fetch & parse ---------- */
+async function fetchCSV() {
   const res = await fetch(csvUrl);
   if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
   return await res.text();
@@ -319,6 +211,7 @@ function parseCSV(str){
   if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
   return rows;
 }
+/* helper to find "Фото каталога" column index heuristically */
 function findCatalogPhotoIndex(headers) {
   const candidates = ['фото каталога','фотокаталога','фото_каталога','catalogphoto','catalog_photo','catalog image','catalog_image','image_catalog','catalog'];
   for (let i=0;i<headers.length;i++){
@@ -331,7 +224,7 @@ function findCatalogPhotoIndex(headers) {
   return -1;
 }
 
-/* Load products */
+/* ---------- Load products from Google Sheet (CSV) ---------- */
 async function loadProductsFromSheet(){
   try {
     elCategories.innerHTML = '<div style="padding:18px;text-align:center;opacity:0.6">Загрузка товаров...</div>';
@@ -352,56 +245,61 @@ async function loadProductsFromSheet(){
     if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
       throw new Error('В таблице обязаны быть колонки: Категория | Название | Описание | Цена | Фото');
     }
-    products = rows.slice(1)
-      .filter(r=>r && r.some(c=>c && String(c).trim()!==''))
-      .map((r,i) => {
-        const category = (r[idx.category]||'').trim();
-        const title = (r[idx.title]||'').trim() || 'Без названия';
-        const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
-        const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
-        const price = parseInt(priceRaw)||0;
-        const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
-        const photo = rawPhoto ? normalizePhotoUrl(rawPhoto,'product') : placeholderFor('No+Image');
-        const rawCatalogPhoto = (catalogPhotoIdx>=0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : '';
-        const catalogPhoto = rawCatalogPhoto ? normalizePhotoUrl(rawCatalogPhoto,'catalog') : '';
-        const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
-        return {category,title,desc,price,photo,catalogPhoto,id};
-      });
-    // debug log first 10
-    console.log('Products sample:', products.slice(0,10).map(p=>({title:p.title, catalog:p.catalogPhoto, photo:p.photo})));
+
+    products = rows.slice(1).filter(r=>r && r.some(c=>c && String(c).trim()!=='')).map((r,i) => {
+      const category = (r[idx.category]||'').trim();
+      const title = (r[idx.title]||'').trim() || 'Без названия';
+      const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
+      const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
+      const price = parseInt(priceRaw)||0;
+
+      // === IMPORTANT: use "Фото каталога" for category image and "Фото" for product image ===
+      const rawCatalog = (catalogPhotoIdx>=0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : '';
+      const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
+      const catalogPhoto = rawCatalog ? normalizePhotoUrl(rawCatalog, 'catalog') : '';
+      const photo = rawPhoto ? normalizePhotoUrl(rawPhoto, 'product') : (catalogPhoto || placeholderFor('No+Image'));
+      const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
+
+      return {category,title,desc,price,photo,catalogPhoto,id};
+    });
+
+    // debug: show sample
+    console.log('Loaded products (sample):', products.slice(0,10));
+
     renderCategories();
   } catch (err) {
     console.error(err);
     elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
-      <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверьте: публикацию таблицы (CSV) и что сайт запущен по https.</small>
+      <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверьте публикацию таблицы (Файл → Опубликовать в интернете → CSV).</small>
     </div>`;
   }
 }
 
-/* Render categories */
+/* ---------- Render categories (uses catalogPhoto column) ---------- */
 function renderCategories(){
   elCategories.innerHTML = '';
   categoriesList.forEach(cat=>{
     const categoryProducts = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
-    const sample = categoryProducts[0] || {};
-    const candidate = categoryProducts.find(p=>p.catalogPhoto && p.catalogPhoto.trim() !== '');
-    const img = (candidate && candidate.catalogPhoto) || sample.photo || placeholderFor(cat);
+    // prefer explicit catalogPhoto from any product in this category
+    const sampleWithCatalog = categoryProducts.find(p => p.catalogPhoto && p.catalogPhoto.trim() !== '');
+    const sample = sampleWithCatalog || categoryProducts[0] || {};
+    const img = (sample.catalogPhoto && sample.catalogPhoto.trim() !== '') ? sample.catalogPhoto : (sample.photo || placeholderFor(cat));
     const div = document.createElement('div');
     div.className = 'cat-card';
     div.innerHTML = `<img src="${img}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)"><div class="cat-meta"><h3>${cat}</h3><div class="small">${categoryProducts.length} товаров</div></div>`;
-    div.addEventListener('click', ()=> { if(window.innerWidth<=720) hideCartPopup(); openCategory(cat); });
+    div.addEventListener('click', ()=>{ if(window.innerWidth<=720) hideCartPopup(); openCategory(cat); });
     elCategories.appendChild(div);
   });
 }
 
-/* Open category -> show products */
+/* ---------- Open category and render products (product images from "Фото") ---------- */
 function openCategory(cat){
   elProductsTitle.innerText = cat;
   elProductsList.innerHTML = '';
   const list = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
   if(list.length === 0){
     elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
-    elProductsCount.innerText = '';
+    document.getElementById('products-count').innerText = '';
   } else {
     list.forEach(p=>{
       const item = document.createElement('div');
@@ -420,7 +318,7 @@ function openCategory(cat){
         </div>`;
       elProductsList.appendChild(item);
     });
-    elProductsCount.innerText = list.length + ' товаров';
+    document.getElementById('products-count').innerText = list.length + ' товаров';
   }
   document.getElementById('categories').style.display = 'none';
   elProductsSection.classList.remove('hidden');
@@ -428,10 +326,10 @@ function openCategory(cat){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* Show categories button */
-document.getElementById('back-to-cats').addEventListener('click', ()=>{ document.getElementById('products-section').style.display='none'; document.getElementById('categories').style.display='grid'; if(window.innerWidth<=720) hideCartPopup(); });
+/* back to categories */
+document.getElementById('back-to-cats').addEventListener('click', ()=>{ document.getElementById('products-section').style.display='none'; document.getElementById('categories').style.display='grid'; });
 
-/* CART logic */
+/* ---------- CART logic ---------- */
 function addToCart(id){
   const p = products.find(x=>x.id===id);
   if(!p) return;
@@ -445,7 +343,7 @@ function removeItem(id){ delete cart[id]; renderCart(); }
 function renderCart(){
   const keys = Object.keys(cart);
   elCartList.innerHTML = '';
-  if(keys.length === 0){ elCartList.innerHTML = '<div style="opacity:0.85;padding:12px;text-align:center;color:#fff">Корзина пуста</div>'; elCartCount.innerText='0'; elCartTotal.innerText='0 KZT'; return; }
+  if(keys.length === 0){ elCartList.innerHTML = '<div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div>'; elCartCount.textContent='0'; elCartTotal.textContent='0 KZT'; return; }
   let total = 0;
   keys.forEach(k=>{
     const it = cart[k];
@@ -455,8 +353,8 @@ function renderCart(){
     row.innerHTML = `
       <img src="${it.photo}" alt="${it.title}" onerror="handleImageError(this)">
       <div style="flex:1">
-        <div class="title">${it.title}</div>
-        <div class="small">${it.price} × ${it.qty} шт.</div>
+        <div style="font-weight:700">${it.title}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.9)">${it.price} × ${it.qty} шт.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
         <div style="display:flex;gap:6px">
@@ -467,57 +365,61 @@ function renderCart(){
       </div>`;
     elCartList.appendChild(row);
   });
-  elCartCount.innerText = keys.length;
-  elCartTotal.innerText = total + ' KZT';
+  elCartCount.textContent = keys.length;
+  elCartTotal.textContent = total + ' KZT';
 }
 
-/* Cart popup */
-function showCartPopup(){ elCartPopup.classList.remove('hidden'); elCartPopup.style.display = 'flex'; }
-function hideCartPopup(){ elCartPopup.style.display = 'none'; elCartPopup.classList.add('hidden'); }
-function toggleCart(){ if(elCartPopup.style.display==='flex') hideCartPopup(); else showCartPopup(); }
+/* Cart popup control */
+function showCartPopup(){ elCartPopup.classList.remove('hidden'); elCartPopup.style.display='flex'; }
+function hideCartPopup(){ elCartPopup.style.display='none'; elCartPopup.classList.add('hidden'); }
+function toggleCart(){ elCartPopup.style.display === 'flex' ? hideCartPopup() : showCartPopup(); }
 cartButton.addEventListener('click', toggleCart);
 document.getElementById('close-cart').addEventListener('click', hideCartPopup);
 
-/* Auto hide on small screens when navigation */
+/* Auto hide on mobile when orientation/resize */
 function autoHideCartOnSmall(){ if(window.innerWidth <= 720) hideCartPopup(); }
 window.addEventListener('resize', autoHideCartOnSmall);
 window.addEventListener('orientationchange', autoHideCartOnSmall);
 
-/* Bank custom dropdown (desktop readable) */
+/* Bank dropdown (custom to ensure visibility on desktop) */
 bankBtn.addEventListener('click', (e)=>{ e.stopPropagation(); bankList.style.display = bankList.style.display==='block' ? 'none' : 'block'; bankList.setAttribute('aria-hidden', bankList.style.display==='block' ? 'false' : 'true'); });
 bankList.addEventListener('click', (e)=>{ const it = e.target.closest('.item'); if(!it) return; selectedBank = it.dataset.val || ''; bankBtn.textContent = (it.textContent || 'Не указано') + ' ▾'; bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
 document.addEventListener('click', ()=>{ bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
 
-/* Build order message & send */
+/* ---------- Order send: build message and CLEAR CART after send ---------- */
 function buildOrderMessage(clientPhone, clientBank){
   const items = Object.values(cart);
   let lines = [];
-  items.forEach((it, idx)=> lines.push(`${idx+1}. ${it.title} — ${it.qty} шт. × ${it.price}₸`));
+  items.forEach((it, i) => lines.push(`${i+1}. ${it.title} — ${it.qty} шт. × ${it.price}₸`));
   const total = items.reduce((s,it)=>s+it.price*it.qty,0);
-  let msg = "🛍️ Новый заказ с сайта Nice_Atyrau\n——————————————\n";
-  msg += "📦 Товары:\n" + lines.join("\n") + "\n";
-  msg += "——————————————\n";
+  let msg = "🛍️ Заказ Nice_Atyrau\n\n";
+  msg += "📦 Товары:\n" + lines.join("\n") + "\n\n";
   msg += `💰 Итого: ${total}₸\n`;
   if(clientBank) msg += `🏦 Банк клиента: ${clientBank}\n`;
   if(clientPhone) msg += `📱 Телефон клиента: ${clientPhone}\n`;
-  msg += `\nСайт: https://nice-atyrau.netlify.app/`;
+  msg += `\nСайт: ${location.origin}`;
   return msg;
 }
+
 document.getElementById('send-order').addEventListener('click', ()=>{
   if(Object.keys(cart).length === 0){ alert('Корзина пуста'); return; }
   const clientPhone = document.getElementById('client-phone').value.trim();
   const clientBank = selectedBank;
   const msg = buildOrderMessage(clientPhone, clientBank);
   const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+  // Open WhatsApp (user must confirm/send in WhatsApp app)
   window.open(waUrl, '_blank');
-  alert('Заказ отправлен оператору в WhatsApp.');
+  // --- IMPORTANT: Clear cart after sending ---
+  cart = {};
+  renderCart();
+  alert('Заказ отправлен оператору в WhatsApp. Корзина очищена.');
   hideCartPopup();
 });
 
-/* Search */
-document.getElementById('search').addEventListener('input',(e)=>{
+/* Search (keeps behavior) */
+document.getElementById('search').addEventListener('input', (e)=>{
   const q = e.target.value.trim().toLowerCase();
-  if(!q){ /* if viewing products keep as is */ if(elProductsSection.style.display==='block') return; renderCategories(); return; }
+  if(!q){ if(elProductsSection.style.display === 'block') return; renderCategories(); return; }
   const matches = products.filter(p => (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q));
   elProductsTitle.innerText = `Поиск: "${q}"`;
   elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
@@ -533,14 +435,10 @@ document.getElementById('search').addEventListener('input',(e)=>{
   if(window.innerWidth<=720) hideCartPopup();
 });
 
-/* floating back */
-document.getElementById('floating-back').addEventListener('click', ()=>{
-  document.getElementById('products-section').style.display='none';
-  document.getElementById('categories').style.display='grid';
-  if(window.innerWidth<=720) hideCartPopup();
-});
+/* floating back simple behavior */
+document.getElementById('floating-back').addEventListener('click', ()=>{ document.getElementById('products-section').style.display='none'; document.getElementById('categories').style.display='grid'; if(window.innerWidth<=720) hideCartPopup(); });
 
-/* Expose for inline handlers */
+/* Expose some functions for inline handlers */
 window.addToCart = addToCart;
 window.changeQty = changeQty;
 window.removeItem = removeItem;
@@ -549,7 +447,7 @@ window.handleImageError = handleImageError;
 
 /* Init */
 (async function init(){
-  document.getElementById('products-section').style.display='none';
+  elProductsSection.style.display = 'none';
   await loadProductsFromSheet();
   renderCart();
   autoHideCartOnSmall();
