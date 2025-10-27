@@ -23,7 +23,6 @@
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       line-height:1.35;
-      -webkit-font-smoothing:antialiased;
     }
 
     /* HEADER */
@@ -56,13 +55,13 @@
       font-size:14px;
     }
 
-    main{max-width:1100px;margin:12px auto;padding:0 14px 80px}
+    main{max-width:1100px;margin:12px auto;padding:0 14px 120px}
 
     .hero{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .hero h1{margin:0;font-size:20px}
     .hint{color:rgba(0,0,0,0.65);font-size:14px;margin-top:6px}
 
-    /* Categories grid */
+    /* Categories grid (объёмные карточки) */
     .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px}
     .cat-card{
       border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;
@@ -224,333 +223,203 @@
   </div>
 
 <script>
-    /* ========== SETTINGS ========== */
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
-    const whatsappNumber = '77782222191';
-    const kaspiQrSrc = '';
-    const categoriesList = [
-      "Посуды",
-      "Игрушки и детские товары",
-      "Органайзеры",
-      "Аксессуары",
-      "Хозтовары",
-      "Для кухни",
-      "Для дома и хозяйства"
-    ];
-    /* ================================ */
+  /* ========== SETTINGS ========== */
+  // Твой Google Sheet CSV URL (ID уже вставлен)
+  const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
+  const whatsappNumber = '77782222191'; // no +
+  const kaspiQrSrc = ''; // при наличии: вставь URL изображения QR
+  const categoriesList = [
+    "Посуды",
+    "Игрушки и детские товары",
+    "Органайзеры",
+    "Аксессуары",
+    "Хозтовары",
+    "Для кухни",
+    "Для дома и хозяйства"
+  ];
+  /* ================================ */
 
-    // UI refs
-    const elCategories = document.getElementById('categories');
-    const elProductsSection = document.getElementById('products-section');
-    const elProductsList = document.getElementById('products-list');
-    const elProductsTitle = document.getElementById('products-title');
-    const elProductsCount = document.getElementById('products-count');
-    const elCartPopup = document.getElementById('cart-popup');
-    const elCartList = document.getElementById('cart-list');
-    const elCartCount = document.getElementById('cart-count');
-    const elCartTotal = document.getElementById('cart-total');
-    const floatingBack = document.getElementById('floating-back');
+  // UI refs
+  const elCategories = document.getElementById('categories');
+  const elProductsSection = document.getElementById('products-section');
+  const elProductsList = document.getElementById('products-list');
+  const elProductsTitle = document.getElementById('products-title');
+  const elProductsCount = document.getElementById('products-count');
+  const elCartPopup = document.getElementById('cart-popup');
+  const elCartList = document.getElementById('cart-list');
+  const elCartCount = document.getElementById('cart-count');
+  const elCartTotal = document.getElementById('cart-total');
+  const floatingBack = document.getElementById('floating-back');
 
-    let products = [];
-    let cart = {};
+  let products = [];
+  let cart = {};
 
-    // normalize drive / url / relative
-    function normalizePhotoUrl(url) {
-      if (!url || !url.toString) return '';
-      url = String(url).trim();
-      if (url === '') return '';
-      // if relative path (images/...), return as-is
-      if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
-        // allow relative paths such as images/...
+  // normalize drive / url / relative; also auto-add images/catalog or images/products when only filename provided
+  function normalizePhotoUrl(url, hintType = '') {
+    if (!url || !url.toString) return '';
+    url = String(url).trim();
+    if (url === '') return '';
+    // if relative path (images/...), return as-is
+    if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
+      // if it's just a filename like "posuda.jpg", prepend depending on hint
+      if (!url.includes('/')) {
+        if (hintType === 'catalog') return `images/catalog/${url}`;
+        if (hintType === 'product') return `images/products/${url}`;
+        // otherwise return relative as-is (allow operator to put images/catalog/...)
         return url;
       }
-      // if direct image
-      if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
-      // google drive patterns
-      const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
-      if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
-      const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
-      if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
-      const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
-      if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
-      // if looks like only ID
-      if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
-      // fallback: return original (may be a fully qualified URL or invalid)
       return url;
     }
+    // if direct image
+    if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
+    // google drive patterns
+    const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
+    if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
+    const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+    if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
+    const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
+    if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
+    // if looks like only ID
+    if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
+    // fallback
+    return url;
+  }
 
-    function getPlaceholderUrl(text) {
-      return `https://via.placeholder.com/480x320.png?text=${encodeURIComponent(text)}`;
-    }
+  function getPlaceholderUrl(text) {
+    return `https://via.placeholder.com/480x320.png?text=${encodeURIComponent(text)}`;
+  }
 
-    function handleImageError(img) {
-      img.onerror = null;
-      img.src = getPlaceholderUrl('Ошибка+загрузки');
-      img.style.opacity = '0.75';
-    }
+  function handleImageError(img) {
+    img.onerror = null;
+    img.src = getPlaceholderUrl('Ошибка+загрузки');
+    img.style.opacity = '0.75';
+  }
 
-    // CSV fetch + parse
-    async function fetchCSV() {
-      const res = await fetch(csvUrl);
-      if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
-      return await res.text();
-    }
+  // CSV fetch + robust parse (handles quoted fields)
+  async function fetchCSV() {
+    const res = await fetch(csvUrl);
+    if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
+    return await res.text();
+  }
 
-    function parseCSV(str) {
-      const rows = [];
-      let cur = '', inQuotes = false, row = [];
-      for (let i=0;i<str.length;i++){
-        const ch = str[i];
-        if (ch === '"') {
-          if (inQuotes && str[i+1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; }
-          continue;
-        }
-        if (ch === ',' && !inQuotes) { row.push(cur); cur=''; continue; }
-        if ((ch === '\n' || ch === '\r') && !inQuotes) {
-          if (cur !== '' || row.length) { row.push(cur); rows.push(row); row = []; cur=''; }
-          if (ch === '\r' && str[i+1] === '\n') i++;
-          continue;
-        }
-        cur += ch;
+  function parseCSV(str) {
+    const rows = [];
+    let cur = '', inQuotes = false, row = [];
+    for (let i=0;i<str.length;i++){
+      const ch = str[i];
+      if (ch === '"') {
+        if (inQuotes && str[i+1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; }
+        continue;
       }
-      if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
-      return rows;
-    }
-
-    // Find header index flexibly for catalog photo
-    function findCatalogPhotoIndex(headers) {
-      const candidates = [
-        'фото каталога','фото_каталога','фото_каталог','catalog photo','catalog_photo',
-        'catalog_image','image_catalog','catalog','photo_catalog','catalogphoto'
-      ];
-      for (let i=0;i<headers.length;i++){
-        const h = headers[i].toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
-        for (const c of candidates){
-          const cNorm = c.toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
-          if (h.includes(cNorm) || cNorm.includes(h)) return i;
-        }
+      if (ch === ',' && !inQuotes) { row.push(cur); cur=''; continue; }
+      if ((ch === '\n' || ch === '\r') && !inQuotes) {
+        if (cur !== '' || row.length) { row.push(cur); rows.push(row); row = []; cur=''; }
+        if (ch === '\r' && str[i+1] === '\n') i++;
+        continue;
       }
-      return -1;
+      cur += ch;
     }
+    if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+    return rows;
+  }
 
-    async function loadProductsFromSheet() {
-      try {
-        elCategories.innerHTML = '<div style="padding:20px;text-align:center;opacity:0.7">Загрузка товаров...</div>';
-        const csv = await fetchCSV();
-        const rows = parseCSV(csv);
-        if (!rows || rows.length < 2) throw new Error('Таблица пуста или неверный формат.');
-        const headersRaw = rows[0].map(h => (h||'').trim());
-        const headers = headersRaw.map(h=>h.toLowerCase());
-        const idx = {
-          category: headers.indexOf('категория'),
-          title: headers.indexOf('название'),
-          desc: headers.indexOf('описание'),
-          price: headers.indexOf('цена'),
-          photo: headers.indexOf('фото'),
-          id: headers.indexOf('id')
-        };
-        const catalogPhotoIdx = findCatalogPhotoIndex(headersRaw);
-        // validate
-        if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
-          throw new Error('В таблице обязаны быть колонки: Категория | Название | Описание | Цена | Фото');
-        }
-        products = rows.slice(1)
-          .filter(row => row && row.some(cell => cell && String(cell).trim() !== ''))
-          .map((r,i) => {
-            const category = (r[idx.category]||'').trim();
-            const title = (r[idx.title]||'').trim() || 'Без названия';
-            const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
-            const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
-            const price = parseInt(priceRaw)||0;
-            const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
-            const photo = rawPhoto ? normalizePhotoUrl(rawPhoto) : getPlaceholderUrl('No+Image');
-            const rawCatalogPhoto = (catalogPhotoIdx>=0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : '';
-            const catalogPhoto = rawCatalogPhoto ? normalizePhotoUrl(rawCatalogPhoto) : '';
-            const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
-            return {category,title,desc,price,photo,catalogPhoto,id};
-          });
-        renderCategories();
-      } catch (err) {
-        elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
-          <b>Ошибка загрузки данных</b><br>
-          <small>${err.message}</small><br>
-          <small style="margin-top:8px;display:block">Проверьте: доступ к таблице, ссылку CSV и развёртывание (не file://)</small>
-        </div>`;
-        console.error(err);
+  // flexible search for catalog-photo header
+  function findCatalogPhotoIndex(headers) {
+    const candidates = [
+      'фото каталога','фото_каталога','фото_каталог','фото каталога','catalogphoto','catalog_photo',
+      'catalogphoto','catalog image','catalog_image','image_catalog','catalog'
+    ];
+    for (let i=0;i<headers.length;i++){
+      const h = (headers[i]||'').toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
+      for (const c of candidates){
+        const cNorm = c.toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
+        if (h.includes(cNorm) || cNorm.includes(h)) return i;
       }
     }
+    return -1;
+  }
 
-    function renderCategories() {
-      elCategories.innerHTML = '';
-      categoriesList.forEach(cat => {
-        const categoryProducts = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
-        // pick catalog photo priority:
-        // 1) first product with catalogPhoto
-        // 2) first product photo
-        // 3) placeholder
-        let imgUrl = '';
-        const withCatalog = categoryProducts.find(p => p.catalogPhoto && p.catalogPhoto.trim() !== '');
-        if (withCatalog) imgUrl = withCatalog.catalogPhoto;
-        else if (categoryProducts[0]) imgUrl = categoryProducts[0].photo;
-        else imgUrl = getPlaceholderUrl(cat);
-        const div = document.createElement('div');
-        div.className = 'cat-card';
-        div.innerHTML = `
-          <img src="${imgUrl}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)">
-          <div class="cat-meta">
-            <h3>${cat}</h3>
-            <div class="small">${categoryProducts.length} товаров</div>
-          </div>
-        `;
-        div.addEventListener('click', () => showCategory(cat));
-        elCategories.appendChild(div);
-      });
-    }
+  async function loadProductsFromSheet() {
+    try {
+      elCategories.innerHTML = '<div style="padding:20px;text-align:center;opacity:0.7">Загрузка товаров...</div>';
+      const csv = await fetchCSV();
+      const rows = parseCSV(csv);
+      if (!rows || rows.length < 2) throw new Error('Таблица пуста или неверный формат.');
+      const headersRaw = rows[0].map(h => (h||'').trim());
+      const headers = headersRaw.map(h=>h.toLowerCase());
+      const idx = {
+        category: headers.indexOf('категория'),
+        title: headers.indexOf('название'),
+        desc: headers.indexOf('описание'),
+        price: headers.indexOf('цена'),
+        photo: headers.indexOf('фото'),
+        id: headers.indexOf('id')
+      };
+      const catalogPhotoIdx = findCatalogPhotoIndex(headersRaw);
 
-    function showCategory(cat) {
-      elProductsTitle.innerText = cat;
-      elProductsList.innerHTML = '';
-      const list = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
-      if (list.length === 0) {
-        elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
-        elProductsCount.innerText = '';
-      } else {
-        list.forEach(p => {
-          const item = document.createElement('div');
-          item.className = 'product-card';
-          item.innerHTML = `
-            <img src="${p.photo}" alt="${p.title}" onerror="handleImageError(this)">
-            <div class="product-info">
-              <h4>${p.title}</h4>
-              <p>${p.desc || ''}</p>
-              <div class="product-meta">
-                <div class="price">${p.price} KZT</div>
-                <div style="margin-left:auto">
-                  <button class="btn btn-primary" onclick='addToCart("${p.id}")'>В корзину</button>
-                </div>
-              </div>
-            </div>
-          `;
-          elProductsList.appendChild(item);
+      if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
+        throw new Error('В таблице обязаны быть колонки: Категория | Название | Описание | Цена | Фото');
+      }
+
+      products = rows.slice(1)
+        .filter(row => row && row.some(cell => cell && String(cell).trim() !== ''))
+        .map((r,i) => {
+          const category = (r[idx.category]||'').trim();
+          const title = (r[idx.title]||'').trim() || 'Без названия';
+          const desc = (idx.desc>=0 ? (r[idx.desc]||'') : '').trim();
+          const priceRaw = (r[idx.price]||'0').replace(/[^0-9.]/g,'').trim();
+          const price = parseInt(priceRaw)||0;
+          const rawPhoto = (idx.photo>=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
+          const photo = rawPhoto ? normalizePhotoUrl(rawPhoto, 'product') : getPlaceholderUrl('No+Image');
+          const rawCatalogPhoto = (catalogPhotoIdx>=0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : '';
+          const catalogPhoto = rawCatalogPhoto ? normalizePhotoUrl(rawCatalogPhoto, 'catalog') : '';
+          const id = (idx.id>=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
+          return {category,title,desc,price,photo,catalogPhoto,id};
         });
-        elProductsCount.innerText = list.length + ' товаров';
-      }
-      elCategories.style.display = 'none';
-      elProductsSection.style.display = 'block';
-      window.scrollTo({top:0,behavior:'smooth'});
-    }
 
-    function showCategories() {
-      elProductsSection.style.display = 'none';
-      elCategories.style.display = 'grid';
-      window.scrollTo({top:0,behavior:'smooth'});
+      renderCategories();
+    } catch (err) {
+      elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
+        <b>Ошибка загрузки данных</b><br>
+        <small>${err.message}</small><br>
+        <small style="margin-top:8px;display:block">Проверьте: CSV-ссылку, права доступа (публикация), и что сайт открыт по https (не file://).</small>
+      </div>`;
+      console.error(err);
     }
+  }
 
-    /* CART */
-    function addToCart(id){
-      const p = products.find(x => x.id === id);
-      if(!p) return;
-      if(!cart[id]) cart[id] = {...p, qty:0};
-      cart[id].qty++;
-      renderCart();
-      elCartPopup.style.display = 'flex';
-    }
+  function renderCategories() {
+    elCategories.innerHTML = '';
+    categoriesList.forEach(cat => {
+      const categoryProducts = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
+      let imgUrl = '';
+      const withCatalog = categoryProducts.find(p => p.catalogPhoto && p.catalogPhoto.trim() !== '');
+      if (withCatalog) imgUrl = withCatalog.catalogPhoto;
+      else if (categoryProducts[0]) imgUrl = categoryProducts[0].photo;
+      else imgUrl = getPlaceholderUrl(cat);
+      const div = document.createElement('div');
+      div.className = 'cat-card';
+      div.innerHTML = `
+        <img src="${imgUrl}" alt="${cat}" class="cat-thumb" onerror="handleImageError(this)">
+        <div class="cat-meta">
+          <h3>${cat}</h3>
+          <div class="small">${categoryProducts.length} товаров</div>
+        </div>
+      `;
+      div.addEventListener('click', () => showCategory(cat));
+      elCategories.appendChild(div);
+    });
+  }
 
-    function changeQty(id, delta){
-      if(!cart[id]) return;
-      cart[id].qty += delta;
-      if(cart[id].qty < 1) delete cart[id];
-      renderCart();
-    }
-
-    function removeItem(id){
-      delete cart[id];
-      renderCart();
-    }
-
-    function renderCart(){
-      const keys = Object.keys(cart);
-      elCartList.innerHTML = '';
-      if(keys.length === 0){
-        elCartList.innerHTML = '<div style="opacity:0.6;padding:20px;text-align:center">Корзина пуста</div>';
-        elCartCount.innerText = '0';
-        elCartTotal.innerText = '0 KZT';
-        return;
-      }
-      let total = 0;
-      keys.forEach(k => {
-        const it = cart[k];
-        total += it.price * it.qty;
-        const row = document.createElement('div');
-        row.className = 'cart-item';
-        row.innerHTML = `
-          <img src="${it.photo}" alt="${it.title}" onerror="handleImageError(this)">
-          <div style="flex:1">
-            <div style="font-weight:700">${it.title}</div>
-            <div class="small">${it.price} × ${it.qty} шт.</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
-            <div style="display:flex;gap:6px">
-              <button class="btn btn-ghost" onclick='changeQty("${it.id}", -1)'>−</button>
-              <button class="btn btn-ghost" onclick='changeQty("${it.id}", 1)'>+</button>
-            </div>
-            <button class="btn btn-ghost" onclick='removeItem("${it.id}")'>✕</button>
-          </div>
-        `;
-        elCartList.appendChild(row);
-      });
-      elCartCount.innerText = keys.length;
-      elCartTotal.innerText = total + ' KZT';
-    }
-
-    function toggleCart(){
-      elCartPopup.style.display = (elCartPopup.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    /* CHECKOUT: WhatsApp -> Kaspi QR */
-    function checkout(){
-      if(Object.keys(cart).length === 0){
-        alert('Корзина пуста');
-        return;
-      }
-      let text = '🛍 Заказ Nice_Atyrau:%0A%0A';
-      Object.values(cart).forEach(it => {
-        text += `• ${encodeURIComponent(it.title)} — ${it.qty}шт. × ${it.price}₸%0A`;
-      });
-      const total = Object.values(cart).reduce((s, it) => s + it.price * it.qty, 0);
-      text += `%0A*Итого:* ${total}₸`;
-      const waUrl = `https://wa.me/${whatsappNumber}?text=${text}`;
-      window.open(waUrl, '_blank');
-      if(kaspiQrSrc && kaspiQrSrc.trim() !== ''){
-        document.getElementById('kaspi-qr').src = kaspiQrSrc;
-        document.getElementById('checkout-modal').style.display = 'grid';
-      } else {
-        alert('Сообщение отправлено в WhatsApp. QR Kaspi не задан в настройках.');
-      }
-    }
-
-    function closeCheckout(){
-      document.getElementById('checkout-modal').style.display = 'none';
-    }
-
-    /* SEARCH */
-    document.getElementById('search').addEventListener('input', (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      if(!q){
-        if(elProductsSection.style.display === 'block'){
-          showCategory(elProductsTitle.innerText);
-        } else {
-          renderCategories();
-        }
-        return;
-      }
-      const matches = products.filter(p => 
-        (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q)
-      );
-      elProductsTitle.innerText = `Поиск: "${q}"`;
-      elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
-      elProductsList.innerHTML = '';
-      matches.forEach(p => {
+  function showCategory(cat) {
+    elProductsTitle.innerText = cat;
+    elProductsList.innerHTML = '';
+    const list = products.filter(p => (p.category||'').toLowerCase() === cat.toLowerCase());
+    if (list.length === 0) {
+      elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
+      elProductsCount.innerText = '';
+    } else {
+      list.forEach(p => {
         const item = document.createElement('div');
         item.className = 'product-card';
         item.innerHTML = `
@@ -561,40 +430,173 @@
             <div class="product-meta">
               <div class="price">${p.price} KZT</div>
               <div style="margin-left:auto">
-                <button class="btn btn-primary" onclick='addToCart("${p.id}")'>Добавить</button>
+                <button class="btn btn-primary" onclick='addToCart("${p.id}")'>В корзину</button>
               </div>
             </div>
           </div>
         `;
         elProductsList.appendChild(item);
       });
-      document.getElementById('categories').style.display = 'none';
-      elProductsSection.style.display = 'block';
-    });
+      elProductsCount.innerText = list.length + ' товаров';
+    }
+    elCategories.style.display = 'none';
+    elProductsSection.style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 
-    // Floating back behavior
-    floatingBack.addEventListener('click', () => {
-      showCategories();
-      floatingBack.style.transform = 'scale(0.98)';
-      setTimeout(() => floatingBack.style.transform = 'scale(1)', 120);
-    });
+  function showCategories() {
+    elProductsSection.style.display = 'none';
+    elCategories.style.display = 'grid';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
 
-    // Init
-    (function init(){
-      elProductsSection.style.display = 'none';
-      loadProductsFromSheet();
-      renderCart();
-      // Expose functions for inline handlers
-      window.addToCart = addToCart;
-      window.changeQty = changeQty;
-      window.removeItem = removeItem;
-      window.toggleCart = toggleCart;
-      window.checkout = checkout;
-      window.closeCheckout = closeCheckout;
-      window.showCategories = showCategories;
-      window.showCategory = showCategory;
-      window.handleImageError = handleImageError;
-    })();
-  </script>
-  </body>
+  /* CART */
+  function addToCart(id){
+    const p = products.find(x => x.id === id);
+    if(!p) return;
+    if(!cart[id]) cart[id] = {...p, qty:0};
+    cart[id].qty++;
+    renderCart();
+    elCartPopup.style.display = 'flex';
+  }
+
+  function changeQty(id, delta){
+    if(!cart[id]) return;
+    cart[id].qty += delta;
+    if(cart[id].qty < 1) delete cart[id];
+    renderCart();
+  }
+
+  function removeItem(id){
+    delete cart[id];
+    renderCart();
+  }
+
+  function renderCart(){
+    const keys = Object.keys(cart);
+    elCartList.innerHTML = '';
+    if(keys.length === 0){
+      elCartList.innerHTML = '<div style="opacity:0.6;padding:20px;text-align:center">Корзина пуста</div>';
+      elCartCount.innerText = '0';
+      elCartTotal.innerText = '0 KZT';
+      return;
+    }
+    let total = 0;
+    keys.forEach(k => {
+      const it = cart[k];
+      total += it.price * it.qty;
+      const row = document.createElement('div');
+      row.className = 'cart-item';
+      row.innerHTML = `
+        <img src="${it.photo}" alt="${it.title}" onerror="handleImageError(this)">
+        <div style="flex:1">
+          <div style="font-weight:700">${it.title}</div>
+          <div class="small">${it.price} × ${it.qty} шт.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost" onclick='changeQty("${it.id}", -1)'>−</button>
+            <button class="btn btn-ghost" onclick='changeQty("${it.id}", 1)'>+</button>
+          </div>
+          <button class="btn btn-ghost" onclick='removeItem("${it.id}")'>✕</button>
+        </div>
+      `;
+      elCartList.appendChild(row);
+    });
+    elCartCount.innerText = keys.length;
+    elCartTotal.innerText = total + ' KZT';
+  }
+
+  function toggleCart(){
+    elCartPopup.style.display = (elCartPopup.style.display === 'flex') ? 'none' : 'flex';
+  }
+
+  /* CHECKOUT: WhatsApp -> Kaspi QR */
+  function checkout(){
+    if(Object.keys(cart).length === 0){
+      alert('Корзина пуста');
+      return;
+    }
+    let lines = [];
+    Object.values(cart).forEach(it => {
+      lines.push(`${it.title} — ${it.qty} шт. × ${it.price}₸`);
+    });
+    const total = Object.values(cart).reduce((s,it)=>s+it.price*it.qty,0);
+    const message = `Заказ Nice_Atyrau:\n` + lines.join('\n') + `\n\nИтого: ${total}₸\n\nПожалуйста, подтвердите.`;
+    const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    if(kaspiQrSrc && kaspiQrSrc.trim() !== ''){
+      document.getElementById('kaspi-qr').src = kaspiQrSrc;
+      document.getElementById('checkout-modal').style.display = 'grid';
+    } else {
+      alert('Сообщение отправлено в WhatsApp. QR Kaspi не задан в настройках.');
+    }
+  }
+
+  function closeCheckout(){
+    document.getElementById('checkout-modal').style.display = 'none';
+  }
+
+  /* SEARCH */
+  document.getElementById('search').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    if(!q){
+      if(elProductsSection.style.display === 'block'){
+        showCategory(elProductsTitle.innerText);
+      } else {
+        renderCategories();
+      }
+      return;
+    }
+    const matches = products.filter(p => (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q));
+    elProductsTitle.innerText = `Поиск: "${q}"`;
+    elProductsCount.innerText = matches.length ? matches.length + ' товаров' : '0';
+    elProductsList.innerHTML = '';
+    matches.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'product-card';
+      item.innerHTML = `
+        <img src="${p.photo}" alt="${p.title}" onerror="handleImageError(this)">
+        <div class="product-info">
+          <h4>${p.title}</h4>
+          <p>${p.desc || ''}</p>
+          <div class="product-meta">
+            <div class="price">${p.price} KZT</div>
+            <div style="margin-left:auto">
+              <button class="btn btn-primary" onclick='addToCart("${p.id}")'>Добавить</button>
+            </div>
+          </div>
+        </div>
+      `;
+      elProductsList.appendChild(item);
+    });
+    document.getElementById('categories').style.display = 'none';
+    elProductsSection.style.display = 'block';
+  });
+
+  // Floating back
+  floatingBack.addEventListener('click', () => {
+    showCategories();
+    floatingBack.style.transform = 'scale(0.98)';
+    setTimeout(()=>floatingBack.style.transform='scale(1)',120);
+  });
+
+  // Init
+  (function init(){
+    elProductsSection.style.display = 'none';
+    loadProductsFromSheet();
+    renderCart();
+    // expose for inline handlers
+    window.addToCart = addToCart;
+    window.changeQty = changeQty;
+    window.removeItem = removeItem;
+    window.toggleCart = toggleCart;
+    window.checkout = checkout;
+    window.closeCheckout = closeCheckout;
+    window.showCategories = showCategories;
+    window.showCategory = showCategory;
+    window.handleImageError = handleImageError;
+  })();
+</script>
+</body>
 </html>
