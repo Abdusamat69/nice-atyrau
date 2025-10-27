@@ -320,13 +320,25 @@ function normalizePhotoUrl(url, hintType='') {
     return driveUrl;
   }
   
-  // Если это имя файла из GitHub репозитория
+  // ИСПРАВЛЕНИЕ: Проверяем реальную структуру репозитория
+  // В вашем репозитории изображения лежат прямо в корне, без папок images/
   if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
-    // Формируем полный URL к файлу в GitHub репозитории
-    const folder = hintType === 'catalog' ? 'catalog/' : 'products/';
-    const githubUrl = `${GITHUB_BASE_URL}images/${folder}${url}`;
-    console.log(`✅ GitHub URL: ${githubUrl}`);
-    return githubUrl;
+    // Пробуем разные варианты путей
+    const possiblePaths = [
+      `${GITHUB_BASE_URL}${url}`, // Прямо в корне
+      `${GITHUB_BASE_URL}images/${url}`, // В папке images
+      `${GITHUB_BASE_URL}images/products/${url}`, // В папке images/products
+      `${GITHUB_BASE_URL}images/catalog/${url}`, // В папке images/catalog
+      `${GITHUB_BASE_URL}photos/${url}`, // В папке photos
+      `${GITHUB_BASE_URL}img/${url}` // В папке img
+    ];
+    
+    console.log(`🔍 Пробуем пути:`, possiblePaths);
+    
+    // Возвращаем самый вероятный путь (прямо в корне)
+    const finalUrl = `${GITHUB_BASE_URL}${url}`;
+    console.log(`✅ Используем путь: ${finalUrl}`);
+    return finalUrl;
   }
   
   console.log(`❓ Неизвестный формат: ${url}`);
