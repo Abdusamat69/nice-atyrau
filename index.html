@@ -55,13 +55,13 @@
       font-size:14px;
     }
 
-    main{max-width:1100px;margin:12px auto;padding:0 14px 120px}
+    main{max-width:1100px;margin:12px auto;padding:0 14px 140px}
 
     .hero{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .hero h1{margin:0;font-size:20px}
     .hint{color:rgba(0,0,0,0.65);font-size:14px;margin-top:6px}
 
-    /* Categories grid (объёмные карточки) */
+    /* Categories grid */
     .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:16px}
     .cat-card{
       border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;
@@ -102,12 +102,17 @@
     .cart-count{background:#fff;border-radius:10px;padding:4px 8px;font-size:13px;color:var(--brand-blue)}
     .cart-popup{
       position:fixed;right:16px;bottom:74px;background:white;border-radius:12px;box-shadow:0 20px 48px rgba(11,34,71,0.12);
-      min-width:320px;max-width:360px;display:none;flex-direction:column;max-height:72vh;overflow:auto;padding:12px;z-index:998;
+      min-width:320px;max-width:380px;display:none;flex-direction:column;max-height:72vh;overflow:auto;padding:12px;z-index:998;
     }
     .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f3f6}
     .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px}
     .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
     .small{font-size:13px;color:rgba(0,0,0,0.6)}
+
+    /* order form inside cart */
+    .order-form{margin-top:12px;padding:10px;border-radius:10px;background:#fbfbff;border:1px solid #eef2ff}
+    .order-form label{display:block;font-size:13px;margin-top:6px}
+    .order-form input, .order-form select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px}
 
     /* Floating BACK button */
     .floating-back{
@@ -142,7 +147,7 @@
       .product-info p{font-size:13px}
       .btn{padding:10px}
       header{padding:10px}
-      main{padding-bottom:120px}
+      main{padding-bottom:160px}
     }
 
     /* Loading states */
@@ -169,7 +174,7 @@
     <section class="hero">
       <div>
         <h1 style="margin:0 0 6px">Добро пожаловать в Nice_Atyrau</h1>
-        <div class="hint">Выберите категорию — добавьте товары в корзину и оплатите через Kaspi QR.</div>
+        <div class="hint">Выберите категорию — добавляйте в корзину — отправляйте заказ оператору.</div>
       </div>
     </section>
 
@@ -192,29 +197,47 @@
   <!-- Floating BACK -->
   <button class="floating-back" id="floating-back" title="Назад">←</button>
 
-  <!-- CART -->
+  <!-- CART BUTTON -->
   <div class="cart-button" onclick="toggleCart()">
     🛒 <span id="cart-count" class="cart-count">0</span>
   </div>
 
+  <!-- CART POPUP -->
   <div class="cart-popup" id="cart-popup" role="dialog" aria-label="Корзина">
     <h3 style="margin:0 0 8px">Корзина</h3>
-    <div id="cart-list"><div style="opacity:0.6">Корзина пуста</div></div>
-    <div class="cart-footer">
-      <div style="font-weight:700">Итого: <span id="cart-total">0 KZT</span></div>
+    <div id="cart-list"><div style="opacity:0.6;padding:8px;text-align:center">Корзина пуста</div></div>
+
+    <div style="margin-top:8px">Итого: <span id="cart-total">0 KZT</span></div>
+
+    <!-- Order form inside cart -->
+    <div class="order-form" id="order-form">
+      <h4 style="margin:0 0 6px">Контакт и оплата</h4>
+      <label for="client-phone">Номер телефона (для связи и выставления счёта)</label>
+      <input id="client-phone" placeholder="+7 7xxxxxxxxx" />
+
+      <label for="client-bank">Выберите банк (если известно)</label>
+      <select id="client-bank">
+        <option value="">Не указано</option>
+        <option value="Kaspi">Kaspi Bank</option>
+        <option value="Halyk">Halyk Bank</option>
+      </select>
+    </div>
+
+    <div class="cart-footer" style="margin-top:10px">
       <div style="display:flex;gap:8px">
         <button class="btn-ghost" onclick="toggleCart()">Закрыть</button>
-        <button class="btn-primary" onclick="checkout()">Оплатить</button>
+        <button class="btn-primary" id="send-order">Отправить заказ (WhatsApp)</button>
       </div>
     </div>
-    <div class="hint2 small" style="margin-top:8px">Оплата: WhatsApp → Kaspi QR. WhatsApp: <b>+7 778 222 2191</b></div>
+
+    <div class="hint2 small" style="margin-top:8px">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
   </div>
 
   <!-- CHECKOUT MODAL -->
   <div id="checkout-modal" class="modal">
     <div class="modal-card">
       <h3 style="margin-top:0">Оплата Kaspi QR</h3>
-      <p style="color:rgba(0,0,0,0.7)">Отсканируйте QR-код через приложение Kaspi. Если QR не задан — сначала отправьте заказ в WhatsApp.</p>
+      <p style="color:rgba(0,0,0,0.7)">Отсканируйте QR-код через приложение Kaspi.</p>
       <img id="kaspi-qr" src="" alt="Kaspi QR" style="width:220px;height:220px;object-fit:contain;border-radius:10px;border:1px solid #eee;background:#fff">
       <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
         <button class="btn-ghost" onclick="closeCheckout()">Закрыть</button>
@@ -224,10 +247,10 @@
 
 <script>
   /* ========== SETTINGS ========== */
-  // Твой Google Sheet CSV URL (ID уже вставлен)
   const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/export?format=csv&gid=0';
-  const whatsappNumber = '77782222191'; // no +
-  const kaspiQrSrc = ''; // при наличии: вставь URL изображения QR
+  const whatsappNumberRaw = '+77782222191'; // display with + for info
+  const whatsappNumber = '77782222191'; // for wa.me (no +)
+  const kaspiQrSrc = ''; // optional, leave empty if none
   const categoriesList = [
     "Посуды",
     "Игрушки и детские товары",
@@ -250,38 +273,36 @@
   const elCartCount = document.getElementById('cart-count');
   const elCartTotal = document.getElementById('cart-total');
   const floatingBack = document.getElementById('floating-back');
+  const sendOrderBtn = document.getElementById('send-order');
 
   let products = [];
   let cart = {};
 
-  // normalize drive / url / relative; also auto-add images/catalog or images/products when only filename provided
+  // normalize drive / url / relative; auto-add images path if only filename
   function normalizePhotoUrl(url, hintType = '') {
-    if (!url || !url.toString) return '';
+    if (!url) return '';
     url = String(url).trim();
     if (url === '') return '';
-    // if relative path (images/...), return as-is
+    // if starts with images/ or /
     if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
-      // if it's just a filename like "posuda.jpg", prepend depending on hint
+      // if filename only -> add based on hint
       if (!url.includes('/')) {
         if (hintType === 'catalog') return `images/catalog/${url}`;
         if (hintType === 'product') return `images/products/${url}`;
-        // otherwise return relative as-is (allow operator to put images/catalog/...)
         return url;
       }
       return url;
     }
-    // if direct image
+    // direct image link
     if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) return url;
-    // google drive patterns
+    // google drive patterns -> convert to uc?export=view
     const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
     if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
     const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
     if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
     const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
     if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
-    // if looks like only ID
     if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
-    // fallback
     return url;
   }
 
@@ -291,11 +312,11 @@
 
   function handleImageError(img) {
     img.onerror = null;
-    img.src = getPlaceholderUrl('Ошибка+загрузки');
+    img.src = getPlaceholderUrl('No+Image');
     img.style.opacity = '0.75';
   }
 
-  // CSV fetch + robust parse (handles quoted fields)
+  // CSV fetch + parse
   async function fetchCSV() {
     const res = await fetch(csvUrl);
     if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
@@ -323,11 +344,9 @@
     return rows;
   }
 
-  // flexible search for catalog-photo header
   function findCatalogPhotoIndex(headers) {
     const candidates = [
-      'фото каталога','фото_каталога','фото_каталог','фото каталога','catalogphoto','catalog_photo',
-      'catalogphoto','catalog image','catalog_image','image_catalog','catalog'
+      'фото каталога','фото_каталога','фото_каталог','catalogphoto','catalog_photo','catalog image','catalog_image','image_catalog','catalog'
     ];
     for (let i=0;i<headers.length;i++){
       const h = (headers[i]||'').toLowerCase().replace(/\s+/g,'').replace(/[^a-zа-я0-9_]/gi,'');
@@ -476,7 +495,7 @@
     const keys = Object.keys(cart);
     elCartList.innerHTML = '';
     if(keys.length === 0){
-      elCartList.innerHTML = '<div style="opacity:0.6;padding:20px;text-align:center">Корзина пуста</div>';
+      elCartList.innerHTML = '<div style="opacity:0.6;padding:12px;text-align:center">Корзина пуста</div>';
       elCartCount.innerText = '0';
       elCartTotal.innerText = '0 KZT';
       return;
@@ -511,31 +530,38 @@
     elCartPopup.style.display = (elCartPopup.style.display === 'flex') ? 'none' : 'flex';
   }
 
-  /* CHECKOUT: WhatsApp -> Kaspi QR */
-  function checkout(){
-    if(Object.keys(cart).length === 0){
-      alert('Корзина пуста');
-      return;
-    }
+  /* ORDER (WhatsApp) */
+  // Build nicely formatted message
+  function buildOrderMessage(clientPhone, clientBank) {
+    const items = Object.values(cart);
     let lines = [];
-    Object.values(cart).forEach(it => {
-      lines.push(`${it.title} — ${it.qty} шт. × ${it.price}₸`);
+    items.forEach((it, idx) => {
+      lines.push(`${idx+1}. ${it.title} — ${it.qty} шт. × ${it.price}₸`);
     });
-    const total = Object.values(cart).reduce((s,it)=>s+it.price*it.qty,0);
-    const message = `Заказ Nice_Atyrau:\n` + lines.join('\n') + `\n\nИтого: ${total}₸\n\nПожалуйста, подтвердите.`;
-    const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank');
-    if(kaspiQrSrc && kaspiQrSrc.trim() !== ''){
-      document.getElementById('kaspi-qr').src = kaspiQrSrc;
-      document.getElementById('checkout-modal').style.display = 'grid';
-    } else {
-      alert('Сообщение отправлено в WhatsApp. QR Kaspi не задан в настройках.');
-    }
+    const total = items.reduce((s,it)=>s+it.price*it.qty,0);
+    let msg = "🛍️ Новый заказ с сайта Nice_Atyrau\n——————————————\n";
+    msg += "📦 Товары:\n";
+    msg += lines.join("\n") + "\n";
+    msg += "——————————————\n";
+    msg += `💰 Итого: ${total}₸\n`;
+    if (clientBank) msg += `🏦 Банк клиента: ${clientBank}\n`;
+    if (clientPhone) msg += `📱 Телефон клиента: ${clientPhone}\n`;
+    msg += "\nПожалуйста, выставьте счёт и свяжитесь с клиентом.";
+    return msg;
   }
 
-  function closeCheckout(){
-    document.getElementById('checkout-modal').style.display = 'none';
-  }
+  // Send to WhatsApp
+  sendOrderBtn.addEventListener('click', () => {
+    if (Object.keys(cart).length === 0) { alert('Корзина пуста'); return; }
+    const clientPhone = document.getElementById('client-phone').value.trim();
+    const clientBank = document.getElementById('client-bank').value;
+    const message = buildOrderMessage(clientPhone, clientBank);
+    const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    // open in new window/tab -> this triggers WhatsApp (mobile/desktop)
+    window.open(waUrl, '_blank');
+    // keep cart as-is (operator will confirm)
+    alert('Заказ отправлен оператору в WhatsApp. Ожидайте ответа.');
+  });
 
   /* SEARCH */
   document.getElementById('search').addEventListener('input', (e) => {
@@ -586,17 +612,16 @@
     elProductsSection.style.display = 'none';
     loadProductsFromSheet();
     renderCart();
-    // expose for inline handlers
+    // expose functions for inline handlers
     window.addToCart = addToCart;
     window.changeQty = changeQty;
     window.removeItem = removeItem;
     window.toggleCart = toggleCart;
-    window.checkout = checkout;
-    window.closeCheckout = closeCheckout;
-    window.showCategories = showCategories;
     window.showCategory = showCategory;
+    window.showCategories = showCategories;
     window.handleImageError = handleImageError;
   })();
+
 </script>
 </body>
 </html>
