@@ -2,550 +2,212 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nice_Atyrau — магазин</title>
   <meta name="description" content="Nice_Atyrau — товары для дома, посуда и детские игрушки" />
   <style>
-    :root{
-      --brand-blue: #0b5ed7;
-      --brand-blue-dark: #093f93;
-      --brand-yellow: #ffd400;
-      --bg: #f7f8fb;
-      --text: #0b2140;
-      --card-radius:12px;
+    :root {
+      --brand-blue: #0057b8;
+      --brand-yellow: #ffd700;
+      --bg-light: #f7f9fb;
+      --text-dark: #222;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text);-webkit-font-smoothing:antialiased}
-    header{position:sticky;top:0;z-index:60;background:var(--brand-blue);color:#fff;padding:12px 14px;display:flex;gap:12px;align-items:center}
-    .logo{display:flex;gap:12px;align-items:center}
-    .logo .circle{width:44px;height:44px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);display:grid;place-items:center;font-weight:900}
-    .brand-title{font-weight:800;font-size:18px}
-    .brand-sub{font-size:12px;opacity:0.95}
-    .search-wrap{flex:1}
-    .search-wrap input{width:100%;padding:10px 14px;border-radius:14px;border:none;outline:none;font-size:15px;box-shadow:0 8px 24px rgba(11,34,71,0.06)}
-    main{max-width:1100px;margin:16px auto;padding:0 14px 140px}
-    .hero{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
-    .hint{color:rgba(0,0,0,0.65)}
-    /* Categories */
-    .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}
-    .cat-card{background:#fff;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 8px 24px rgba(11,34,71,0.06);display:flex;flex-direction:column;align-items:stretch}
-    .cat-card img{width:100%;height:160px;object-fit:cover;display:block}
-    .cat-body{padding:10px}
-    .cat-title{font-weight:700;color:var(--brand-blue);margin:0 0 6px}
-    .cat-count{color:rgba(0,0,0,0.6);font-size:13px}
-    /* Products */
-    #products-section{display:none}
-    .products-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-    .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(11,34,71,0.06)}
-    .card img{width:100%;height:180px;object-fit:cover}
-    .card-body{padding:12px}
-    .card h4{margin:0 0 6px;color:var(--brand-blue)}
-    .card p{margin:0 0 10px;color:rgba(0,0,0,0.7)}
-    .meta{display:flex;align-items:center;gap:10px}
-    .price{font-weight:800;color:var(--brand-blue)}
-    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer}
-    .btn-primary{background:var(--brand-blue);color:#fff}
-    .btn-ghost{background:transparent;border:1px solid #e6e9ef}
-    .back-btn{background:transparent;border:0;color:var(--brand-blue);cursor:pointer}
-    /* Floating & cart */
-    .floating-back{position:fixed;left:16px;bottom:20px;width:56px;height:56px;border-radius:50%;background:var(--brand-yellow);color:var(--brand-blue);display:grid;place-items:center;font-weight:800;box-shadow:0 10px 30px rgba(11,34,71,0.12);z-index:999;cursor:pointer}
-    .floating-back:hover{transform:scale(1.06)}
-    .floating-cart{position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:#fff;padding:12px 16px;border-radius:999px;box-shadow:0 20px 48px rgba(11,34,71,0.18);z-index:999;display:flex;align-items:center;gap:8px}
-    .cart-popup{position:fixed;right:16px;bottom:86px;background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));color:#fff;border-radius:12px;padding:12px;min-width:320px;max-width:460px;display:none;flex-direction:column;z-index:998;box-shadow:0 28px 68px rgba(11,34,71,0.35)}
-    .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
-    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
-    .order-form{margin-top:10px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
-    .order-form label{display:block;font-size:13px;color:#fff;margin-top:8px}
-    .order-form input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;margin-top:6px}
-    .bank-btn{width:100%;text-align:left;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;cursor:pointer}
-    .bank-list{position:absolute;background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));padding:6px;border-radius:8px;left:0;right:0;display:none;z-index:1200}
-    .cart-actions{display:flex;gap:8px;margin-top:12px}
-    .cart-actions .cart-send{flex:1;padding:10px 12px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);font-weight:800;border:0;cursor:pointer}
-    .cart-actions .cart-close{flex:1;padding:10px 12px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.14);cursor:pointer}
-    footer{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:10px 14px;border-top:1px solid #eee;font-size:13px;text-align:center}
-    .hidden{display:none}
-    @media(max-width:720px){
-      .card img{height:140px}
-      .cat-card img{height:120px}
-      .cart-popup{right:10px;left:10px;bottom:86px;min-width:auto;max-width:calc(100% - 20px)}
-      .floating-back{left:14px;bottom:110px}
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      background: var(--bg-light);
+      color: var(--text-dark);
+    }
+    header {
+      background: var(--brand-blue);
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .contacts {
+      background: var(--brand-yellow);
+      color: #000;
+      text-align: center;
+      padding: 0.5rem;
+      font-weight: 500;
+    }
+    main {
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .card h3 {
+      margin: 0.5rem 0;
+      color: var(--brand-blue);
+      font-size: 1.1rem;
+    }
+    .card p {
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+    .back-btn {
+      display: none;
+      background: var(--brand-blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      margin: 1rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .back-btn:hover {
+      background: #004799;
+    }
+    .search-box {
+      display: none;
+      max-width: 400px;
+      margin: 1rem auto;
+      text-align: center;
+    }
+    .search-box input {
+      width: 90%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    footer {
+      background: var(--brand-blue);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <div class="circle">N</div>
-      <div>
-        <div class="brand-title">Nice_Atyrau</div>
-        <div class="brand-sub">Всё для дома и детские игрушки</div>
-      </div>
-    </div>
-
-    <div class="search-wrap" style="margin-left:12px">
-      <input id="search" placeholder="Поиск по названию, описанию или категории..." />
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div>
-        <h1 style="margin:0 0 6px">Nice_Atyrau — магазин</h1>
-        <div class="hint">Выберите категорию или найдите товар через поиск.</div>
-      </div>
-    </section>
-
-    <!-- Categories -->
-    <section id="categories" class="categories" aria-live="polite"></section>
-
-    <!-- Products -->
-    <section id="products-section" style="display:none">
-      <div class="products-head">
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="back-btn" id="back-to-cats">← Назад</button>
-          <div style="font-weight:700"><span id="products-title">Товары</span> <small id="products-count" style="font-size:13px;color:rgba(0,0,0,0.6)"></small></div>
-        </div>
-        <div class="small">Категории и товары берутся из Google Sheets</div>
-      </div>
-
-      <div id="products-grid" class="products-grid"></div>
-      <div style="margin-top:12px"><button class="btn-ghost" id="back-to-cats-2">← Назад в категории</button></div>
-    </section>
-  </main>
-
-  <button class="floating-back hidden" id="floating-back" title="Назад">←</button>
-
-  <div class="floating-cart" id="cart-button" title="Открыть корзину">🛒 <span id="cart-count">0</span></div>
-
-  <div class="cart-popup hidden" id="cart-popup" role="dialog" aria-label="Корзина">
-    <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
-    <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
-    <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
-
-    <div class="order-form">
-      <h4 style="margin:8px 0 6px;color:#fff">Контакт и оплата</h4>
-      <label for="client-phone">Номер телефона (для связи)</label>
-      <input id="client-phone" placeholder="+7 7XXXXXXXXX" />
-      <div id="phone-error" style="color:#ff6b6b;font-size:12px;margin-top:4px;display:none">Введите корректный номер телефона</div>
-
-      <label style="margin-top:8px">Выберите банк</label>
-      <div style="position:relative">
-        <button class="bank-btn" id="bank-btn" type="button">Не указано ▾</button>
-        <div class="bank-list" id="bank-list" role="listbox" aria-hidden="true">
-          <div class="item" data-val="">Не указано</div>
-          <div class="item" data-val="Kaspi">Kaspi Bank</div>
-          <div class="item" data-val="Halyk">Halyk Bank</div>
-          <div class="item" data-val="Jusan">Jusan Bank</div>
-          <div class="item" data-val="BCK">BCK</div>
-          <div class="item" data-val="Forte">Forte</div>
-        </div>
-      </div>
-      <div id="bank-error" style="color:#ff6b6b;font-size:12px;margin-top:4px;display:none">Пожалуйста, выберите банк</div>
-    </div>
-
-    <div class="cart-actions">
-      <button class="cart-send" id="send-order">
-        <span class="spinner" style="display:none"></span>
-        <span>Отправить заказ</span>
-      </button>
-      <button class="cart-close" id="close-cart">Закрыть</button>
-    </div>
-
-    <div style="margin-top:8px;color:rgba(255,255,255,0.9)">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
+  <header>Nice_Atyrau</header>
+  <div class="contacts">
+    📞 +7 778 222 2191 &nbsp; | &nbsp; 💳 BCK • Forte • Kaspi
   </div>
 
-  <footer>Казахстан · Atyrau · WhatsApp: +7 778 222 2191</footer>
+  <button class="back-btn" onclick="showCategories()">⬅ Назад</button>
 
-<script>
-/* ========== Настройки ========== */
-// Google Sheets ID: (дано тобой)
-const SHEET_ID = '1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo';
-// GVIZ JSON endpoint (используем sheet id)
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+  <div class="search-box" id="searchBox">
+    <input type="text" id="searchInput" placeholder="Поиск по товарам..." oninput="filterProducts()" />
+  </div>
 
-// GitHub raw base (репо public)
-const GITHUB_BASE = 'https://raw.githubusercontent.com/Abdusamat69/nice-atyrau/main';
+  <main id="content">
+    <p style="text-align:center;">Загрузка...</p>
+  </main>
 
-// WhatsApp (без +)
-const WHATSAPP_NUMBER = '77782222191';
+  <footer>© 2025 Nice_Atyrau — Все права защищены</footer>
 
-/* DEMO placeholder */
-const DEMO_IMAGE = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f0f0f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="18">No Image</text></svg>');
+  <script>
+    const SHEET_ID = "1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo";
+    const GITHUB_BASE = "https://raw.githubusercontent.com/Abdusamat69/nice-atyrau/main";
+    const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
-/* UI refs */
-const elCategories = document.getElementById('categories');
-const elProductsSection = document.getElementById('products-section');
-const elProductsGrid = document.getElementById('products-grid');
-const elProductsTitle = document.getElementById('products-title');
-const elProductsCount = document.getElementById('products-count');
-const backToCats = document.getElementById('back-to-cats');
-const backToCats2 = document.getElementById('back-to-cats-2');
-const floatingBack = document.getElementById('floating-back');
-const searchInput = document.getElementById('search');
+    let allData = {};
+    let currentCategory = "";
 
-const cartButton = document.getElementById('cart-button');
-const cartPopup = document.getElementById('cart-popup');
-const cartList = document.getElementById('cart-list');
-const cartCount = document.getElementById('cart-count');
-const cartTotal = document.getElementById('cart-total');
-const clientPhoneInput = document.getElementById('client-phone');
-const phoneError = document.getElementById('phone-error');
-const bankBtn = document.getElementById('bank-btn');
-const bankList = document.getElementById('bank-list');
-const bankError = document.getElementById('bank-error');
-const sendOrderBtn = document.getElementById('send-order');
-const closeCartBtn = document.getElementById('close-cart');
+    async function fetchSheet(sheetName) {
+      const url = `${API_URL}&sheet=${encodeURIComponent(sheetName)}`;
+      const res = await fetch(url);
+      const text = await res.text();
+      return JSON.parse(text.substr(47).slice(0, -2));
+    }
 
-/* State */
-let products = [];
-let categoriesMap = {}; // { categoryName: { count, catalogPhoto } }
-let visibleProducts = [];
-let cart = {};
-let selectedBank = '';
+    async function loadCategories() {
+      const json = await fetchSheet("Категории");
+      const rows = json.table.rows;
+      const content = document.getElementById("content");
+      content.innerHTML = "";
 
-/* Helpers */
-function safe(v){ return v == null ? '' : String(v); }
+      rows.forEach(row => {
+        const name = row.c[0]?.v || "";
+        const photo = row.c[1]?.v || "";
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${GITHUB_BASE}${photo}" alt="${name}">
+          <h3>${name}</h3>
+        `;
+        card.onclick = () => loadCategoryItems(name);
+        content.appendChild(card);
+      });
 
-function resolveImagePath(cellValue, expectedFolder){
-  // cellValue may be:
-  // - full path starting with /images/...
-  // - just filename like "skovorodka.jpg"
-  // - full URL (https://...)
-  if(!cellValue) return '';
-  const s = cellValue.trim();
-  if(/^https?:\/\//i.test(s)) return s;
-  if(s.startsWith('/images/')){
-    // user provided repository-style path starting with /images/...
-    // raw url: https://raw.githubusercontent.com/{user}/{repo}/main{path}
-    return `${GITHUB_BASE}${s}`; // GITHUB_BASE already ends without slash
-  }
-  // if it contains images/ inside (no leading slash)
-  if(s.includes('images/')) return `${GITHUB_BASE}/${s.replace(/^\/+/, '')}`;
-  // otherwise assume filename, append folder
-  return `${GITHUB_BASE}/images/${expectedFolder}/${encodeURIComponent(s)}`;
-}
+      document.querySelector(".back-btn").style.display = "none";
+      document.getElementById("searchBox").style.display = "none";
+    }
 
-function handleImgError(e){
-  e.target.onerror = null;
-  e.target.src = DEMO_IMAGE;
-}
+    async function loadCategoryItems(categoryName) {
+      try {
+        const json = await fetchSheet(categoryName);
+        const rows = json.table.rows;
+        const content = document.getElementById("content");
+        content.innerHTML = "";
 
-/* Parse gviz JSON response */
-function parseGviz(text){
-  // remove prefix and suffix to get pure JSON
-  // gviz returns: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
-  const start = text.indexOf('setResponse(');
-  if(start === -1) throw new Error('GViz: unexpected response');
-  const jsonText = text.slice(start + 'setResponse('.length).replace(/\);\s*$/,'');
-  return JSON.parse(jsonText);
-}
+        rows.forEach(r => {
+          const name = r.c[0]?.v || "";
+          const desc = r.c[1]?.v || "";
+          const price = r.c[2]?.v || "";
+          const photo = r.c[3]?.v || "";
+          const card = document.createElement("div");
+          card.className = "card product";
+          card.innerHTML = `
+            <img src="${GITHUB_BASE}${photo}" alt="${name}">
+            <h3>${name}</h3>
+            <p>${price ? price + " ₸" : ""}</p>
+            <small>${desc}</small>
+          `;
+          content.appendChild(card);
+        });
 
-/* Load products from sheet */
-async function loadFromSheet(){
-  try{
-    elCategories.innerHTML = '<div style="padding:18px;text-align:center;opacity:0.6">Загрузка...</div>';
-    const r = await fetch(SHEET_URL);
-    if(!r.ok) throw new Error('Ошибка загрузки таблицы: ' + r.status);
-    const txt = await r.text();
-    const data = parseGviz(txt);
-    const rows = data.table.rows || [];
-    products = rows.map((row, idx) => {
-      // Таблица у тебя: |Категория | Название | Описание | Цена | Фото | Фото каталога|
-      // Это означает: c[0] = category, c[1] = title, c[2] = desc, c[3] = price, c[4] = photo, c[5] = catalogPhoto
-      const c = row.c || [];
-      const category = safe(c[0]?.v).trim();
-      const title = safe(c[1]?.v).trim();
-      const desc = safe(c[2]?.v).trim();
-      const price = safe(c[3]?.v).trim();
-      const photoCell = safe(c[4]?.v).trim();
-      const catalogPhotoCell = safe(c[5]?.v).trim();
-
-      // resolve images (photo => product image, catalogPhoto => category card image)
-      const productImage = resolveImagePath(photoCell, 'products');
-      const catalogImage = resolveImagePath(catalogPhotoCell || photoCell, 'catalog'); // fallback to photo if no catalog
-      const id = safe(c[6]?.v) || `prod-${idx+1}`;
-
-      // collect categories
-      if(category){
-        if(!categoriesMap[category]) categoriesMap[category] = {count:0, catalogPhoto: catalogImage};
-        categoriesMap[category].count++;
-        // if category has no catalog photo yet, prefer this row's catalogPhoto when available
-        if(!categoriesMap[category].catalogPhoto && catalogImage) categoriesMap[category].catalogPhoto = catalogImage;
+        currentCategory = categoryName;
+        document.querySelector(".back-btn").style.display = "inline-block";
+        document.getElementById("searchBox").style.display = "block";
+      } catch (e) {
+        document.getElementById("content").innerHTML = "<p style='text-align:center;color:red;'>Ошибка загрузки товаров</p>";
+        console.error(e);
       }
-
-      return { id, category, title, desc, price, photoCell, productImage, catalogImage };
-    });
-
-    // render categories and all products
-    renderCategories();
-    visibleProducts = products.slice();
-    renderProducts(visibleProducts);
-    elCategories.querySelectorAll?.length && (document.getElementById('loading')?.remove?.());
-  }catch(err){
-    console.error(err);
-    elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
-      <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверь доступность таблицы (Anyone with link can view)</small>
-    </div>`;
-  }
-}
-
-/* Render categories */
-function renderCategories(){
-  elCategories.innerHTML = '';
-  const cats = Object.keys(categoriesMap);
-  if(cats.length === 0){
-    // if no categories provided - derive from products
-    const derived = {};
-    products.forEach(p => {
-      const cat = p.category || 'Без категории';
-      if(!derived[cat]) derived[cat] = {count:0, catalogPhoto: p.catalogImage || p.productImage};
-      derived[cat].count++;
-    });
-    for(const cat in derived){
-      categoriesMap[cat] = derived[cat];
     }
-  }
 
-  // Create card for each category
-  for(const cat of Object.keys(categoriesMap)){
-    const info = categoriesMap[cat];
-    const card = document.createElement('div');
-    card.className = 'cat-card';
-    const img = document.createElement('img');
-    img.src = info.catalogPhoto || DEMO_IMAGE;
-    img.alt = cat;
-    img.onerror = handleImgError;
-    const body = document.createElement('div');
-    body.className = 'cat-body';
-    const h = document.createElement('h3'); h.className = 'cat-title'; h.textContent = cat;
-    const small = document.createElement('div'); small.className = 'cat-count'; small.textContent = `${info.count || products.filter(p=>p.category===cat).length} товаров`;
-    body.appendChild(h); body.appendChild(small);
-    card.appendChild(img); card.appendChild(body);
-    card.addEventListener('click', ()=> openCategory(cat));
-    elCategories.appendChild(card);
-  }
-
-  // If there are also some products without category, show "Все"
-  const allBtn = document.createElement('div');
-  // (we already show categories as cards; don't need a button separately)
-}
-
-/* Open category -> show products */
-function openCategory(cat){
-  elProductsTitle.textContent = cat;
-  const list = products.filter(p => (p.category || '').toLowerCase() === (cat || '').toLowerCase());
-  visibleProducts = list;
-  renderProducts(list);
-  document.getElementById('categories').style.display = 'grid';
-  // toggle sections
-  document.getElementById('categories').style.display = 'none';
-  elProductsSection.style.display = 'block';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* Show categories */
-function showCategories(){
-  elProductsSection.style.display = 'none';
-  document.getElementById('categories').style.display = 'grid';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* Render products grid */
-function renderProducts(list){
-  elProductsGrid.innerHTML = '';
-  elProductsCount.textContent = (list && list.length) ? `${list.length} товаров` : '';
-  if(!list || list.length === 0){
-    elProductsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:18px;opacity:0.7">Нет товаров</div>';
-    return;
-  }
-  list.forEach(p => {
-    const card = document.createElement('div'); card.className = 'card';
-    const img = document.createElement('img'); img.src = p.productImage || DEMO_IMAGE; img.alt = p.title; img.onerror = handleImgError;
-    const body = document.createElement('div'); body.className = 'card-body';
-    const h = document.createElement('h4'); h.textContent = p.title;
-    const desc = document.createElement('p'); desc.textContent = p.desc || '';
-    const meta = document.createElement('div'); meta.className = 'meta';
-    const price = document.createElement('div'); price.className = 'price'; price.textContent = p.price ? p.price + ' ₸' : '';
-    const actions = document.createElement('div'); actions.style.marginLeft = 'auto';
-    const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'В корзину';
-    btn.addEventListener('click', ()=> addToCart(p.id));
-    actions.appendChild(btn);
-    meta.appendChild(price); meta.appendChild(actions);
-    body.appendChild(h); body.appendChild(desc); body.appendChild(meta);
-    card.appendChild(img); card.appendChild(body);
-    elProductsGrid.appendChild(card);
-  });
-}
-
-/* Search */
-search.addEventListener('input', (e)=>{
-  const q = e.target.value.trim().toLowerCase();
-  if(!q){
-    // if on products section, leave visibleProducts; if on categories show categories
-    if(elProductsSection.style.display === 'block'){
-      renderProducts(visibleProducts);
-    } else {
-      renderCategories();
+    function showCategories() {
+      loadCategories();
+      currentCategory = "";
     }
-    return;
-  }
-  const matches = products.filter(p => {
-    return (p.title && p.title.toLowerCase().includes(q)) ||
-           (p.desc && p.desc.toLowerCase().includes(q)) ||
-           (p.category && p.category.toLowerCase().includes(q));
-  });
-  // show results in products section
-  elProductsTitle.textContent = `Поиск: "${q}"`;
-  elProductsCount.textContent = matches.length ? matches.length + ' товаров' : '0';
-  elProductsSection.style.display = 'block';
-  document.getElementById('categories').style.display = 'none';
-  renderProducts(matches);
-});
 
-/* Back buttons */
-backToCats.addEventListener('click', showCategories);
-backToCats2.addEventListener('click', showCategories);
+    function filterProducts() {
+      const value = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll(".product").forEach(el => {
+        const name = el.querySelector("h3").textContent.toLowerCase();
+        el.style.display = name.includes(value) ? "" : "none";
+      });
+    }
 
-/* Floating back (for mobile) */
-floatingBack.addEventListener('click', showCategories);
-
-/* ========== CART ========== */
-function addToCart(id){
-  const p = products.find(x => x.id === id);
-  if(!p) return;
-  if(!cart[id]) cart[id] = {...p, qty:0};
-  cart[id].qty++;
-  renderCart();
-  cartPopup.style.display = 'flex';
-  // animate cart btn
-  cartButton.style.transform = 'scale(1.08)';
-  setTimeout(()=> cartButton.style.transform = 'scale(1)', 160);
-}
-
-function changeQty(id, delta){
-  if(!cart[id]) return;
-  cart[id].qty += delta;
-  if(cart[id].qty <= 0) delete cart[id];
-  renderCart();
-}
-
-function removeItem(id){
-  if(confirm('Удалить товар из корзины?')){
-    delete cart[id];
-    renderCart();
-  }
-}
-
-function renderCart(){
-  const keys = Object.keys(cart);
-  cartList.innerHTML = '';
-  if(keys.length === 0){
-    cartList.innerHTML = '<div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div>';
-    cartCount.textContent = '0';
-    cartTotal.textContent = '0 KZT';
-    return;
-  }
-  let total = 0;
-  keys.forEach(k => {
-    const it = cart[k];
-    total += (Number(it.price) || 0) * it.qty;
-    const row = document.createElement('div'); row.className = 'cart-item';
-    const img = document.createElement('img'); img.src = it.productImage || DEMO_IMAGE; img.onerror = handleImgError;
-    const info = document.createElement('div'); info.style.flex = '1';
-    const title = document.createElement('div'); title.style.fontWeight = '700'; title.textContent = it.title;
-    const details = document.createElement('div'); details.style.color = '#fff'; details.style.fontSize = '13px'; details.textContent = `${it.price} × ${it.qty} шт.`;
-    info.appendChild(title); info.appendChild(details);
-    const controls = document.createElement('div'); controls.style.display='flex'; controls.style.flexDirection='column'; controls.style.gap='6px'; controls.style.alignItems='center';
-    const qtyControls = document.createElement('div'); qtyControls.style.display='flex'; qtyControls.style.gap='6px';
-    const decBtn = document.createElement('button'); decBtn.className = 'btn btn-ghost'; decBtn.textContent = '−'; decBtn.addEventListener('click', ()=> changeQty(it.id, -1));
-    const incBtn = document.createElement('button'); incBtn.className = 'btn btn-ghost'; incBtn.textContent = '+'; incBtn.addEventListener('click', ()=> changeQty(it.id, 1));
-    const delBtn = document.createElement('button'); delBtn.className = 'btn btn-ghost'; delBtn.textContent = '✕'; delBtn.addEventListener('click', ()=> removeItem(it.id));
-    qtyControls.appendChild(decBtn); qtyControls.appendChild(incBtn);
-    controls.appendChild(qtyControls); controls.appendChild(delBtn);
-    row.appendChild(img); row.appendChild(info); row.appendChild(controls);
-    cartList.appendChild(row);
-  });
-  cartCount.textContent = Object.values(cart).reduce((s,i)=> s + i.qty, 0);
-  cartTotal.textContent = total + ' KZT';
-}
-
-/* Toggle cart */
-cartButton.addEventListener('click', ()=> {
-  if(cartPopup.classList.contains('hidden') || cartPopup.style.display === 'none'){ cartPopup.style.display = 'flex'; cartPopup.classList.remove('hidden'); }
-  else { cartPopup.style.display = 'none'; cartPopup.classList.add('hidden'); }
-});
-document.getElementById('close-cart').addEventListener('click', ()=> { cartPopup.style.display = 'none'; });
-
-/* Auto-hide cart on small screens */
-function autoHideCartOnSmall(){ if(window.innerWidth <= 720) cartPopup.style.display = 'none'; }
-window.addEventListener('resize', autoHideCartOnSmall);
-window.addEventListener('orientationchange', autoHideCartOnSmall);
-
-/* ========== BANK SELECT ========== */
-bankBtn.addEventListener('click', (e)=> { e.stopPropagation(); bankList.style.display = bankList.style.display === 'block' ? 'none' : 'block'; bankList.setAttribute('aria-hidden', bankList.style.display !== 'block'); });
-bankList.addEventListener('click', (e)=> { const it = e.target.closest('.item'); if(!it) return; selectedBank = it.dataset.val || ''; bankBtn.textContent = (it.textContent || 'Не указано') + ' ▾'; bankList.style.display = 'none'; bankError.style.display = 'none'; });
-document.addEventListener('click', ()=> { bankList.style.display = 'none'; bankList.setAttribute('aria-hidden', 'true'); });
-
-/* ========== PHONE VALIDATION ========== */
-function validatePhone(phone){
-  const digits = phone.replace(/\D/g,'');
-  // Accept 7XXXXXXXXXX (11 digits starting with 7)
-  return /^7\d{9}$/.test(digits) || /^77\d{9}$/.test(digits); // slightly tolerant
-}
-clientPhoneInput.addEventListener('input', ()=> { phoneError.style.display = 'none'; });
-
-/* ========== SEND ORDER ========== */
-sendOrderBtn.addEventListener('click', async ()=>{
-  if(Object.keys(cart).length === 0){ alert('Корзина пуста'); return; }
-  const phone = clientPhoneInput.value.trim();
-  if(!validatePhone(phone)){ phoneError.style.display = 'block'; alert('Введите корректный номер телефона формата +7 7XXXXXXXXX'); return; }
-  if(!selectedBank){ bankError.style.display = 'block'; alert('Выберите банк'); return; }
-
-  // build message
-  const items = Object.values(cart);
-  const lines = items.map((it, idx) => `${idx+1}. ${it.title} — ${it.qty} шт × ${it.price}₸`).join('\n');
-  const total = items.reduce((s,it)=> s + (Number(it.price) || 0) * it.qty, 0);
-  const msg = `🛍️ Заказ Nice_Atyrau\n\n📦 Товары:\n${lines}\n\n💰 Итого: ${total}₸\n🏦 Банк: ${selectedBank}\n📱 Клиент: ${phone}\n\nСайт: ${location.origin}`;
-  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-
-  // small UX: show sending spinner (simple)
-  const spinner = sendOrderBtn.querySelector('.spinner');
-  const textEl = sendOrderBtn.querySelector('span:last-child');
-  spinner && (spinner.style.display = 'inline-block');
-  if(textEl) textEl.textContent = 'Отправка...';
-  sendOrderBtn.disabled = true;
-
-  try{
-    // open wa
-    window.open(waUrl, '_blank');
-    // clear cart
-    cart = {};
-    renderCart();
-    clientPhoneInput.value = '';
-    selectedBank = '';
-    bankBtn.textContent = 'Не указано ▾';
-    alert('Заказ отправлен оператору в WhatsApp. Корзина очищена.');
-    cartPopup.style.display = 'none';
-  }catch(err){
-    console.error(err);
-    alert('Ошибка при отправке заказа. Попробуйте ещё раз.');
-  }finally{
-    spinner && (spinner.style.display = 'none');
-    if(textEl) textEl.textContent = 'Отправить заказ';
-    sendOrderBtn.disabled = false;
-  }
-});
-
-/* ========== Init ========== */
-(async function init(){
-  // show categories loading placeholder
-  elCategories.innerHTML = '<div id="loading" style="grid-column:1/-1;text-align:center;padding:18px;opacity:0.6">Загрузка товаров...</div>';
-  await loadFromSheet();
-  renderCart();
-  // ensure cart hidden on mobile
-  autoHideCartOnSmall();
-})();
-</script>
+    loadCategories();
+  </script>
 </body>
 </html>
