@@ -2,291 +2,148 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Nice_Atyrau — магазин</title>
   <meta name="description" content="Nice_Atyrau — товары для дома, посуда и детские игрушки" />
   <style>
-    :root {
+    :root{
       --brand-blue: #0b5ed7;
       --brand-blue-dark: #093f93;
       --brand-yellow: #ffd400;
       --bg: #f7f8fb;
-      --card-radius: 12px;
       --text: #0b2140;
-      --white: #ffffff;
-      --muted: #f1f5fb;
+      --card-radius:12px;
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin:0; padding:0; }
-    body {
-      background: linear-gradient(180deg, var(--bg), #fff);
-      color: var(--text);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      line-height: 1.35;
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text);-webkit-font-smoothing:antialiased}
+    header{position:sticky;top:0;z-index:60;background:var(--brand-blue);color:#fff;padding:12px 14px;display:flex;gap:12px;align-items:center}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo .circle{width:44px;height:44px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);display:grid;place-items:center;font-weight:900}
+    .brand-title{font-weight:800;font-size:18px}
+    .brand-sub{font-size:12px;opacity:0.95}
+    .search-wrap{flex:1}
+    .search-wrap input{width:100%;padding:10px 14px;border-radius:14px;border:none;outline:none;font-size:15px;box-shadow:0 8px 24px rgba(11,34,71,0.06)}
+    main{max-width:1100px;margin:16px auto;padding:0 14px 140px}
+    .hero{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+    .hint{color:rgba(0,0,0,0.65)}
+    /* Categories */
+    .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}
+    .cat-card{background:#fff;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 8px 24px rgba(11,34,71,0.06);display:flex;flex-direction:column;align-items:stretch}
+    .cat-card img{width:100%;height:160px;object-fit:cover;display:block}
+    .cat-body{padding:10px}
+    .cat-title{font-weight:700;color:var(--brand-blue);margin:0 0 6px}
+    .cat-count{color:rgba(0,0,0,0.6);font-size:13px}
+    /* Products */
+    #products-section{display:none}
+    .products-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(11,34,71,0.06)}
+    .card img{width:100%;height:180px;object-fit:cover}
+    .card-body{padding:12px}
+    .card h4{margin:0 0 6px;color:var(--brand-blue)}
+    .card p{margin:0 0 10px;color:rgba(0,0,0,0.7)}
+    .meta{display:flex;align-items:center;gap:10px}
+    .price{font-weight:800;color:var(--brand-blue)}
+    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer}
+    .btn-primary{background:var(--brand-blue);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid #e6e9ef}
+    .back-btn{background:transparent;border:0;color:var(--brand-blue);cursor:pointer}
+    /* Floating & cart */
+    .floating-back{position:fixed;left:16px;bottom:20px;width:56px;height:56px;border-radius:50%;background:var(--brand-yellow);color:var(--brand-blue);display:grid;place-items:center;font-weight:800;box-shadow:0 10px 30px rgba(11,34,71,0.12);z-index:999;cursor:pointer}
+    .floating-back:hover{transform:scale(1.06)}
+    .floating-cart{position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:#fff;padding:12px 16px;border-radius:999px;box-shadow:0 20px 48px rgba(11,34,71,0.18);z-index:999;display:flex;align-items:center;gap:8px}
+    .cart-popup{position:fixed;right:16px;bottom:86px;background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));color:#fff;border-radius:12px;padding:12px;min-width:320px;max-width:460px;display:none;flex-direction:column;z-index:998;box-shadow:0 28px 68px rgba(11,34,71,0.35)}
+    .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+    .order-form{margin-top:10px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
+    .order-form label{display:block;font-size:13px;color:#fff;margin-top:8px}
+    .order-form input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;margin-top:6px}
+    .bank-btn{width:100%;text-align:left;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;cursor:pointer}
+    .bank-list{position:absolute;background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));padding:6px;border-radius:8px;left:0;right:0;display:none;z-index:1200}
+    .cart-actions{display:flex;gap:8px;margin-top:12px}
+    .cart-actions .cart-send{flex:1;padding:10px 12px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);font-weight:800;border:0;cursor:pointer}
+    .cart-actions .cart-close{flex:1;padding:10px 12px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.14);cursor:pointer}
+    footer{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:10px 14px;border-top:1px solid #eee;font-size:13px;text-align:center}
+    .hidden{display:none}
+    @media(max-width:720px){
+      .card img{height:140px}
+      .cat-card img{height:120px}
+      .cart-popup{right:10px;left:10px;bottom:86px;min-width:auto;max-width:calc(100% - 20px)}
+      .floating-back{left:14px;bottom:110px}
     }
-    header {
-      background: var(--brand-blue);
-      color: var(--white);
-      padding: 12px 16px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      justify-content: flex-start;
-      position: sticky;
-      top:0;
-      z-index:40;
-    }
-    .brand { display:flex; align-items:center; gap:12px; }
-    .logo-circle {
-      width:46px; height:46px; border‐radius:10px; background: var(--brand-yellow);
-      display:grid; place-items:center; color: var(--brand-blue);
-      font-weight:900; font-size:20px;
-      box-shadow: 0 6px 18px rgba(11,34,71,0.08);
-      flex-shrink:0;
-    }
-    .brand-title { font-weight:800; font-size:18px; }
-    .brand-sub { font-size:12px; opacity:0.9; color:rgba(255,255,255,0.9); }
-    .search-wrap { flex:1; margin-left:14px; margin-right:12px; }
-    .search-wrap input {
-      width:100%; padding:12px 14px; border-radius:14px; border:none; outline:none;
-      box-shadow: 0 8px 24px rgba(11,34,71,0.06);
-      font-size:15px;
-    }
-    main { max-width:1100px; margin:14px auto; padding:0 14px 140px; }
-    .hero { display:flex; gap:16px; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .hero h1 { margin:0; font-size:20px; }
-    .hint { color: rgba(0,0,0,0.65); font-size:14px; margin-top:6px; }
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
-      gap:14px;
-      margin-bottom:16px;
-    }
-    .cat-card {
-      border-radius:16px; padding:14px; display:flex; gap:12px; align-items:center;
-      cursor:pointer;
-      background: linear-gradient(135deg,#fff7d6, var(--brand-yellow));
-      box-shadow: 0 10px 30px rgba(11,34,71,0.08);
-      border:1px solid rgba(0,0,0,0.03);
-      transition: transform .18s ease, box-shadow .18s ease;
-    }
-    .cat-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 18px 40px rgba(11,34,71,0.12);
-    }
-    .cat-thumb {
-      width:84px; height:84px; border-radius:12px; object-fit:cover;
-      border:1px solid #eee; flex-shrink:0;
-    }
-    .cat-meta h3 { margin:0; font-size:16px; color: var(--brand-blue); }
-    .cat-meta .small { font-size:13px; color:rgba(0,0,0,0.6); margin-top:6px; }
-    #products-section { display:none; }
-    .products-head {
-      display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px; position:relative;
-    }
-    .products-list {
-      display:flex; flex-direction:column; gap:12px;
-    }
-    .product-card {
-      display:flex; gap:12px; align-items:center;
-      background:white; padding:12px; border-radius:12px;
-      box-shadow:0 10px 24px rgba(11,34,71,0.04);
-      border:1px solid rgba(0,0,0,0.02);
-    }
-    .product-card img {
-      width:120px; height:86px; object-fit:cover; border-radius:8px; flex-shrink:0;
-    }
-    .product-info h4 { margin:0; font-size:16px; }
-    .product-info p { margin:6px 0 10px; color:rgba(0,0,0,0.65); font-size:14px; }
-    .product-meta { display:flex; align-items:center; gap:10px; }
-    .price { font-weight:800; color: var(--brand-blue); }
-    .btn { border:0; padding:10px 12px; border-radius:10px; cursor:pointer; }
-    .btn-primary { background: var(--brand-blue); color:white; }
-    .btn-ghost { background:transparent; border:1px solid #e6e9ef; }
-    .floating-back {
-      position:fixed; left:16px; bottom:20px; width:56px; height:56px; border-radius:50%;
-      background:var(--brand-yellow); color:var(--brand-blue); display:grid; place-items:center;
-      font-weight:800; font-size:20px;
-      box-shadow:0 10px 30px rgba(11,34,71,0.12); border:none; cursor:pointer; z-index:999;
-      transition: transform .14s;
-    }
-    .floating-back:hover { transform: scale(1.06); }
-    .cart-button {
-      position:fixed; right:16px; bottom:16px;
-      background: var(--brand-blue); color:white;
-      padding:12px 16px; border-radius:50px;
-      box-shadow: 0 20px 48px rgba(11,34,71,0.18);
-      font-weight:700; cursor:pointer; z-index:999; display:flex; align-items:center; gap:8px;
-      transform-style: preserve-3d;
-    }
-    .cart-count { background:#fff; border-radius:10px; padding:4px 8px; font-size:13px; color: var(--brand-blue); }
-    .cart-popup {
-      position:fixed; right:16px; bottom:84px;
-      background: linear-gradient(180deg, #0a4fc6, var(--brand-blue-dark));
-      color: var(--white); border-radius:14px;
-      box-shadow: 0 28px 68px rgba(11,34,71,0.35);
-      min-width:320px; max-width:460px; display:none; flex-direction:column;
-      max-height:78vh; overflow:auto; padding:14px; z-index:998;
-      transform-origin: bottom right; perspective:1000px;
-    }
-    .cart-item {
-      display:flex; gap:10px; align-items:center;
-      padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06);
-    }
-    .cart-item img {
-      width:56px; height:56px; object-fit:cover; border-radius:8px;
-      border:1px solid rgba(255,255,255,0.06);
-    }
-    .cart-popup .small { color: rgba(255,255,255,0.85); }
-    .cart-popup .order-form {
-      margin-top:12px; padding:12px;
-      border-radius:10px;
-      background: rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    .cart-popup label {
-      display:block; font-size:13px; margin-top:6px; color: rgba(255,255,255,0.95);
-    }
-    .cart-popup input {
-      width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);
-      margin-top:6px; background: rgba(255,255,255,0.03); color:#fff;
-    }
-    .cart-popup input::placeholder { color:#e8f0ff; }
-    .bank-select { position:relative; margin-top:6px; }
-    .bank-select .bank-btn {
-      width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);
-      background:transparent; color:#fff; text-align:left; cursor:pointer;
-    }
-    .bank-select .bank-list {
-      position:absolute; left:0; right:0; top:calc(100% + 6px);
-      background: linear-gradient(180deg, var(--brand-blue-dark), var(--brand-blue));
-      color:#fff; border-radius:8px; padding:6px;
-      box-shadow:0 10px 30px rgba(11,34,71,0.14); display:none; z-index:1000;
-    }
-    .bank-select .bank-list .item {
-      padding:8px; border-radius:6px; cursor:pointer;
-    }
-    .bank-select .bank-list .item:hover {
-      background: rgba(255,255,255,0.06);
-    }
-    .cart-actions { display:flex; gap:8px; margin-top:12px; }
-    .cart-actions .cart-send {
-      flex:1; padding:10px 12px; border-radius:10px; background: var(--brand-yellow);
-      color: var(--brand-blue); font-weight:800; border:0;
-      box-shadow:0 10px 24px rgba(11,34,71,0.12); cursor:pointer;
-    }
-    .cart-actions .cart-close {
-      flex:1; padding:10px 12px; border-radius:10px; background:transparent;
-      color:#fff; border:1px solid rgba(255,255,255,0.14); cursor:pointer;
-    }
-    .cart-actions .cart-send:active, .cart-actions .cart-close:active {
-      transform: translateY(1px);
-    }
-    .loading { opacity:0.6; pointer-events: none; }
-    .spinner {
-      width: 20px; height:20px;
-      border:2px solid #f3f3f3; border-top:2px solid var(--brand-blue);
-      border-radius:50%; animation: spin 1s linear infinite;
-      display:inline-block; margin-right:8px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    footer {
-      position: fixed; left:0; right:0; bottom:0;
-      background:#fff; padding:10px 14px; border-top:1px solid #eee;
-      font-size:13px; color:#666; text-align:center;
-    }
-    @media (max-width:720px) {
-      .cat-card { padding:12px; }
-      .product-card { flex-direction:column; gap:10px; }
-      .product-card img { width:96px; height:72px; }
-      .brand-title { font-size:16px; }
-      .search-wrap { margin-left:8px; margin-right:8px; }
-      .cart-popup {
-        right:10px; left:10px; bottom:86px;
-        min-width:auto; max-width:calc(100%-20px);
-      }
-      .floating-back { left:14px; bottom:110px; }
-    }
-    @media (max-width:420px) {
-      .categories { grid-template-columns:1fr; }
-      .product-info p { font-size:13px; }
-      header { padding:10px; }
-      main { padding-bottom:260px; }
-      .search-wrap input { font-size:14px; padding:10px; }
-    }
-    .hidden { display:none; }
   </style>
 </head>
 <body>
   <header>
-    <div class="brand">
-      <div class="logo-circle">N</div>
+    <div class="logo">
+      <div class="circle">N</div>
       <div>
         <div class="brand-title">Nice_Atyrau</div>
         <div class="brand-sub">Всё для дома и детские игрушки</div>
       </div>
     </div>
-    <div class="search-wrap">
-      <input id="search" placeholder="Поиск по названию, описанию или категории…" />
+
+    <div class="search-wrap" style="margin-left:12px">
+      <input id="search" placeholder="Поиск по названию, описанию или категории..." />
     </div>
   </header>
+
   <main>
     <section class="hero">
       <div>
-        <h1>Добро пожаловать в Nice_Atyrau</h1>
-        <div class="hint">Выберите категорию — добавляйте в корзину — отправляйте заказ оператору.</div>
+        <h1 style="margin:0 0 6px">Nice_Atyrau — магазин</h1>
+        <div class="hint">Выберите категорию или найдите товар через поиск.</div>
       </div>
     </section>
+
+    <!-- Categories -->
     <section id="categories" class="categories" aria-live="polite"></section>
-    <section id="products-section">
+
+    <!-- Products -->
+    <section id="products-section" style="display:none">
       <div class="products-head">
-        <div style="display:flex; gap:8px; align-items:center">
-          <div style="width:8px"></div>
-          <div style="font-weight:700">
-            <span id="products-title">Товары</span>
-            <small id="products-count" style="font-size:13px; color:rgba(0,0,0,0.6)"></small>
-          </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="back-btn" id="back-to-cats">← Назад</button>
+          <div style="font-weight:700"><span id="products-title">Товары</span> <small id="products-count" style="font-size:13px;color:rgba(0,0,0,0.6)"></small></div>
         </div>
-        <div class="small">Категории загружаются из Google Sheets</div>
+        <div class="small">Категории и товары берутся из Google Sheets</div>
       </div>
-      <div id="products-list" class="products-list"></div>
-      <div style="margin-top:12px">
-        <button class="btn-ghost" id="back-to-cats">← Назад в категории</button>
-      </div>
+
+      <div id="products-grid" class="products-grid"></div>
+      <div style="margin-top:12px"><button class="btn-ghost" id="back-to-cats-2">← Назад в категории</button></div>
     </section>
   </main>
-  <button class="floating-back" id="floating-back" title="Назад">←</button>
-  <div class="cart-button" id="cart-button" title="Открыть корзину">🛒 <span id="cart-count" class="cart-count">0</span></div>
+
+  <button class="floating-back hidden" id="floating-back" title="Назад">←</button>
+
+  <div class="floating-cart" id="cart-button" title="Открыть корзину">🛒 <span id="cart-count">0</span></div>
+
   <div class="cart-popup hidden" id="cart-popup" role="dialog" aria-label="Корзина">
     <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
-    <div id="cart-list">
-      <div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div>
-    </div>
+    <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
     <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
-    <div class="order-form" id="order-form">
+
+    <div class="order-form">
       <h4 style="margin:8px 0 6px;color:#fff">Контакт и оплата</h4>
       <label for="client-phone">Номер телефона (для связи)</label>
-      <input id="client-phone" placeholder="+7 7xxxxxxxxx" />
+      <input id="client-phone" placeholder="+7 7XXXXXXXXX" />
       <div id="phone-error" style="color:#ff6b6b;font-size:12px;margin-top:4px;display:none">Введите корректный номер телефона</div>
+
       <label style="margin-top:8px">Выберите банк</label>
-      <div class="bank-select" id="bank-select">
+      <div style="position:relative">
         <button class="bank-btn" id="bank-btn" type="button">Не указано ▾</button>
         <div class="bank-list" id="bank-list" role="listbox" aria-hidden="true">
           <div class="item" data-val="">Не указано</div>
           <div class="item" data-val="Kaspi">Kaspi Bank</div>
           <div class="item" data-val="Halyk">Halyk Bank</div>
           <div class="item" data-val="Jusan">Jusan Bank</div>
-          <div class="item" data-val="BCK">BCK Bank</div>
-          <div class="item" data-val="Forte">Forte Bank</div>
+          <div class="item" data-val="BCK">BCK</div>
+          <div class="item" data-val="Forte">Forte</div>
         </div>
       </div>
       <div id="bank-error" style="color:#ff6b6b;font-size:12px;margin-top:4px;display:none">Пожалуйста, выберите банк</div>
     </div>
+
     <div class="cart-actions">
       <button class="cart-send" id="send-order">
         <span class="spinner" style="display:none"></span>
@@ -294,566 +151,401 @@
       </button>
       <button class="cart-close" id="close-cart">Закрыть</button>
     </div>
+
     <div style="margin-top:8px;color:rgba(255,255,255,0.9)">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
   </div>
+
   <footer>Казахстан · Atyrau · WhatsApp: +7 778 222 2191</footer>
 
-  <script>
-    /* ========== SETTINGS ========== */
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo/gviz/tq?tqx=out:csv&sheet=Лист1';
-    const whatsappNumber = '77782222191';
-    const categoriesList = [
-      "Посуды",
-      "Игрушки и детские товары",
-      "Органайзеры",
-      "Аксессуары",
-      "Хозтовары",
-      "Для кухни",
-      "Для дома и хозяйства"
-    ];
+<script>
+/* ========== Настройки ========== */
+// Google Sheets ID: (дано тобой)
+const SHEET_ID = '1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo';
+// GVIZ JSON endpoint (используем sheet id)
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
-    const DEMO_IMAGES = {
-      'Посуды': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
-      'Игрушки и детские товары': 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&h=300&fit=crop',
-      'Органайзеры': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
-      'Аксессуары': 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=300&fit=crop',
-      'Хозтовары': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
-      'Для кухни': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
-      'Для дома и хозяйства': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop'
-    };
+// GitHub raw base (репо public)
+const GITHUB_BASE = 'https://raw.githubusercontent.com/Abdusamat69/nice-atyrau/main';
 
-    /* UI refs */
-    const elCategories = document.getElementById('categories');
-    const elProductsSection = document.getElementById('products-section');
-    const elProductsList = document.getElementById('products-list');
-    const elProductsTitle = document.getElementById('products-title');
-    const elProductsCount = document.getElementById('products-count');
-    const elBackToCats = document.getElementById('back-to-cats');
-    const cartButton = document.getElementById('cart-button');
-    const elCartPopup = document.getElementById('cart-popup');
-    const elCartList = document.getElementById('cart-list');
-    const elCartCount = document.getElementById('cart-count');
-    const elCartTotal = document.getElementById('cart-total');
-    const floatingBack = document.getElementById('floating-back');
-    const bankBtn = document.getElementById('bank-btn');
-    const bankList = document.getElementById('bank-list');
-    const clientPhoneInput = document.getElementById('client-phone');
-    const phoneError = document.getElementById('phone-error');
-    const bankError = document.getElementById('bank-error');
-    const sendOrderBtn = document.getElementById('send-order');
+// WhatsApp (без +)
+const WHATSAPP_NUMBER = '77782222191';
 
-    let products = [];
-    let cart = {};
-    let selectedBank = '';
-    let searchTimeout = null;
+/* DEMO placeholder */
+const DEMO_IMAGE = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f0f0f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="18">No Image</text></svg>');
 
-    function escapeHtml(unsafe) {
-      if (!unsafe) return '';
-      return String(unsafe)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/\'/g, "&#039;");
-    }
+/* UI refs */
+const elCategories = document.getElementById('categories');
+const elProductsSection = document.getElementById('products-section');
+const elProductsGrid = document.getElementById('products-grid');
+const elProductsTitle = document.getElementById('products-title');
+const elProductsCount = document.getElementById('products-count');
+const backToCats = document.getElementById('back-to-cats');
+const backToCats2 = document.getElementById('back-to-cats-2');
+const floatingBack = document.getElementById('floating-back');
+const searchInput = document.getElementById('search');
 
-    function normalizePhotoUrl(url, hintType='') {
-      if (!url) return '';
-      url = String(url).trim();
-      if (!url) return '';
-      if (/^https?:\/\/.+\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url)) {
-        return url;
+const cartButton = document.getElementById('cart-button');
+const cartPopup = document.getElementById('cart-popup');
+const cartList = document.getElementById('cart-list');
+const cartCount = document.getElementById('cart-count');
+const cartTotal = document.getElementById('cart-total');
+const clientPhoneInput = document.getElementById('client-phone');
+const phoneError = document.getElementById('phone-error');
+const bankBtn = document.getElementById('bank-btn');
+const bankList = document.getElementById('bank-list');
+const bankError = document.getElementById('bank-error');
+const sendOrderBtn = document.getElementById('send-order');
+const closeCartBtn = document.getElementById('close-cart');
+
+/* State */
+let products = [];
+let categoriesMap = {}; // { categoryName: { count, catalogPhoto } }
+let visibleProducts = [];
+let cart = {};
+let selectedBank = '';
+
+/* Helpers */
+function safe(v){ return v == null ? '' : String(v); }
+
+function resolveImagePath(cellValue, expectedFolder){
+  // cellValue may be:
+  // - full path starting with /images/...
+  // - just filename like "skovorodka.jpg"
+  // - full URL (https://...)
+  if(!cellValue) return '';
+  const s = cellValue.trim();
+  if(/^https?:\/\//i.test(s)) return s;
+  if(s.startsWith('/images/')){
+    // user provided repository-style path starting with /images/...
+    // raw url: https://raw.githubusercontent.com/{user}/{repo}/main{path}
+    return `${GITHUB_BASE}${s}`; // GITHUB_BASE already ends without slash
+  }
+  // if it contains images/ inside (no leading slash)
+  if(s.includes('images/')) return `${GITHUB_BASE}/${s.replace(/^\/+/, '')}`;
+  // otherwise assume filename, append folder
+  return `${GITHUB_BASE}/images/${expectedFolder}/${encodeURIComponent(s)}`;
+}
+
+function handleImgError(e){
+  e.target.onerror = null;
+  e.target.src = DEMO_IMAGE;
+}
+
+/* Parse gviz JSON response */
+function parseGviz(text){
+  // remove prefix and suffix to get pure JSON
+  // gviz returns: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+  const start = text.indexOf('setResponse(');
+  if(start === -1) throw new Error('GViz: unexpected response');
+  const jsonText = text.slice(start + 'setResponse('.length).replace(/\);\s*$/,'');
+  return JSON.parse(jsonText);
+}
+
+/* Load products from sheet */
+async function loadFromSheet(){
+  try{
+    elCategories.innerHTML = '<div style="padding:18px;text-align:center;opacity:0.6">Загрузка...</div>';
+    const r = await fetch(SHEET_URL);
+    if(!r.ok) throw new Error('Ошибка загрузки таблицы: ' + r.status);
+    const txt = await r.text();
+    const data = parseGviz(txt);
+    const rows = data.table.rows || [];
+    products = rows.map((row, idx) => {
+      // Таблица у тебя: |Категория | Название | Описание | Цена | Фото | Фото каталога|
+      // Это означает: c[0] = category, c[1] = title, c[2] = desc, c[3] = price, c[4] = photo, c[5] = catalogPhoto
+      const c = row.c || [];
+      const category = safe(c[0]?.v).trim();
+      const title = safe(c[1]?.v).trim();
+      const desc = safe(c[2]?.v).trim();
+      const price = safe(c[3]?.v).trim();
+      const photoCell = safe(c[4]?.v).trim();
+      const catalogPhotoCell = safe(c[5]?.v).trim();
+
+      // resolve images (photo => product image, catalogPhoto => category card image)
+      const productImage = resolveImagePath(photoCell, 'products');
+      const catalogImage = resolveImagePath(catalogPhotoCell || photoCell, 'catalog'); // fallback to photo if no catalog
+      const id = safe(c[6]?.v) || `prod-${idx+1}`;
+
+      // collect categories
+      if(category){
+        if(!categoriesMap[category]) categoriesMap[category] = {count:0, catalogPhoto: catalogImage};
+        categoriesMap[category].count++;
+        // if category has no catalog photo yet, prefer this row's catalogPhoto when available
+        if(!categoriesMap[category].catalogPhoto && catalogImage) categoriesMap[category].catalogPhoto = catalogImage;
       }
-      const m1 = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
-      if (m1) return `https://drive.google.com/uc?export=view&id=${m1[1]}`;
-      const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
-      if (m2) return `https://drive.google.com/uc?export=view&id=${m2[1]}`;
-      const m3 = url.match(/\/open\?id=([a-zA-Z0-9_-]{10,})/);
-      if (m3) return `https://drive.google.com/uc?export=view&id=${m3[1]}`;
-      if (/^[a-zA-Z0-9_-]{10,}$/.test(url)) return `https://drive.google.com/uc?export=view&id=${url}`;
-      return '';
-    }
 
-    function placeholderFor(text) {
-      const safeText = text.length > 10 ? 'Image' : text.substring(0,10).replace(/[^a-zA-Z0-9]/g, ' ');
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-        <rect width="200" height="200" fill="#f0f0f0"/>
-        <text x="100" y="100" text-anchor="middle" dy="0.3em" font-family="Arial" font-size="14" fill="#666">${safeText}</text>
-      </svg>`;
-      return `data:image/svg+xml;base64,${btoa(svg)}`;
-    }
-
-    function handleImageError(img) {
-      img.onerror = null;
-      const category = img.alt;
-      if (DEMO_IMAGES[category]) {
-        img.src = DEMO_IMAGES[category];
-      } else {
-        img.src = placeholderFor('No Image');
-      }
-      img.style.opacity = '0.7';
-    }
-
-    async function fetchCSV() {
-      try {
-        const res = await fetch(csvUrl);
-        if (!res.ok) throw new Error('Ошибка загрузки CSV: ' + res.status);
-        return await res.text();
-      } catch (error) {
-        throw new Error('Не удалось загрузить данные. Проверьте подключение к интернету.');
-      }
-    }
-
-    function parseCSV(str) {
-      const rows = [];
-      let current = '';
-      let inQuotes = false;
-      let row = [];
-      for (let i = 0; i < str.length; i++) {
-        const char = str[i];
-        const nextChar = str[i+1];
-        if (char === '"') {
-          if (inQuotes && nextChar === '"') {
-            current += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-          continue;
-        }
-        if (char === ',' && !inQuotes) {
-          row.push(current);
-          current = '';
-          continue;
-        }
-        if ((char === '\n' || char === '\r') && !inQuotes) {
-          if (current !== '' || row.length > 0) {
-            row.push(current);
-            rows.push(row);
-            row = [];
-            current = '';
-          }
-          if (char === '\r' && nextChar === '\n') i++;
-          continue;
-        }
-        current += char;
-      }
-      if (current !== '' || row.length > 0) {
-        row.push(current);
-        rows.push(row);
-      }
-      return rows;
-    }
-
-    function findCatalogPhotoIndex(headers) {
-      const candidates = [
-        'фото каталога','фотокаталога','фото_каталога','фотокаталог',
-        'каталог фото','каталог','catalog','catalogphoto','catalog_photo',
-        'catalog image','catalog_image','image_catalog'
-      ];
-      for (let i=0; i<headers.length; i++) {
-        const header = (headers[i] || '').toLowerCase().trim();
-        for (const candidate of candidates) {
-          if (header.includes(candidate) || candidate.includes(header)) {
-            return i;
-          }
-        }
-      }
-      return -1;
-    }
-
-    async function loadProductsFromSheet() {
-      try {
-        elCategories.innerHTML = '<div style="padding:18px;text-align:center;opacity:0.6"><div class="spinner"></div> Загрузка товаров...</div>';
-        const csv = await fetchCSV();
-        const rows = parseCSV(csv);
-        if (!rows || rows.length < 2) {
-          throw new Error('Таблица пуста или неверный формат.');
-        }
-        const headersRaw = rows[0].map(h => h || '');
-        const headers = headersRaw.map(h => h.trim().toLowerCase());
-        const idx = {
-          category: headers.indexOf('категория'),
-          title: headers.indexOf('название'),
-          desc: headers.indexOf('описание'),
-          price: headers.indexOf('цена'),
-          photo: headers.indexOf('фото'),
-          id: headers.indexOf('id')
-        };
-        const catalogPhotoIdx = findCatalogPhotoIndex(headersRaw);
-
-        if (idx.category < 0 || idx.title < 0 || idx.price < 0) {
-          throw new Error('В таблице обязаны быть колонки: Категория | Название | Цена');
-        }
-
-        products = rows.slice(1)
-          .filter(r => r.some(cell => cell && cell.trim() !== ''))
-          .map((r,i) => {
-            const category = escapeHtml(r[idx.category] || '').trim();
-            const title = escapeHtml(r[idx.title] || '').trim() || 'Без названия';
-            const desc = escapeHtml(idx.desc >= 0 ? (r[idx.desc] || '') : '').trim();
-            const priceRaw = (r[idx.price] || '0').replace(/[^0-9.]/g, '').trim();
-            const price = parseInt(priceRaw) || 0;
-            const rawPhoto = (idx.photo >=0 && r[idx.photo]) ? r[idx.photo].trim() : '';
-            const photo = rawPhoto ? normalizePhotoUrl(rawPhoto,'product') : '';
-            const rawCatalog = (catalogPhotoIdx >=0 && r[catalogPhotoIdx]) ? r[catalogPhotoIdx].trim() : rawPhoto;
-            const catalogPhoto = rawCatalog ? normalizePhotoUrl(rawCatalog,'catalog') : '';
-            const id = (idx.id >=0 && r[idx.id]) ? r[idx.id].trim() : `prod-${i+1}-${Date.now().toString(36).slice(-4)}`;
-            return { category, title, desc, price, photo, catalogPhoto, id };
-          });
-
-        renderCategories();
-      } catch(err) {
-        console.error('Ошибка загрузки:', err);
-        elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
-          <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверьте публикацию таблицы.</small>
-        </div>`;
-      }
-    }
-
-    function renderCategories() {
-      elCategories.innerHTML = '';
-      categoriesList.forEach(cat => {
-        const catProducts = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
-        let catalogImage = '';
-        const productWithCatalog = catProducts.find(p => p.catalogPhoto && p.catalogPhoto.trim() !== '');
-        if (productWithCatalog) {
-          catalogImage = productWithCatalog.catalogPhoto;
-        } else if (catProducts.length > 0) {
-          catalogImage = catProducts[0].photo || '';
-        }
-        const finalImage = catalogImage || DEMO_IMAGES[cat] || placeholderFor(cat);
-        const card = document.createElement('div');
-        card.className = 'cat-card';
-        const img = document.createElement('img');
-        img.className = 'cat-thumb';
-        img.src = finalImage;
-        img.alt = cat;
-        img.loading = 'lazy';
-        img.onerror = () => handleImageError(img);
-        const meta = document.createElement('div');
-        meta.className = 'cat-meta';
-        const title = document.createElement('h3');
-        title.textContent = cat;
-        const count = document.createElement('div');
-        count.className = 'small';
-        count.textContent = `${catProducts.length} товаров`;
-        meta.appendChild(title);
-        meta.appendChild(count);
-        card.appendChild(img);
-        card.appendChild(meta);
-        card.addEventListener('click', () => {
-          if (window.innerWidth <= 720) hideCartPopup();
-          openCategory(cat);
-        });
-        elCategories.appendChild(card);
-      });
-    }
-
-    function openCategory(cat) {
-      elProductsTitle.textContent = cat;
-      elProductsList.innerHTML = '';
-      const list = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
-      if (list.length === 0) {
-        elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Нет товаров в этой категории.</div>';
-        elProductsCount.textContent = '';
-      } else {
-        list.forEach(p => {
-          const item = document.createElement('div');
-          item.className = 'product-card';
-          const img = document.createElement('img');
-          img.src = p.photo || DEMO_IMAGES[p.category] || placeholderFor(p.title);
-          img.alt = p.title;
-          img.loading = 'lazy';
-          img.onerror = () => handleImageError(img);
-          const info = document.createElement('div');
-          info.className = 'product-info';
-          const title = document.createElement('h4');
-          title.textContent = p.title;
-          const desc = document.createElement('p');
-          desc.textContent = p.desc || '';
-          const meta = document.createElement('div');
-          meta.className = 'product-meta';
-          const price = document.createElement('div');
-          price.className = 'price';
-          price.textContent = `${p.price} KZT`;
-          const actions = document.createElement('div');
-          actions.style.marginLeft = 'auto';
-          const button = document.createElement('button');
-          button.className = 'btn btn-primary';
-          button.textContent = 'В корзину';
-          button.onclick = () => addToCart(p.id);
-          actions.appendChild(button);
-          meta.appendChild(price);
-          meta.appendChild(actions);
-          info.appendChild(title);
-          info.appendChild(desc);
-          info.appendChild(meta);
-          item.appendChild(img);
-          item.appendChild(info);
-          elProductsList.appendChild(item);
-        });
-        elProductsCount.textContent = list.length + ' товаров';
-      }
-      document.getElementById('categories').style.display = 'none';
-      elProductsSection.style.display = 'block';
-      window.scrollTo({ top:0, behavior:'smooth' });
-    }
-
-    function showCategories() {
-      elProductsSection.style.display = 'none';
-      document.getElementById('categories').style.display = 'grid';
-      window.scrollTo({ top:0, behavior:'smooth' });
-    }
-
-    function addToCart(id) {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      if (!cart[id]) cart[id] = { ...p, qty:0 };
-      cart[id].qty++;
-      renderCart();
-      elCartPopup.style.display = 'flex';
-      cartButton.style.transform = 'scale(1.1)';
-      setTimeout(() => cartButton.style.transform = 'scale(1)', 200);
-    }
-
-    function changeQty(id, delta) {
-      if (!cart[id]) return;
-      cart[id].qty += delta;
-      if (cart[id].qty < 1) {
-        if (confirm('Удалить товар из корзины?')) {
-          delete cart[id];
-        } else {
-          cart[id].qty = 1;
-        }
-      }
-      renderCart();
-    }
-
-    function removeItem(id) {
-      if (confirm('Удалить товар из корзины?')) {
-        delete cart[id];
-        renderCart();
-      }
-    }
-
-    function renderCart() {
-      const keys = Object.keys(cart);
-      elCartList.innerHTML = '';
-      if (keys.length === 0) {
-        elCartList.innerHTML = '<div style="opacity:0.6;padding:20px;text-align:center">Корзина пуста</div>';
-        elCartCount.textContent = '0';
-        elCartTotal.textContent = '0 KZT';
-        return;
-      }
-      let total = 0;
-      keys.forEach(k => {
-        const it = cart[k];
-        total += it.price * it.qty;
-        const row = document.createElement('div');
-        row.className = 'cart-item';
-        const img = document.createElement('img');
-        img.src = it.photo || DEMO_IMAGES[it.category] || placeholderFor(it.title);
-        img.alt = it.title;
-        img.onerror = () => handleImageError(img);
-        const info = document.createElement('div');
-        info.style.flex = '1';
-        const title = document.createElement('div');
-        title.style.fontWeight='700';
-        title.textContent = it.title;
-        const details = document.createElement('div');
-        details.className='small';
-        details.textContent = `${it.price} × ${it.qty} шт.`;
-        info.appendChild(title);
-        info.appendChild(details);
-        const controls = document.createElement('div');
-        controls.style.display='flex'; controls.style.flexDirection='column'; controls.style.gap='6px'; controls.style.alignItems='center';
-        const qtyControls = document.createElement('div');
-        qtyControls.style.display='flex'; qtyControls.style.gap='6px';
-        const decBtn = document.createElement('button');
-        decBtn.className='btn btn-ghost'; decBtn.textContent='−'; decBtn.onclick=()=>changeQty(it.id,-1);
-        const incBtn = document.createElement('button');
-        incBtn.className='btn btn-ghost'; incBtn.textContent='+'; incBtn.onclick=()=>changeQty(it.id,1);
-        const delBtn = document.createElement('button');
-        delBtn.className='btn btn-ghost'; delBtn.textContent='✕'; delBtn.onclick=()=>removeItem(it.id);
-        qtyControls.appendChild(decBtn); qtyControls.appendChild(incBtn);
-        controls.appendChild(qtyControls); controls.appendChild(delBtn);
-        row.appendChild(img); row.appendChild(info); row.appendChild(controls);
-        elCartList.appendChild(row);
-      });
-      elCartCount.textContent = keys.length;
-      elCartTotal.textContent = total + ' KZT';
-    }
-
-    function toggleCart() {
-      elCartPopup.style.display = (elCartPopup.style.display==='flex') ? 'none':'flex';
-    }
-
-    cartButton.addEventListener('click', toggleCart);
-    document.getElementById('close-cart').addEventListener('click', () => { elCartPopup.style.display='none'; });
-
-    function hideCartPopup() { if(window.innerWidth<=720) elCartPopup.style.display='none'; }
-    window.addEventListener('resize', hideCartPopup);
-    window.addEventListener('orientationchange', hideCartPopup);
-
-    bankBtn.addEventListener('click', e=>{ e.stopPropagation(); bankList.style.display=(bankList.style.display==='block'?'none':'block'); bankList.setAttribute('aria-hidden', bankList.style.display==='block'?'false':'true'); });
-    bankList.addEventListener('click', e=>{ const it=e.target.closest('.item'); if(!it) return; selectedBank = it.dataset.val||''; bankBtn.textContent = (it.textContent||'Не указано') + ' ▾'; bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); bankError.style.display='none'; });
-    document.addEventListener('click', ()=>{ bankList.style.display='none'; bankList.setAttribute('aria-hidden','true'); });
-
-    function validatePhone(phone) {
-      const phoneRegex = /^\+7\s?7\d{9}$/;
-      return phoneRegex.test(phone.replace(/\s/g,''));
-    }
-    clientPhoneInput.addEventListener('input', e=>{
-      let value = e.target.value.replace(/\D/g,'');
-      if(value.startsWith('7')) value='+7'+value.slice(1);
-      if(value.length>12) value=value.slice(0,12);
-      if(value.length>3) value=value.slice(0,3)+' '+value.slice(3);
-      if(value.length>7) value=value.slice(0,7)+' '+value.slice(7);
-      if(value.length>11) value=value.slice(0,11)+' '+value.slice(11);
-      if(value.length>14) value=value.slice(0,14)+' '+value.slice(14);
-      e.target.value=value;
-      phoneError.style.display='none';
+      return { id, category, title, desc, price, photoCell, productImage, catalogImage };
     });
 
-    function buildOrderMessage(clientPhone, clientBank) {
-      const items = Object.values(cart);
-      let lines=[];
-      items.forEach((it,idx)=> lines.push(`${idx+1}. ${it.title} — ${it.qty} шт. × ${it.price}₸`));
-      const total= items.reduce((s,it)=> s + it.price * it.qty, 0);
-      let msg = "🛍️ Заказ Nice_Atyrau\n\n";
-      msg += "📦 Товары:\n" + lines.join("\n") + "\n\n";
-      msg += `💰 Итого: ${total}₸\n`;
-      if(clientBank) msg += `🏦 Банк клиента: ${clientBank}\n`;
-      if(clientPhone) msg += `📱 Телефон клиента: ${clientPhone}\n`;
-      msg += `\nСайт: ${location.origin}`;
-      return msg;
+    // render categories and all products
+    renderCategories();
+    visibleProducts = products.slice();
+    renderProducts(visibleProducts);
+    elCategories.querySelectorAll?.length && (document.getElementById('loading')?.remove?.());
+  }catch(err){
+    console.error(err);
+    elCategories.innerHTML = `<div style="padding:12px;background:#fff3cd;border-radius:10px;border:1px solid #ffe8a1">
+      <b>Ошибка загрузки данных</b><br><small>${err.message}</small><br><small>Проверь доступность таблицы (Anyone with link can view)</small>
+    </div>`;
+  }
+}
+
+/* Render categories */
+function renderCategories(){
+  elCategories.innerHTML = '';
+  const cats = Object.keys(categoriesMap);
+  if(cats.length === 0){
+    // if no categories provided - derive from products
+    const derived = {};
+    products.forEach(p => {
+      const cat = p.category || 'Без категории';
+      if(!derived[cat]) derived[cat] = {count:0, catalogPhoto: p.catalogImage || p.productImage};
+      derived[cat].count++;
+    });
+    for(const cat in derived){
+      categoriesMap[cat] = derived[cat];
     }
+  }
 
-    sendOrderBtn.addEventListener('click', async () => {
-      if(Object.keys(cart).length === 0) {
-        alert('Корзина пуста');
-        return;
-      }
-      const clientPhone = clientPhoneInput.value.trim();
-      const clientBank = selectedBank;
-      let isValid=true;
-      if(!validatePhone(clientPhone)) {
-        phoneError.style.display='block';
-        isValid=false;
-      }
-      if(!clientBank) {
-        bankError.style.display='block';
-        isValid=false;
-      }
-      if(!isValid) {
-        alert('Пожалуйста, заполните все обязательные поля корректно.');
-        return;
-      }
-      const spinner = sendOrderBtn.querySelector('.spinner');
-      const textEl = sendOrderBtn.querySelector('span:last-child');
-      spinner.style.display='inline-block';
-      textEl.textContent='Отправка...';
-      sendOrderBtn.disabled=true;
-      try {
-        const msg = buildOrderMessage(clientPhone, clientBank);
-        const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-        await new Promise(r=>setTimeout(r,1000));
-        window.open(waUrl,'_blank');
-        cart = {};
-        renderCart();
-        clientPhoneInput.value='';
-        selectedBank='';
-        bankBtn.textContent='Не указано ▾';
-        alert('Заказ отправлен оператору в WhatsApp. Корзина очищена.');
-        elCartPopup.style.display='none';
-      } catch(error) {
-        alert('Ошибка при отправке заказа. Пожалуйста, попробуйте ещё раз.');
-      } finally {
-        spinner.style.display='none';
-        textEl.textContent='Отправить заказ';
-        sendOrderBtn.disabled=false;
-      }
-    });
+  // Create card for each category
+  for(const cat of Object.keys(categoriesMap)){
+    const info = categoriesMap[cat];
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    const img = document.createElement('img');
+    img.src = info.catalogPhoto || DEMO_IMAGE;
+    img.alt = cat;
+    img.onerror = handleImgError;
+    const body = document.createElement('div');
+    body.className = 'cat-body';
+    const h = document.createElement('h3'); h.className = 'cat-title'; h.textContent = cat;
+    const small = document.createElement('div'); small.className = 'cat-count'; small.textContent = `${info.count || products.filter(p=>p.category===cat).length} товаров`;
+    body.appendChild(h); body.appendChild(small);
+    card.appendChild(img); card.appendChild(body);
+    card.addEventListener('click', ()=> openCategory(cat));
+    elCategories.appendChild(card);
+  }
 
-    document.getElementById('search').addEventListener('input', e=>{
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(()=>{
-        const q = e.target.value.trim().toLowerCase();
-        if(!q) {
-          if(elProductsSection.style.display === 'block') return;
-          else { renderCategories(); return; }
-        }
-        const matches = products.filter(p => (p.title + ' ' + p.desc + ' ' + p.category).toLowerCase().includes(q));
-        elProductsTitle.textContent = `Поиск: "${q}"`;
-        elProductsCount.textContent = matches.length ? matches.length + ' товаров' : '0';
-        elProductsList.innerHTML='';
-        if(matches.length === 0) {
-          elProductsList.innerHTML = '<div style="opacity:0.7;padding:20px;text-align:center">Ничего не найдено</div>';
-        } else {
-          matches.forEach(p=>{
-            const item = document.createElement('div');
-            item.className='product-card';
-            const img = document.createElement('img');
-            img.src = p.photo || DEMO_IMAGES[p.category] || placeholderFor(p.title);
-            img.alt = p.title;
-            img.loading='lazy';
-            img.onerror = ()=>handleImageError(img);
-            const info = document.createElement('div');
-            info.className='product-info';
-            const title = document.createElement('h4');
-            title.textContent = p.title;
-            const desc = document.createElement('p');
-            desc.textContent = p.desc || '';
-            const meta = document.createElement('div');
-            meta.className='product-meta';
-            const price = document.createElement('div');
-            price.className='price';
-            price.textContent = `${p.price} KZT`;
-            const actions = document.createElement('div');
-            actions.style.marginLeft='auto';
-            const button = document.createElement('button');
-            button.className='btn btn-primary';
-            button.textContent='Добавить';
-            button.onclick=()=>addToCart(p.id);
-            actions.appendChild(button);
-            meta.appendChild(price);
-            meta.appendChild(actions);
-            info.appendChild(title);
-            info.appendChild(desc);
-            info.appendChild(meta);
-            item.appendChild(img);
-            item.appendChild(info);
-            elProductsList.appendChild(item);
-          });
-        }
-        document.getElementById('categories').style.display='none';
-        elProductsSection.style.display='block';
-        if(window.innerWidth<=720) elCartPopup.style.display='none';
-      },300);
-    });
+  // If there are also some products without category, show "Все"
+  const allBtn = document.createElement('div');
+  // (we already show categories as cards; don't need a button separately)
+}
 
-    floatingBack.addEventListener('click', ()=>{
-      showCategories();
-      floatingBack.style.transform='scale(0.98)';
-      setTimeout(()=>floatingBack.style.transform='scale(1)',120);
-    });
+/* Open category -> show products */
+function openCategory(cat){
+  elProductsTitle.textContent = cat;
+  const list = products.filter(p => (p.category || '').toLowerCase() === (cat || '').toLowerCase());
+  visibleProducts = list;
+  renderProducts(list);
+  document.getElementById('categories').style.display = 'grid';
+  // toggle sections
+  document.getElementById('categories').style.display = 'none';
+  elProductsSection.style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-    elBackToCats.addEventListener('click', showCategories);
+/* Show categories */
+function showCategories(){
+  elProductsSection.style.display = 'none';
+  document.getElementById('categories').style.display = 'grid';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-    window.addToCart=addToCart;
-    window.changeQty=changeQty;
-    window.removeItem=removeItem;
-    window.showCategory=openCategory;
-    window.handleImageError=handleImageError;
-    window.hideCartPopup=hideCartPopup;
+/* Render products grid */
+function renderProducts(list){
+  elProductsGrid.innerHTML = '';
+  elProductsCount.textContent = (list && list.length) ? `${list.length} товаров` : '';
+  if(!list || list.length === 0){
+    elProductsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:18px;opacity:0.7">Нет товаров</div>';
+    return;
+  }
+  list.forEach(p => {
+    const card = document.createElement('div'); card.className = 'card';
+    const img = document.createElement('img'); img.src = p.productImage || DEMO_IMAGE; img.alt = p.title; img.onerror = handleImgError;
+    const body = document.createElement('div'); body.className = 'card-body';
+    const h = document.createElement('h4'); h.textContent = p.title;
+    const desc = document.createElement('p'); desc.textContent = p.desc || '';
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const price = document.createElement('div'); price.className = 'price'; price.textContent = p.price ? p.price + ' ₸' : '';
+    const actions = document.createElement('div'); actions.style.marginLeft = 'auto';
+    const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'В корзину';
+    btn.addEventListener('click', ()=> addToCart(p.id));
+    actions.appendChild(btn);
+    meta.appendChild(price); meta.appendChild(actions);
+    body.appendChild(h); body.appendChild(desc); body.appendChild(meta);
+    card.appendChild(img); card.appendChild(body);
+    elProductsGrid.appendChild(card);
+  });
+}
 
-    (async function init(){
-      elProductsSection.style.display='none';
-      await loadProductsFromSheet();
-      renderCart();
-      hideCartPopup();
-    })();
-  </script>
+/* Search */
+search.addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){
+    // if on products section, leave visibleProducts; if on categories show categories
+    if(elProductsSection.style.display === 'block'){
+      renderProducts(visibleProducts);
+    } else {
+      renderCategories();
+    }
+    return;
+  }
+  const matches = products.filter(p => {
+    return (p.title && p.title.toLowerCase().includes(q)) ||
+           (p.desc && p.desc.toLowerCase().includes(q)) ||
+           (p.category && p.category.toLowerCase().includes(q));
+  });
+  // show results in products section
+  elProductsTitle.textContent = `Поиск: "${q}"`;
+  elProductsCount.textContent = matches.length ? matches.length + ' товаров' : '0';
+  elProductsSection.style.display = 'block';
+  document.getElementById('categories').style.display = 'none';
+  renderProducts(matches);
+});
+
+/* Back buttons */
+backToCats.addEventListener('click', showCategories);
+backToCats2.addEventListener('click', showCategories);
+
+/* Floating back (for mobile) */
+floatingBack.addEventListener('click', showCategories);
+
+/* ========== CART ========== */
+function addToCart(id){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+  if(!cart[id]) cart[id] = {...p, qty:0};
+  cart[id].qty++;
+  renderCart();
+  cartPopup.style.display = 'flex';
+  // animate cart btn
+  cartButton.style.transform = 'scale(1.08)';
+  setTimeout(()=> cartButton.style.transform = 'scale(1)', 160);
+}
+
+function changeQty(id, delta){
+  if(!cart[id]) return;
+  cart[id].qty += delta;
+  if(cart[id].qty <= 0) delete cart[id];
+  renderCart();
+}
+
+function removeItem(id){
+  if(confirm('Удалить товар из корзины?')){
+    delete cart[id];
+    renderCart();
+  }
+}
+
+function renderCart(){
+  const keys = Object.keys(cart);
+  cartList.innerHTML = '';
+  if(keys.length === 0){
+    cartList.innerHTML = '<div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div>';
+    cartCount.textContent = '0';
+    cartTotal.textContent = '0 KZT';
+    return;
+  }
+  let total = 0;
+  keys.forEach(k => {
+    const it = cart[k];
+    total += (Number(it.price) || 0) * it.qty;
+    const row = document.createElement('div'); row.className = 'cart-item';
+    const img = document.createElement('img'); img.src = it.productImage || DEMO_IMAGE; img.onerror = handleImgError;
+    const info = document.createElement('div'); info.style.flex = '1';
+    const title = document.createElement('div'); title.style.fontWeight = '700'; title.textContent = it.title;
+    const details = document.createElement('div'); details.style.color = '#fff'; details.style.fontSize = '13px'; details.textContent = `${it.price} × ${it.qty} шт.`;
+    info.appendChild(title); info.appendChild(details);
+    const controls = document.createElement('div'); controls.style.display='flex'; controls.style.flexDirection='column'; controls.style.gap='6px'; controls.style.alignItems='center';
+    const qtyControls = document.createElement('div'); qtyControls.style.display='flex'; qtyControls.style.gap='6px';
+    const decBtn = document.createElement('button'); decBtn.className = 'btn btn-ghost'; decBtn.textContent = '−'; decBtn.addEventListener('click', ()=> changeQty(it.id, -1));
+    const incBtn = document.createElement('button'); incBtn.className = 'btn btn-ghost'; incBtn.textContent = '+'; incBtn.addEventListener('click', ()=> changeQty(it.id, 1));
+    const delBtn = document.createElement('button'); delBtn.className = 'btn btn-ghost'; delBtn.textContent = '✕'; delBtn.addEventListener('click', ()=> removeItem(it.id));
+    qtyControls.appendChild(decBtn); qtyControls.appendChild(incBtn);
+    controls.appendChild(qtyControls); controls.appendChild(delBtn);
+    row.appendChild(img); row.appendChild(info); row.appendChild(controls);
+    cartList.appendChild(row);
+  });
+  cartCount.textContent = Object.values(cart).reduce((s,i)=> s + i.qty, 0);
+  cartTotal.textContent = total + ' KZT';
+}
+
+/* Toggle cart */
+cartButton.addEventListener('click', ()=> {
+  if(cartPopup.classList.contains('hidden') || cartPopup.style.display === 'none'){ cartPopup.style.display = 'flex'; cartPopup.classList.remove('hidden'); }
+  else { cartPopup.style.display = 'none'; cartPopup.classList.add('hidden'); }
+});
+document.getElementById('close-cart').addEventListener('click', ()=> { cartPopup.style.display = 'none'; });
+
+/* Auto-hide cart on small screens */
+function autoHideCartOnSmall(){ if(window.innerWidth <= 720) cartPopup.style.display = 'none'; }
+window.addEventListener('resize', autoHideCartOnSmall);
+window.addEventListener('orientationchange', autoHideCartOnSmall);
+
+/* ========== BANK SELECT ========== */
+bankBtn.addEventListener('click', (e)=> { e.stopPropagation(); bankList.style.display = bankList.style.display === 'block' ? 'none' : 'block'; bankList.setAttribute('aria-hidden', bankList.style.display !== 'block'); });
+bankList.addEventListener('click', (e)=> { const it = e.target.closest('.item'); if(!it) return; selectedBank = it.dataset.val || ''; bankBtn.textContent = (it.textContent || 'Не указано') + ' ▾'; bankList.style.display = 'none'; bankError.style.display = 'none'; });
+document.addEventListener('click', ()=> { bankList.style.display = 'none'; bankList.setAttribute('aria-hidden', 'true'); });
+
+/* ========== PHONE VALIDATION ========== */
+function validatePhone(phone){
+  const digits = phone.replace(/\D/g,'');
+  // Accept 7XXXXXXXXXX (11 digits starting with 7)
+  return /^7\d{9}$/.test(digits) || /^77\d{9}$/.test(digits); // slightly tolerant
+}
+clientPhoneInput.addEventListener('input', ()=> { phoneError.style.display = 'none'; });
+
+/* ========== SEND ORDER ========== */
+sendOrderBtn.addEventListener('click', async ()=>{
+  if(Object.keys(cart).length === 0){ alert('Корзина пуста'); return; }
+  const phone = clientPhoneInput.value.trim();
+  if(!validatePhone(phone)){ phoneError.style.display = 'block'; alert('Введите корректный номер телефона формата +7 7XXXXXXXXX'); return; }
+  if(!selectedBank){ bankError.style.display = 'block'; alert('Выберите банк'); return; }
+
+  // build message
+  const items = Object.values(cart);
+  const lines = items.map((it, idx) => `${idx+1}. ${it.title} — ${it.qty} шт × ${it.price}₸`).join('\n');
+  const total = items.reduce((s,it)=> s + (Number(it.price) || 0) * it.qty, 0);
+  const msg = `🛍️ Заказ Nice_Atyrau\n\n📦 Товары:\n${lines}\n\n💰 Итого: ${total}₸\n🏦 Банк: ${selectedBank}\n📱 Клиент: ${phone}\n\nСайт: ${location.origin}`;
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+  // small UX: show sending spinner (simple)
+  const spinner = sendOrderBtn.querySelector('.spinner');
+  const textEl = sendOrderBtn.querySelector('span:last-child');
+  spinner && (spinner.style.display = 'inline-block');
+  if(textEl) textEl.textContent = 'Отправка...';
+  sendOrderBtn.disabled = true;
+
+  try{
+    // open wa
+    window.open(waUrl, '_blank');
+    // clear cart
+    cart = {};
+    renderCart();
+    clientPhoneInput.value = '';
+    selectedBank = '';
+    bankBtn.textContent = 'Не указано ▾';
+    alert('Заказ отправлен оператору в WhatsApp. Корзина очищена.');
+    cartPopup.style.display = 'none';
+  }catch(err){
+    console.error(err);
+    alert('Ошибка при отправке заказа. Попробуйте ещё раз.');
+  }finally{
+    spinner && (spinner.style.display = 'none');
+    if(textEl) textEl.textContent = 'Отправить заказ';
+    sendOrderBtn.disabled = false;
+  }
+});
+
+/* ========== Init ========== */
+(async function init(){
+  // show categories loading placeholder
+  elCategories.innerHTML = '<div id="loading" style="grid-column:1/-1;text-align:center;padding:18px;opacity:0.6">Загрузка товаров...</div>';
+  await loadFromSheet();
+  renderCart();
+  // ensure cart hidden on mobile
+  autoHideCartOnSmall();
+})();
+</script>
 </body>
 </html>
