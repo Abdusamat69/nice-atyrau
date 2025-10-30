@@ -27,14 +27,28 @@
   main{max-width:1100px;margin:16px auto;padding:0 14px 120px}
   .hero{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
   .hint{color:var(--muted);font-size:14px}
-  /* categories */
-  .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
-  .cat-block{border-radius:12px;padding:18px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer;min-height:90px;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 18px rgba(11,34,71,0.06)}
-  .cat-block:hover{transform:translateY(-6px);box-shadow:0 16px 34px rgba(11,34,71,0.12)}
-  /* products */
+
+  /* Categories */
+  .categories{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .cat-block{
+    border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer;min-height:100px;transition:transform .14s,box-shadow .14s;
+    text-align:center;
+  }
+  .cat-block:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(11,34,71,0.12)}
+
+  /* Products */
   #products-section{display:none;margin-top:6px}
   .products-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
-  .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .products-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;
+  }
   .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(11,34,71,0.06);display:flex;flex-direction:column}
   .card img{width:100%;height:180px;object-fit:cover;flex-shrink:0;background:#f3f4f6}
   .card-body{padding:12px;display:flex;flex-direction:column;gap:8px}
@@ -46,25 +60,32 @@
   .btn-primary{background:var(--brand-blue);color:#fff}
   .btn-yellow{background:var(--brand-yellow);color:var(--brand-blue);font-weight:800}
   .back-btn{background:transparent;border:0;color:var(--brand-blue);cursor:pointer;font-weight:700}
-  /* cart */
+
+  /* Responsive product image sizes and grid tweaks from your requested CSS */
+  /* (Matches the CSS block you approved) */
+  .products-grid .product-card { /* if using .product-card - kept for compatibility */ }
+  .product-card img { width:160px; height:160px; object-fit:cover; border-radius:12px; margin:0 auto 10px; display:block; }
+
+  /* CART (panel on right) */
   .floating-cart{position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:#fff;padding:12px 14px;border-radius:999px;box-shadow:0 20px 48px rgba(11,34,71,0.18);z-index:999;display:flex;gap:10px;align-items:center;cursor:pointer}
   .cart-count{background:#fff;color:var(--brand-blue);padding:4px 8px;border-radius:8px;font-weight:800}
-  .cart-popup{position:fixed;right:16px;bottom:86px;background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));color:#fff;border-radius:12px;padding:12px;min-width:320px;max-width:460px;display:none;flex-direction:column;z-index:998;box-shadow:0 28px 68px rgba(11,34,71,0.35)}
-  .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
-  .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
-  .order-form{margin-top:10px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
-  .order-form label{display:block;font-size:13px;color:#fff;margin-top:8px}
-  .order-form input, .order-form select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;margin-top:6px}
-  .cart-actions{display:flex;gap:8px;margin-top:12px}
-  .cart-actions .cart-send{flex:1;padding:10px 12px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);font-weight:800;border:0;cursor:pointer}
-  .cart-actions .cart-close{flex:1;padding:10px 12px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.14);cursor:pointer}
-  footer{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:10px 14px;border-top:1px solid #eee;text-align:center;font-size:13px}
-  .hidden{display:none}
+  .cart-modal { position: fixed; top: 0; right: 0; width: 360px; max-width: 92%; height: 100%; background: #fff; box-shadow: -8px 0 24px rgba(0,0,0,0.15); transform: translateX(110%); transition: transform 0.32s ease; z-index: 1200; display:flex; flex-direction:column; }
+  .cart-modal.open { transform: translateX(0); }
+  .cart-header { padding: 16px; border-bottom: 1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
+  .cart-body { padding: 12px; overflow:auto; flex:1; }
+  .cart-item { display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0; }
+  .cart-item img{ width:56px; height:56px; object-fit:cover; border-radius:8px; }
+  .cart-footer { padding: 12px; border-top:1px solid #eee; }
+  .cart-footer input, .cart-footer select { width:100%; padding:8px; margin-bottom:8px; border-radius:8px; border:1px solid #ddd; }
+  .cart-footer .send-btn { width:100%; background:var(--brand-blue); color:#fff; border:0; padding:10px; border-radius:8px; cursor:pointer; font-weight:700; }
+  .close-cart { background:transparent; border:0; cursor:pointer; color:var(--brand-blue); font-weight:700; }
+
+  /* small screens */
   @media(max-width:720px){
     .search{width:160px}
     .card img{height:150px}
     .cat-block{min-height:80px;padding:12px}
-    .cart-popup{left:12px;right:12px;bottom:86px;min-width:auto;max-width:calc(100% - 24px)}
+    .cart-modal { width: 100%; max-width: 100%; }
   }
 </style>
 </head>
@@ -111,42 +132,40 @@
 
   <div class="floating-cart" id="cart-button" aria-label="Открыть корзину">🛒 <span id="cart-count" class="cart-count">0</span></div>
 
-  <div class="cart-popup hidden" id="cart-popup" role="dialog" aria-label="Корзина">
-    <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
-    <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
-    <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
-
-    <div class="order-form">
-      <label for="client-phone">Номер телефона клиента</label>
+  <!-- Cart modal (right panel) -->
+  <aside id="cart-modal" class="cart-modal" aria-hidden="true" role="dialog" aria-label="Корзина">
+    <div class="cart-header">
+      <div style="font-weight:800">Корзина</div>
+      <button class="close-cart" id="close-cart-btn">✕</button>
+    </div>
+    <div class="cart-body" id="cart-list">
+      <div style="opacity:0.6;text-align:center;padding:12px">Корзина пуста</div>
+    </div>
+    <div class="cart-footer">
+      <div style="margin-bottom:6px;font-weight:700">Итого: <span id="cart-total">0 KZT</span></div>
+      <label for="client-phone" style="font-size:13px;margin-bottom:6px;display:block">Номер телефона клиента</label>
       <input id="client-phone" placeholder="+7 7XXXXXXXXX" />
-
-      <label>Выберите банк</label>
+      <label style="font-size:13px;margin:8px 0 6px;display:block">Выберите банк</label>
       <select id="bank-select">
         <option value="">Не указано</option>
         <option value="Kaspi">Kaspi Bank</option>
         <option value="Halyk">Halyk Bank</option>
       </select>
-
-      <div id="phone-error" style="color:#ff8b8b;font-size:12px;display:none;margin-top:6px">Введите корректный номер телефона</div>
-      <div id="bank-error" style="color:#ff8b8b;font-size:12px;display:none;margin-top:6px">Пожалуйста, выберите банк</div>
+      <div id="phone-error" style="color:#d9534f;font-size:13px;display:none;margin-top:6px">Введите корректный номер телефона</div>
+      <div id="bank-error" style="color:#d9534f;font-size:13px;display:none;margin-top:6px">Пожалуйста, выберите банк</div>
+      <div style="height:10px"></div>
+      <button class="send-btn" id="send-order">Отправить заказ</button>
     </div>
+  </aside>
 
-    <div class="cart-actions">
-      <button class="cart-send" id="send-order">Отправить заказ</button>
-      <button class="cart-close" id="close-cart">Закрыть</button>
-    </div>
-
-    <div style="margin-top:8px;color:rgba(255,255,255,0.9)">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
-  </div>
-
-  <footer>Казахстан · Atyrau · WhatsApp: +7 778 222 2191</footer>
+  <footer style="text-align:center;padding:10px 0;border-top:1px solid #eee;background:#fff;position:fixed;left:0;right:0;bottom:0">Казахстан · Atyrau · WhatsApp: +7 778 222 2191</footer>
 
 <script>
-/* CONFIG */
+/* ========== CONFIG ========== */
 const SHEET_ID = '1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo';
 const GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/Abdusamat69/nice-atyrau/main';
-const WHATSAPP_NUMBER = '77782222191';
+const WHATSAPP_NUMBER = '77782222191'; // без +
 
 const CATEGORY_NAMES = [
   'Посуды',
@@ -160,7 +179,7 @@ const CATEGORY_NAMES = [
 
 const CATEGORY_COLORS = ['#ff7f50','#6a5acd','#20b2aa','#ff8c00','#00aaff','#8A2BE2','#ff5c8a'];
 
-/* UI refs */
+/* ========== UI refs ========== */
 const elCategories = document.getElementById('categories');
 const productsSection = document.getElementById('products-section');
 const productsGrid = document.getElementById('products-grid');
@@ -171,7 +190,7 @@ const showAllBtn = document.getElementById('show-all');
 const searchInput = document.getElementById('search');
 
 const cartButton = document.getElementById('cart-button');
-const cartPopup = document.getElementById('cart-popup');
+const cartModal = document.getElementById('cart-modal');
 const cartList = document.getElementById('cart-list');
 const cartCountEl = document.getElementById('cart-count');
 const cartTotalEl = document.getElementById('cart-total');
@@ -180,14 +199,14 @@ const bankSelect = document.getElementById('bank-select');
 const phoneError = document.getElementById('phone-error');
 const bankError = document.getElementById('bank-error');
 const sendOrderBtn = document.getElementById('send-order');
-const closeCartBtn = document.getElementById('close-cart');
+const closeCartBtn = document.getElementById('close-cart-btn');
 
 let products = []; // current opened category products
 let visibleProducts = [];
 let currentCategory = null;
 let cart = loadCartFromStorage();
 
-/* Utilities */
+/* Utility image placeholder */
 const DEMO_IMAGE = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f0f0f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="18">No Image</text></svg>');
 
 function resolveImagePath(cellValue){
@@ -200,7 +219,7 @@ function resolveImagePath(cellValue){
 }
 function handleImgError(e){ e.target.onerror = null; e.target.src = DEMO_IMAGE; }
 
-/* Fetch sheet rows via GViz */
+/* Fetch rows via GViz (works when deployed on Vercel — CORS allowed there) */
 async function fetchSheetRows(sheetName){
   const url = GVIZ_BASE + encodeURIComponent(sheetName);
   const res = await fetch(url);
@@ -222,7 +241,7 @@ function renderCategories(){
     block.addEventListener('click', ()=> openCategory(name));
     elCategories.appendChild(block);
   });
-  // add "Все" block at start
+  // "Все" block first
   const all = document.createElement('div');
   all.className = 'cat-block';
   all.style.background = '#0b5ed7';
@@ -261,7 +280,7 @@ function showProductsView(title, list){
   searchInput.focus();
 }
 
-/* Render products */
+/* Render product cards */
 function renderProducts(list){
   productsGrid.innerHTML = '';
   if(!list || list.length === 0){
@@ -277,7 +296,7 @@ function renderProducts(list){
     const meta = document.createElement('div'); meta.className = 'meta';
     const price = document.createElement('div'); price.className = 'price'; price.textContent = p.price ? p.price + ' ₸' : '';
     const actions = document.createElement('div'); actions.style.marginLeft = 'auto';
-    const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'В корзину';
+    const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Добавить в корзину';
     btn.addEventListener('click', ()=> addToCart(p));
     actions.appendChild(btn);
     meta.appendChild(price); meta.appendChild(actions);
@@ -287,7 +306,7 @@ function renderProducts(list){
   });
 }
 
-/* Open specific category (sheet) */
+/* Open single category (sheet) */
 async function openCategory(name){
   currentCategory = name;
   products = [];
@@ -321,7 +340,7 @@ async function openAll(){
   }
 }
 
-/* Search */
+/* Search inside visible products */
 searchInput.addEventListener('input', (e)=>{
   const q = e.target.value.trim().toLowerCase();
   if(!q){ renderProducts(visibleProducts); return; }
@@ -340,9 +359,9 @@ document.getElementById('back-to-cats').addEventListener('click', ()=> {
 /* Show all button */
 document.getElementById('show-all').addEventListener('click', openAll);
 
-/* CART functions */
-function loadCartFromStorage(){ try{ const r = localStorage.getItem('nice_atyrau_cart_v3'); return r ? JSON.parse(r) : {}; }catch(e){ return {}; } }
-function saveCartToStorage(){ try{ localStorage.setItem('nice_atyrau_cart_v3', JSON.stringify(cart)); }catch(e){} }
+/* CART: localStorage key */
+function loadCartFromStorage(){ try{ const r = localStorage.getItem('nice_atyrau_cart_v4'); return r ? JSON.parse(r) : {}; }catch(e){ return {}; } }
+function saveCartToStorage(){ try{ localStorage.setItem('nice_atyrau_cart_v4', JSON.stringify(cart)); }catch(e){} }
 
 function addToCart(product){
   if(!product || !product.id) return;
@@ -350,7 +369,7 @@ function addToCart(product){
   cart[product.id].qty++;
   saveCartToStorage();
   renderCart();
-  openCartPopup();
+  openCart();
 }
 
 function changeQty(id, delta){
@@ -369,7 +388,7 @@ function renderCart(){
   const keys = Object.keys(cart);
   cartList.innerHTML = '';
   if(keys.length === 0){
-    cartList.innerHTML = '<div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div>';
+    cartList.innerHTML = '<div style="opacity:0.6;padding:12px;text-align:center">Корзина пуста</div>';
     cartCountEl.textContent = '0';
     cartTotalEl.textContent = '0 KZT';
     return;
@@ -382,7 +401,7 @@ function renderCart(){
     const img = document.createElement('img'); img.src = it.image || DEMO_IMAGE; img.onerror = handleImgError;
     const info = document.createElement('div'); info.style.flex = '1';
     const title = document.createElement('div'); title.style.fontWeight = '700'; title.textContent = it.title;
-    const details = document.createElement('div'); details.style.fontSize = '13px'; details.style.color = '#fff'; details.textContent = `${it.price} × ${it.qty} шт.`;
+    const details = document.createElement('div'); details.style.fontSize = '13px'; details.style.color = '#444'; details.textContent = `${it.price} × ${it.qty} шт.`;
     info.appendChild(title); info.appendChild(details);
     const controls = document.createElement('div'); controls.style.display='flex'; controls.style.flexDirection='column'; controls.style.gap='6px'; controls.style.alignItems='center';
     const qtyControls = document.createElement('div'); qtyControls.style.display='flex'; qtyControls.style.gap='6px';
@@ -398,36 +417,39 @@ function renderCart(){
   cartTotalEl.textContent = total + ' KZT';
 }
 
-/* Cart popup open/close with robust handlers */
-function openCartPopup(){
-  cartPopup.style.display = 'flex';
-  cartPopup.classList.remove('hidden');
+/* Cart open/close (panel) */
+function openCart(){
+  cartModal.classList.add('open');
+  cartModal.setAttribute('aria-hidden', 'false');
   renderCart();
 }
-function closeCartPopup(){
-  cartPopup.style.display = 'none';
-  cartPopup.classList.add('hidden');
+function closeCart(){
+  cartModal.classList.remove('open');
+  cartModal.setAttribute('aria-hidden', 'true');
 }
 
-/* toggle cart */
 cartButton.addEventListener('click', ()=> {
-  if(cartPopup.style.display === 'flex' && !cartPopup.classList.contains('hidden')) closeCartPopup();
-  else openCartPopup();
+  if(cartModal.classList.contains('open')) closeCart();
+  else openCart();
 });
-closeCartBtn.addEventListener('click', ()=> closeCartPopup());
+closeCartBtn.addEventListener('click', ()=> closeCart());
 
-// close on click outside popup
-document.addEventListener('click', (e)=>{
-  const inside = e.composedPath().includes(cartPopup) || e.composedPath().includes(cartButton);
-  if(!inside && cartPopup.style.display === 'flex' && !cartPopup.classList.contains('hidden')) closeCartPopup();
-});
 // close on Esc
-document.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closeCartPopup(); });
+document.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closeCart(); });
 
-/* phone validation */
+// close on click outside cart (when open)
+document.addEventListener('click', (e)=>{
+  if(!cartModal.classList.contains('open')) return;
+  const path = e.composedPath ? e.composedPath() : (e.path || []);
+  if(path && (path.includes(cartModal) || path.includes(cartButton))) return;
+  // click outside
+  closeCart();
+});
+
+/* Validation */
 function validatePhone(v){ const d = String(v).replace(/\D/g,''); return /^7\d{9}$/.test(d); }
 
-/* send order to WhatsApp */
+/* Send order via WhatsApp */
 sendOrderBtn.addEventListener('click', ()=>{
   if(Object.keys(cart).length === 0){ alert('Корзина пуста'); return; }
   const phone = clientPhoneInput.value.trim();
@@ -442,13 +464,13 @@ sendOrderBtn.addEventListener('click', ()=>{
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(waUrl, '_blank');
 
-  // clear cart after sending
+  // clear cart
   cart = {};
   saveCartToStorage();
   renderCart();
   clientPhoneInput.value = '';
   bankSelect.value = '';
-  closeCartPopup();
+  closeCart();
   alert('Заказ отправлен оператору в WhatsApp. Корзина очищена.');
 });
 
@@ -456,7 +478,7 @@ sendOrderBtn.addEventListener('click', ()=>{
 (async function init(){
   renderCategories();
   renderCart();
-  // optionally open all products initially? keep showing categories
+  // Optional: you can auto-open all products: openAll();
 })();
 </script>
 </body>
