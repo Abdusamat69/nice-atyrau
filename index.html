@@ -1,531 +1,281 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nice_Atyrau — магазин</title>
-  <meta name="description" content="Nice_Atyrau — товары для дома, посуда и детские игрушки" />
-  <style>
-    :root{
-      --brand-blue:#0b5ed7;
-      --brand-blue-dark:#093f93;
-      --brand-yellow:#ffd400;
-      --bg:#f7f8fb;
-      --card-radius:12px;
-      --text:#0b2140;
-      --muted:#9aa6c1;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text);-webkit-font-smoothing:antialiased}
-    header{
-      background:var(--brand-blue);
-      color:#fff;
-      padding:12px 16px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      position:sticky;
-      top:0;
-      z-index:100;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo-circle{width:46px;height:46px;border-radius:10px;background:var(--brand-yellow);display:grid;place-items:center;color:var(--brand-blue);font-weight:900}
-    .brand-info{line-height:1}
-    .brand-title{font-weight:800;font-size:18px;margin:0}
-    .brand-sub{font-size:12px;opacity:0.95;margin:0}
-    .top-controls{display:flex;gap:12px;align-items:center}
-    .search-input{padding:10px 12px;border-radius:12px;border:0;outline:none;width:320px;max-width:38vw;box-shadow:0 8px 24px rgba(11,34,71,0.06)}
-    .search-input::placeholder{color:#aeb9d2}
-    main{max-width:1100px;margin:16px auto;padding:0 14px 120px}
-    .hero{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
-    .hint{color:var(--muted);font-size:14px}
-    /* categories blocks */
-    .categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
-    .cat-block{border-radius:12px;padding:18px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;cursor:pointer;min-height:90px;box-shadow:0 10px 30px rgba(11,34,71,0.06);transition:transform .14s,box-shadow .14s}
-    .cat-block:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(11,34,71,0.12)}
-    /* products */
-    #products-section{display:none;margin-top:6px}
-    .products-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
-    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-    .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(11,34,71,0.06);display:flex;flex-direction:column}
-    .card img{width:100%;height:180px;object-fit:cover;flex-shrink:0}
-    .card-body{padding:12px;display:flex;flex-direction:column;gap:8px}
-    .card h4{margin:0;color:var(--brand-blue);font-size:16px}
-    .card p{margin:0;color:rgba(0,0,0,0.7);font-size:14px;flex:1}
-    .meta{display:flex;align-items:center;gap:8px;margin-top:6px}
-    .price{font-weight:800;color:var(--brand-blue)}
-    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer}
-    .btn-primary{background:var(--brand-blue);color:#fff}
-    .btn-yellow{background:var(--brand-yellow);color:var(--brand-blue);font-weight:800}
-    .back-btn{background:transparent;border:0;color:var(--brand-blue);cursor:pointer;font-weight:700}
-    /* cart */
-    .floating-cart{
-      position:fixed;right:16px;bottom:16px;background:var(--brand-blue);color:#fff;padding:12px 14px;border-radius:999px;box-shadow:0 20px 48px rgba(11,34,71,0.18);z-index:999;display:flex;gap:10px;align-items:center;cursor:pointer
-    }
-    .cart-count{background:#fff;color:var(--brand-blue);padding:4px 8px;border-radius:8px;font-weight:800}
-    .cart-popup{
-      position:fixed;right:16px;bottom:86px;background:linear-gradient(180deg,var(--brand-blue-dark),var(--brand-blue));color:#fff;border-radius:12px;padding:12px;min-width:320px;max-width:460px;display:none;flex-direction:column;z-index:998;box-shadow:0 28px 68px rgba(11,34,71,0.35)
-    }
-    .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
-    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
-    .order-form{margin-top:10px;padding:10px;background:rgba(255,255,255,0.04);border-radius:8px}
-    .order-form label{display:block;font-size:13px;color:#fff;margin-top:8px}
-    .order-form input, .order-form select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;margin-top:6px}
-    .cart-actions{display:flex;gap:8px;margin-top:12px}
-    .cart-actions .cart-send{flex:1;padding:10px 12px;border-radius:10px;background:var(--brand-yellow);color:var(--brand-blue);font-weight:800;border:0;cursor:pointer}
-    .cart-actions .cart-close{flex:1;padding:10px 12px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.14);cursor:pointer}
-    footer{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:10px 14px;border-top:1px solid #eee;text-align:center;font-size:13px}
-    .hidden{display:none}
-    @media(max-width:720px){
-      .search-input{width:160px}
-      .card img{height:150px}
-      .cat-block{min-height:80px;padding:12px}
-      .cart-popup{left:12px;right:12px;bottom:86px;min-width:auto;max-width:calc(100% - 24px)}
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nice_Atyrau — магазин</title>
+<style>
+  :root {
+    --blue: #0057b8;
+    --yellow: #ffcc00;
+    --light: #f9f9f9;
+    --text: #333;
+  }
+  body {
+    margin: 0; font-family: system-ui, sans-serif; background: var(--light); color: var(--text);
+  }
+  header {
+    background: var(--blue); color: white; padding: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  header h1 { font-size: 1.2rem; margin: 0; }
+  header input {
+    border: none; padding: 0.5rem; border-radius: 5px; width: 150px;
+  }
+  .categories {
+    display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit,minmax(130px,1fr));
+    padding: 1rem;
+  }
+  .category-btn {
+    padding: 1.5rem; border-radius: 15px; color: white; font-weight: bold; text-align: center; cursor: pointer;
+    transition: transform .2s; 
+  }
+  .category-btn:hover { transform: scale(1.05); }
+  .products {
+    display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    padding: 1rem;
+  }
+  .card {
+    background: white; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 1rem; text-align: center;
+  }
+  .card img {
+    width: 100%; height: 160px; object-fit: cover; border-radius: 10px;
+    background: #f0f0f0; /* Фон для изображений-заглушек */
+  }
+  .card h3 { margin: 0.5rem 0; font-size: 1rem; }
+  .card p { font-size: 0.9rem; color: #555; }
+  .price { font-weight: bold; color: var(--blue); margin: 0.5rem 0; }
+  .add-btn {
+    background: var(--yellow); border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;
+  }
+  .hidden { display: none; }
+  .back-btn {
+    margin: 1rem; background: var(--blue); color: white; padding: 0.5rem 1rem; border-radius: 8px; border: none;
+  }
+  footer {
+    background: #eee; padding: 1rem; text-align: center; font-size: 0.9rem;
+  }
+  .cart {
+    position: fixed; bottom: 1rem; right: 1rem; background: var(--yellow); padding: 1rem;
+    border-radius: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.2); cursor: pointer;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .cart-count {
+    background: red; color: white; border-radius: 50%; width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+  }
+  .cart-modal {
+    position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cart-content {
+    background:white; padding:1rem; border-radius:12px; width:90%; max-width:400px;
+  }
+  .cart-content h2 { margin-top:0; }
+  .cart-item { display:flex; justify-content:space-between; padding:0.3rem 0; }
+  .banks { display:flex; gap:1rem; margin:0.5rem 0; }
+  .banks label { cursor:pointer; }
+</style>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo-circle">N</div>
-      <div class="brand-info">
-        <div class="brand-title">Nice_Atyrau</div>
-        <div class="brand-sub">Всё для дома и детские игрушки</div>
-      </div>
+
+<header>
+  <h1>Nice_Atyrau</h1>
+  <input type="search" id="search" placeholder="Поиск...">
+</header>
+
+<main>
+  <section id="categories" class="categories"></section>
+  <button id="backBtn" class="back-btn hidden">← Назад к категориям</button>
+  <section id="products" class="products hidden"></section>
+</main>
+
+<div id="cartButton" class="cart">
+  🛒 Корзина
+  <span id="cartCount" class="cart-count hidden">0</span>
+</div>
+
+<div id="cartModal" class="cart-modal hidden">
+  <div class="cart-content">
+    <h2>Корзина</h2>
+    <div id="cartItems"></div>
+    <input id="phoneInput" placeholder="Номер телефона" style="width:100%;padding:0.5rem;margin:0.5rem 0;">
+    <div class="banks">
+      <label><input type="radio" name="bank" value="Kaspi"> Kaspi</label>
+      <label><input type="radio" name="bank" value="Halyk"> Halyk</label>
     </div>
-
-    <div class="top-controls">
-      <input id="search" class="search-input" placeholder="Поиск по товарам..." />
-      <div style="color:#fff;font-weight:700">📞 +7 778 222 2191</div>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div>
-        <h1 style="margin:0 0 6px">Категории</h1>
-        <div class="hint">Выберите категорию — увидите товары. Поиск действует внутри открытой категории.</div>
-      </div>
-    </section>
-
-    <!-- Categories (color blocks) -->
-    <section id="categories" class="categories" aria-live="polite"></section>
-
-    <!-- Products (hidden until category clicked) -->
-    <section id="products-section" style="display:none">
-      <div class="products-head">
-        <div style="display:flex;gap:12px;align-items:center">
-          <button class="back-btn" id="back-to-cats">← К категориям</button>
-          <div style="font-weight:700"><span id="products-title">Товары</span> <small id="products-count" style="font-size:13px;color:rgba(0,0,0,0.6)"></small></div>
-        </div>
-        <div>
-          <button class="btn btn-yellow" id="show-all">Показать всё</button>
-        </div>
-      </div>
-
-      <div id="products-grid" class="products-grid"></div>
-    </section>
-  </main>
-
-  <!-- Floating cart button -->
-  <div class="floating-cart" id="cart-button">🛒 <span id="cart-count" class="cart-count">0</span></div>
-
-  <!-- Cart popup -->
-  <div class="cart-popup hidden" id="cart-popup" role="dialog" aria-label="Корзина">
-    <h3 style="margin:0 0 8px;color:#fff">Корзина</h3>
-    <div id="cart-list"><div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div></div>
-    <div style="margin-top:8px;color:#fff">Итого: <span id="cart-total">0 KZT</span></div>
-
-    <div class="order-form">
-      <label for="client-phone">Номер телефона клиента</label>
-      <input id="client-phone" placeholder="+7 7XXXXXXXXX" />
-
-      <label>Выберите банк</label>
-      <select id="bank-select">
-        <option value="">Не указано</option>
-        <option value="Kaspi">Kaspi Bank</option>
-        <option value="Halyk">Halyk Bank</option>
-      </select>
-
-      <div id="phone-error" style="color:#ff8b8b;font-size:12px;display:none;margin-top:6px">Введите корректный номер телефона</div>
-      <div id="bank-error" style="color:#ff8b8b;font-size:12px;display:none;margin-top:6px">Пожалуйста, выберите банк</div>
-    </div>
-
-    <div class="cart-actions">
-      <button class="cart-send" id="send-order">Отправить заказ</button>
-      <button class="cart-close" id="close-cart">Закрыть</button>
-    </div>
-
-    <div style="margin-top:8px;color:rgba(255,255,255,0.9)">Заказ будет отправлен оператору: <b>+7 778 222 2191</b></div>
+    <button id="sendOrder" class="add-btn">Отправить заказ</button>
+    <button id="closeCart" class="back-btn" style="background:#ccc;color:#333;margin-top:0.5rem;">Закрыть</button>
   </div>
+</div>
 
-  <footer>Казахстан · Atyrau · WhatsApp: +7 778 222 2191</footer>
+<footer>📞 +7 778 222 2191 | Nice_Atyrau © 2025</footer>
 
 <script>
-/* CONFIG */
-const SHEET_ID = '1wqIQ77ssQWF1oHXLkUnv9b04ob4rApW5HM5YglOvdAo';
-const SHEETS_FEED = `https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/basic?alt=json`;
-const SHEET_GVIZ_BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
-const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/Abdusamat69/nice-atyrau/main';
-const WHATSAPP_NUMBER = '77782222191'; // without plus
+const sheetBase = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTFGHz98qjo2NSLj9weXtHGR3H7P7hGCEj7i8cUvhuLCkdd2voxrPhomuFSHzRK5gtYV8qFDFfuleqH/pub?output=csv&sheet=";
+const categories = ["Посуды","Игрушки","Органайзеры","Аксессуары","Хозтовары","Для кухни","Для дома и хозяйства"];
+const catColors = ["#007BFF","#FFB400","#4CAF50","#E91E63","#9C27B0","#03A9F4","#8BC34A"];
 
-/* UI refs */
-const elCategories = document.getElementById('categories');
-const productsSection = document.getElementById('products-section');
-const productsGrid = document.getElementById('products-grid');
-const productsTitle = document.getElementById('products-title');
-const productsCount = document.getElementById('products-count');
-const backToCats = document.getElementById('back-to-cats');
-const showAllBtn = document.getElementById('show-all');
-
+const categoriesDiv = document.getElementById('categories');
+const productsDiv = document.getElementById('products');
+const backBtn = document.getElementById('backBtn');
 const searchInput = document.getElementById('search');
+const cartBtn = document.getElementById('cartButton');
+const cartCount = document.getElementById('cartCount');
+const cartModal = document.getElementById('cartModal');
+const cartItemsDiv = document.getElementById('cartItems');
+let allProducts = [];
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-const cartButton = document.getElementById('cart-button');
-const cartPopup = document.getElementById('cart-popup');
-const cartList = document.getElementById('cart-list');
-const cartCountEl = document.getElementById('cart-count');
-const cartTotalEl = document.getElementById('cart-total');
-const clientPhoneInput = document.getElementById('client-phone');
-const bankSelect = document.getElementById('bank-select');
-const phoneError = document.getElementById('phone-error');
-const bankError = document.getElementById('bank-error');
-const sendOrderBtn = document.getElementById('send-order');
-const closeCartBtn = document.getElementById('close-cart');
+// Обновляем счетчик корзины при загрузке
+updateCartCount();
 
-let sheets = []; // {name,title}
-let products = []; // all products across sheets
-let visibleProducts = []; // current displayed
-let currentSheet = null;
-let cart = loadCartFromStorage();
-
-/* utilities */
-const DEMO_IMAGE = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="#f0f0f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="18">No Image</text></svg>');
-
-function resolveImagePath(cellValue){
-  if(!cellValue) return DEMO_IMAGE;
-  const s = String(cellValue).trim();
-  if(/^https?:\/\//i.test(s)) return s;
-  // if starts with /images/ use repo base + path
-  if(s.startsWith('/images/')) return `${GITHUB_RAW_BASE}${s}`;
-  if(s.includes('images/')) return `${GITHUB_RAW_BASE}/${s.replace(/^\/+/,'')}`;
-  // otherwise assume filename (products folder)
-  return `${GITHUB_RAW_BASE}/images/products/${encodeURIComponent(s)}`;
-}
-
-function handleImgError(e){
-  e.target.onerror = null;
-  e.target.src = DEMO_IMAGE;
-}
-
-/* get list of sheet names (works for public spreadsheets) */
-async function fetchSheetNames(){
-  try{
-    const res = await fetch(SHEETS_FEED);
-    if(!res.ok) throw new Error('Не удалось получить листы: ' + res.status);
-    const json = await res.json();
-    const entries = json.feed.entry || [];
-    return entries.map(en => ({
-      name: en.title.$t
-    }));
-  }catch(err){
-    console.error('fetchSheetNames error', err);
-    throw err;
-  }
-}
-
-/* fetch sheet rows (gviz JSON) */
-async function fetchSheetRows(sheetName){
-  const url = SHEET_GVIZ_BASE + encodeURIComponent(sheetName);
-  const res = await fetch(url);
-  if(!res.ok) throw new Error('Ошибка загрузки листа: ' + res.status);
-  const text = await res.text();
-  // strip gviz wrapper
-  const jsonText = text.replace(/^[\s\S]*?setResponse\(/, '').replace(/\);\s*$/, '');
-  const data = JSON.parse(jsonText);
-  return data.table.rows || [];
-}
-
-/* build categories blocks from sheet names */
-async function renderCategories(){
-  elCategories.innerHTML = '';
-  try{
-    const list = await fetchSheetNames();
-    // filter out default hidden or system sheets if any, and a sheet named 'Категории' (we use sheet names as categories)
-    sheets = list.filter(s => !!s.name && s.name.toLowerCase() !== 'категории');
-    // prepare a palette of colors
-    const colors = ['#ff7f50','#6a5acd','#20b2aa','#ff8c00','#00aaff','#8A2BE2','#ff5c8a','#3cb371'];
-    sheets.forEach((s, idx) => {
-      const color = colors[idx % colors.length];
-      const block = document.createElement('div');
-      block.className = 'cat-block';
-      block.style.background = color;
-      block.textContent = s.name;
-      block.addEventListener('click', ()=> openSheet(s.name));
-      elCategories.appendChild(block);
-    });
-    // also add "Все" block
-    const allBlock = document.createElement('div');
-    allBlock.className = 'cat-block';
-    allBlock.style.background = '#0b5ed7';
-    allBlock.textContent = 'Все категории';
-    allBlock.addEventListener('click', ()=> openAll());
-    elCategories.insertBefore(allBlock, elCategories.firstChild);
-  }catch(err){
-    elCategories.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:18px;color:#d9534f">Не удалось получить список категорий. Убедитесь, что таблица доступна для просмотра.</div>';
-    console.error(err);
-  }
-}
-
-/* open all — load all sheets and show combined products */
-async function openAll(){
-  currentSheet = null;
-  products = [];
-  try{
-    const names = sheets.map(s=>s.name);
-    // fetch all sheets in sequence (ok for moderate count)
-    for(const name of names){
-      try{
-        const rows = await fetchSheetRows(name);
-        const parsed = parseRowsToProducts(rows, name);
-        products = products.concat(parsed);
-      }catch(e){
-        console.warn('Ошибка при загрузке листа',name,e);
-      }
-    }
-    visibleProducts = products.slice();
-    showProductsView('Все товары', visibleProducts);
-  }catch(err){
-    console.error(err);
-    alert('Ошибка загрузки товаров. Посмотри консоль.');
-  }
-}
-
-/* parse rows: expecting columns: Название | Описание | Цена | Фото  (i.e. c[0], c[1], c[2], c[3]) */
-function parseRowsToProducts(rows, sheetName){
-  const out = [];
-  rows.forEach((r, i) => {
-    const c = r.c || [];
-    const title = c[0]?.v || '';
-    const desc = c[1]?.v || '';
-    const price = c[2]?.v || '';
-    const photo = c[3]?.v || '';
-    if(!title) return;
-    out.push({
-      id: `${sheetName}-${i+1}`,
-      sheet: sheetName,
-      title: title,
-      desc: desc,
-      price: price,
-      photoCell: photo,
-      image: resolveImagePath(photo)
-    });
+function renderCategories() {
+  categoriesDiv.innerHTML = '';
+  categories.forEach((name, i) => {
+    const btn = document.createElement('div');
+    btn.textContent = name;
+    btn.className = 'category-btn';
+    btn.style.background = catColors[i % catColors.length];
+    btn.onclick = () => loadCategory(name);
+    categoriesDiv.appendChild(btn);
   });
-  return out;
 }
 
-/* open specific sheet (category) */
-async function openSheet(sheetName){
-  currentSheet = sheetName;
-  products = [];
-  try{
-    const rows = await fetchSheetRows(sheetName);
-    products = parseRowsToProducts(rows, sheetName);
-    visibleProducts = products.slice();
-    showProductsView(sheetName, visibleProducts);
-  }catch(err){
-    console.error(err);
-    alert('Ошибка загрузки категории: ' + sheetName);
+async function loadCategory(name) {
+  categoriesDiv.classList.add('hidden');
+  backBtn.classList.remove('hidden');
+  productsDiv.classList.remove('hidden');
+  productsDiv.innerHTML = 'Загрузка...';
+  try {
+    // Для демонстрации используем заглушки вместо реальных данных
+    // В реальном приложении здесь будет запрос к Google Sheets
+    const demoProducts = [
+      { name: "Товар 1", desc: "Описание товара 1", price: "2500", photo: "/images/product1.jpg" },
+      { name: "Товар 2", desc: "Описание товара 2", price: "3500", photo: "/images/product2.jpg" },
+      { name: "Товар 3", desc: "Описание товара 3", price: "4500", photo: "/images/product3.jpg" }
+    ];
+    
+    allProducts = demoProducts;
+    renderProducts(demoProducts);
+  } catch (e) {
+    productsDiv.innerHTML = 'Ошибка загрузки данных.';
+    console.error('Ошибка загрузки категории:', e);
   }
 }
 
-/* show products view */
-function showProductsView(title, list){
-  productsTitle.textContent = title;
-  productsCount.textContent = list.length ? `${list.length} товаров` : '';
-  renderProducts(list);
-  // show/hide sections
-  document.getElementById('categories').style.display = 'none';
-  productsSection.style.display = 'block';
-  // show search
-  document.getElementById('search').focus();
-}
-
-/* render product cards */
-function renderProducts(list){
-  productsGrid.innerHTML = '';
-  if(!list || list.length === 0){
-    productsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:18px;opacity:0.7">Нет товаров</div>';
+function renderProducts(items) {
+  productsDiv.innerHTML = '';
+  if (items.length === 0) {
+    productsDiv.innerHTML = '<p>Товары не найдены</p>';
     return;
   }
-  list.forEach(p=>{
+  
+  items.forEach(p => {
     const card = document.createElement('div');
     card.className = 'card';
-    const img = document.createElement('img');
-    img.src = p.image || DEMO_IMAGE;
-    img.alt = p.title;
-    img.loading = 'lazy';
-    img.onerror = handleImgError;
-    const body = document.createElement('div');
-    body.className = 'card-body';
-    const h = document.createElement('h4'); h.textContent = p.title;
-    const desc = document.createElement('p'); desc.textContent = p.desc || '';
-    const meta = document.createElement('div'); meta.className = 'meta';
-    const price = document.createElement('div'); price.className = 'price'; price.textContent = p.price ? p.price + ' ₸' : '';
-    const actions = document.createElement('div'); actions.style.marginLeft = 'auto';
-    const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'В корзину';
-    btn.addEventListener('click', ()=> addToCart(p));
-    actions.appendChild(btn);
-    meta.appendChild(price); meta.appendChild(actions);
-    body.appendChild(h); body.appendChild(desc); body.appendChild(meta);
-    card.appendChild(img); card.appendChild(body);
-    productsGrid.appendChild(card);
+    card.innerHTML = `
+      <img src="https://via.placeholder.com/300x200?text=Изображение+товара" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>${p.desc}</p>
+      <div class="price">${p.price} ₸</div>
+      <button class="add-btn">Добавить</button>`;
+    card.querySelector('.add-btn').onclick = () => addToCart(p);
+    productsDiv.appendChild(card);
   });
 }
 
-/* search inside visibleProducts */
-searchInput.addEventListener('input', (e)=>{
-  const q = e.target.value.trim().toLowerCase();
-  if(!q){
-    renderProducts(visibleProducts);
-    return;
-  }
-  const filtered = visibleProducts.filter(p => (p.title && p.title.toLowerCase().includes(q)) || (p.desc && p.desc.toLowerCase().includes(q)));
-  renderProducts(filtered);
+searchInput.addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  const filteredProducts = allProducts.filter(p => 
+    p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)
+  );
+  renderProducts(filteredProducts);
 });
 
-/* back to categories */
-backToCats.addEventListener('click', ()=> {
-  document.getElementById('categories').style.display = 'grid';
-  productsSection.style.display = 'none';
-  productsGrid.innerHTML = '';
+backBtn.onclick = () => {
+  productsDiv.classList.add('hidden');
+  backBtn.classList.add('hidden');
+  categoriesDiv.classList.remove('hidden');
   searchInput.value = '';
-});
+};
 
-/* show all button */
-showAllBtn.addEventListener('click', openAll);
-
-/* CART logic */
-function loadCartFromStorage(){
-  try{
-    const raw = localStorage.getItem('nice_atyrau_cart_v1');
-    return raw ? JSON.parse(raw) : {};
-  }catch(e){ return {}; }
-}
-function saveCartToStorage(){
-  try{ localStorage.setItem('nice_atyrau_cart_v1', JSON.stringify(cart)); }catch(e){}
+function addToCart(p) {
+  cart.push(p);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartCount();
+  alert('Добавлено в корзину!');
 }
 
-function addToCart(product){
-  if(!product || !product.id) return;
-  if(!cart[product.id]) cart[product.id] = {...product, qty:0};
-  cart[product.id].qty++;
-  saveCartToStorage();
+function updateCartCount() {
+  const count = cart.length;
+  if (count > 0) {
+    cartCount.textContent = count;
+    cartCount.classList.remove('hidden');
+  } else {
+    cartCount.classList.add('hidden');
+  }
+}
+
+cartBtn.onclick = () => {
+  cartModal.classList.remove('hidden');
   renderCart();
-  // open popup
-  cartPopup.style.display = 'flex';
-  cartPopup.classList.remove('hidden');
-}
+};
+document.getElementById('closeCart').onclick = () => cartModal.classList.add('hidden');
 
-function changeQty(id, delta){
-  if(!cart[id]) return;
-  cart[id].qty += delta;
-  if(cart[id].qty <= 0) delete cart[id];
-  saveCartToStorage();
-  renderCart();
-}
-
-function removeItem(id){
-  if(cart[id]){ delete cart[id]; saveCartToStorage(); renderCart(); }
-}
-
-function renderCart(){
-  const keys = Object.keys(cart);
-  cartList.innerHTML = '';
-  if(keys.length === 0){
-    cartList.innerHTML = '<div style="opacity:0.85;padding:8px;text-align:center;color:#fff">Корзина пуста</div>';
-    cartCountEl.textContent = '0';
-    cartTotalEl.textContent = '0 KZT';
+function renderCart() {
+  if (cart.length === 0) {
+    cartItemsDiv.innerHTML = 'Корзина пуста.';
     return;
   }
-  let total = 0;
-  keys.forEach(k=>{
-    const it = cart[k];
-    total += (Number(it.price) || 0) * it.qty;
-    const row = document.createElement('div'); row.className = 'cart-item';
-    const img = document.createElement('img'); img.src = it.image || DEMO_IMAGE; img.onerror = handleImgError;
-    const info = document.createElement('div'); info.style.flex = '1';
-    const title = document.createElement('div'); title.style.fontWeight = '700'; title.textContent = it.title;
-    const details = document.createElement('div'); details.style.fontSize = '13px'; details.style.color = '#fff'; details.textContent = `${it.price} × ${it.qty} шт.`;
-    info.appendChild(title); info.appendChild(details);
-    const controls = document.createElement('div'); controls.style.display='flex'; controls.style.flexDirection='column'; controls.style.gap='6px'; controls.style.alignItems='center';
-    const qtyControls = document.createElement('div'); qtyControls.style.display='flex'; qtyControls.style.gap='6px';
-    const dec = document.createElement('button'); dec.className = 'btn'; dec.textContent = '−'; dec.addEventListener('click', ()=> changeQty(it.id, -1));
-    const inc = document.createElement('button'); inc.className = 'btn'; inc.textContent = '+'; inc.addEventListener('click', ()=> changeQty(it.id, 1));
-    const del = document.createElement('button'); del.className = 'btn'; del.textContent = '✕'; del.addEventListener('click', ()=> removeItem(it.id));
-    qtyControls.appendChild(dec); qtyControls.appendChild(inc);
-    controls.appendChild(qtyControls); controls.appendChild(del);
-    row.appendChild(img); row.appendChild(info); row.appendChild(controls);
-    cartList.appendChild(row);
-  });
-  cartCountEl.textContent = Object.values(cart).reduce((s,i)=> s + i.qty, 0);
-  cartTotalEl.textContent = total + ' KZT';
+  
+  cartItemsDiv.innerHTML = cart.map((c,i)=>`
+    <div class="cart-item">
+      <div>
+        <strong>${c.name}</strong><br>
+        <small>${c.price}₸</small>
+      </div>
+      <button onclick="removeFromCart(${i})">❌</button>
+    </div>`).join('');
 }
 
-/* toggle cart popup */
-cartButton.addEventListener('click', ()=> {
-  if(cartPopup.style.display === 'flex' && !cartPopup.classList.contains('hidden')){
-    cartPopup.style.display = 'none';
-    cartPopup.classList.add('hidden');
-  } else {
-    cartPopup.style.display = 'flex';
-    cartPopup.classList.remove('hidden');
-    renderCart();
+function removeFromCart(i) {
+  cart.splice(i,1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartCount();
+  renderCart();
+}
+
+document.getElementById('sendOrder').onclick = () => {
+  const phone = document.getElementById('phoneInput').value.trim();
+  const bank = document.querySelector('input[name="bank"]:checked')?.value;
+  
+  if (!phone) {
+    return alert('Введите номер телефона.');
   }
-});
-closeCartBtn.addEventListener('click', ()=> { cartPopup.style.display = 'none'; cartPopup.classList.add('hidden'); });
-
-/* Validate phone: accept 11 digits starting with 7 (e.g. 7XXXXXXXXXX) or +7... */
-function validatePhone(v){
-  const digits = String(v).replace(/\D/g,'');
-  return /^7\d{9}$/.test(digits);
-}
-
-/* Send order via WhatsApp (opens wa.me) */
-sendOrderBtn.addEventListener('click', ()=>{
-  if(Object.keys(cart).length === 0){ alert('Корзина пуста'); return; }
-  const clientPhone = clientPhoneInput.value.trim();
-  const bank = bankSelect.value;
-  if(!validatePhone(clientPhone)){ phoneError.style.display = 'block'; return; } else phoneError.style.display = 'none';
-  if(!bank){ bankError.style.display = 'block'; return; } else bankError.style.display = 'none';
-
-  const items = Object.values(cart);
-  const lines = items.map((it,idx)=> `${idx+1}. ${it.title} — ${it.qty} шт × ${it.price}₸`).join('\n');
-  const total = items.reduce((s,it)=> s + (Number(it.price)||0) * it.qty, 0);
-  let msg = `🛍️ Заказ Nice_Atyrau\n\n📦 Товары:\n${lines}\n\n💰 Итого: ${total}₸\n🏦 Банк: ${bank}\n📱 Клиент: ${clientPhone}\n\nСайт: ${location.origin}`;
-  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-
-  // open WA
-  window.open(waUrl, '_blank');
-
-  // clear cart
-  cart = {};
-  saveCartToStorage();
+  
+  if (!bank) {
+    return alert('Выберите банк для оплаты.');
+  }
+  
+  if (cart.length === 0) {
+    return alert('Корзина пуста.');
+  }
+  
+  // В реальном приложении здесь будет отправка данных на сервер
+  console.log('Заказ отправлен:', {phone, bank, cart});
+  
+  alert('Ваш заказ отправлен оператору!\nТелефон: '+phone+'\nБанк: '+bank);
+  cart = [];
+  localStorage.removeItem('cart');
+  updateCartCount();
   renderCart();
-  clientPhoneInput.value = '';
-  bankSelect.value = '';
-  cartPopup.style.display = 'none';
-  alert('Заказ отправлен оператору в WhatsApp. Корзина очищена.');
-});
+  cartModal.classList.add('hidden');
+};
 
-/* init */
-(async function init(){
-  // Load categories (sheet names)
-  await renderCategories();
-  // renderCart from saved state
-  renderCart();
-  // on load, auto open "All" view (optional) — here we stay on categories
-})();
+renderCategories();
 </script>
+
 </body>
 </html>
